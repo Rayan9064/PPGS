@@ -31,37 +31,36 @@ A mobile application built using **React Native (Expo)** to scan packaged produc
 ## 📁 Project Structure
 
 ```
-
-ppgs-mvp/
+PPGS/
 │
-├── App.js
 ├── package.json
-├── assets/
-│   └── images/
+├── tsconfig.json
+├── README.md
+├── PLAN.md
 │
-├── components/
-│   ├── ScanButton.js
-│   ├── ProductCard.js
-│   └── Loader.js
-│
-├── screens/
-│   ├── HomeScreen.js
-│   ├── ScannerScreen.js
-│   └── ResultScreen.js
-│
-├── services/
-│   └── productAPI.js   # API handler for Open Food Facts
-│
-├── utils/
-│   └── gradingLogic.js # Simple product grading logic
-│
-├── constants/
-│   └── Colors.js
-│   └── NutritionLimits.js
-│
-└── navigation/
-└── AppNavigator.js
-
+└── src/
+    ├── components/       # Reusable UI components
+    │   ├── ScanButton.tsx
+    │   ├── ProductCard.tsx
+    │   └── Loader.tsx
+    │
+    ├── screens/         # Application screens
+    │   ├── HomeScreen.tsx
+    │   ├── ScannerScreen.tsx
+    │   └── ResultScreen.tsx
+    │
+    ├── services/        # External service integrations
+    │   └── productAPI.ts # Open Food Facts API handler
+    │
+    ├── utils/           # Helper functions and utilities
+    │   └── gradingLogic.ts
+    │
+    ├── constants/       # Application constants
+    │   ├── Colors.ts
+    │   └── NutritionLimits.ts
+    │
+    └── navigation/      # Navigation configuration
+        └── AppNavigator.tsx
 ```
 
 ---
