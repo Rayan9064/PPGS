@@ -1,129 +1,41 @@
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { useCameraPermissions } from "expo-camera";
+import { Link, Stack } from "expo-router";
 import React from 'react';
-import { ScrollView, StyleSheet, View } from 'react-native';
-import { List, Surface, Text, useTheme } from 'react-native-paper';
+import { Pressable, SafeAreaView, StyleSheet, View } from 'react-native';
+import { Text, useTheme } from 'react-native-paper';
 
 export default function HomeScreen() {
   const theme = useTheme();
+  const [permission, requestPermission] = useCameraPermissions();
+  const isPermissionGranted = Boolean(permission?.granted);
 
   return (
-    <ScrollView style={styles.container}>
-      <View style={styles.headerContainer}>
-        <Surface style={styles.headerCard} elevation={2}>
-          <MaterialCommunityIcons
-            name="heart-pulse"
-            size={48}
-            color="#4CAF50"
-          />
-          <Text variant="headlineLarge" style={styles.title}>
-            PPGS
+    <SafeAreaView style={styles.container}>
+      <Stack.Screen options={{ title: "Overview", headerShown: false }} />
+      <Text style={styles.title}>Product Scanner</Text>
+      <View style={{ gap: 20 }}>
+        <Pressable onPress={requestPermission}>
+          <Text style={styles.buttonStyle}>
+            {isPermissionGranted ? "Permission Granted" : "Request Camera Access"}
           </Text>
-          <Text variant="titleMedium" style={styles.subtitle}>
-            Your Health Companion
-          </Text>
-          <Text variant="bodyMedium" style={styles.description}>
-            Make informed choices about packaged foods with our nutrition grading system
-          </Text>
-        </Surface>
+        </Pressable>
+        <Link href={"/scanner"} asChild>
+          <Pressable disabled={!isPermissionGranted}>
+            <Text
+              style={[
+                styles.buttonStyle,
+                { opacity: !isPermissionGranted ? 0.5 : 1 },
+              ]}
+            >
+              Scan Product
+            </Text>
+          </Pressable>
+        </Link>
       </View>
-
-      <Surface style={styles.infoCard} elevation={1}>
-        <Text variant="titleLarge" style={styles.sectionTitle}>
-          How It Works
-        </Text>
-
-        <List.Section>
-          <List.Item
-            title="Scan Product"
-            description="Use the scanner to capture product barcode"
-            left={props => (
-              <View style={[styles.iconContainer, { backgroundColor: '#E8F5E9' }]}>
-                <MaterialCommunityIcons
-                  name="barcode-scan"
-                  size={24}
-                  color="#4CAF50"
-                />
-              </View>
-            )}
-          />
-          <List.Item
-            title="View Details"
-            description="Get detailed nutritional information"
-            left={props => (
-              <View style={[styles.iconContainer, { backgroundColor: '#E3F2FD' }]}>
-                <MaterialCommunityIcons
-                  name="food-apple"
-                  size={24}
-                  color="#2196F3"
-                />
-              </View>
-            )}
-          />
-          <List.Item
-            title="Check Grade"
-            description="See the health grade from A to E"
-            left={props => (
-              <View style={[styles.iconContainer, { backgroundColor: '#FFF3E0' }]}>
-                <MaterialCommunityIcons
-                  name="medal"
-                  size={24}
-                  color="#FF9800"
-                />
-              </View>
-            )}
-          />
-        </List.Section>
-      </Surface>
-
-      <Surface style={styles.infoCard} elevation={1}>
-        <Text variant="titleLarge" style={styles.sectionTitle}>
-          Grading System
-        </Text>
-        <View style={styles.gradeList}>
-          {['A', 'B', 'C', 'D', 'E'].map((grade) => (
-            <Surface key={grade} style={styles.gradeItemCard} elevation={1}>
-              <View style={styles.gradeItem}>
-                <View style={[styles.gradeBadge, { backgroundColor: getGradeColor(grade) }]}>
-                  <Text style={styles.gradeText}>{grade}</Text>
-                </View>
-                <Text variant="bodyMedium" style={styles.gradeDescription}>
-                  {getGradeDescription(grade)}
-                </Text>
-              </View>
-            </Surface>
-          ))}
-        </View>
-      </Surface>
-
-      <Surface style={[styles.infoCard, styles.tipsCard]} elevation={1}>
-        <Text variant="titleLarge" style={styles.sectionTitle}>
-          Healthy Tips
-        </Text>
-        <List.Section>
-          <List.Item
-            title="Check Sugar Content"
-            description="Lower is better for your health"
-            left={props => (
-              <MaterialCommunityIcons name="cube-outline" size={24} color="#FF5722" />
-            )}
-          />
-          <List.Item
-            title="Monitor Salt Intake"
-            description="Aim for products with less sodium"
-            left={props => (
-              <MaterialCommunityIcons name="shaker-outline" size={24} color="#FF9800" />
-            )}
-          />
-          <List.Item
-            title="Watch Fat Levels"
-            description="Choose foods with healthy fats"
-            left={props => (
-              <MaterialCommunityIcons name="water-outline" size={24} color="#4CAF50" />
-            )}
-          />
-        </List.Section>
-      </Surface>
-    </ScrollView>
+      <Text style={styles.description}>
+        Scan product barcodes to get detailed nutrition information
+      </Text>
+    </SafeAreaView>
   );
 }
 
@@ -152,7 +64,10 @@ const getGradeDescription = (grade: string) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F5F5F5',
+    alignItems: "center",
+    backgroundColor: "black",
+    justifyContent: "space-around",
+    paddingVertical: 80,
   },
   headerContainer: {
     backgroundColor: '#4CAF50',
@@ -169,9 +84,10 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
   },
   title: {
-    color: '#2E7D32',
-    fontWeight: 'bold',
-    marginTop: 8,
+    color: "white",
+    fontSize: 40,
+    textAlign: "center",
+    marginBottom: 20,
   },
   subtitle: {
     color: '#4CAF50',
@@ -234,5 +150,10 @@ const styles = StyleSheet.create({
   tipsCard: {
     marginTop: 0,
     marginBottom: 32,
+  },
+  buttonStyle: {
+    color: "#0E7AFE",
+    fontSize: 20,
+    textAlign: "center",
   },
 });
