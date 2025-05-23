@@ -1,5 +1,5 @@
 import { CameraView, useCameraPermissions } from "expo-camera";
-import { Stack, router } from "expo-router";
+import { Stack, router, useNavigation } from "expo-router";
 import { useEffect, useRef, useState } from "react";
 import {
   AppState,
@@ -10,17 +10,37 @@ import {
 } from "react-native";
 import { Button, Text } from "react-native-paper";
 import { LoadingOverlay } from "../../components/LoadingOverlay";
+import Overlay from "../../components/Overlay";
 import { fetchProductData } from "../../services/productAPI";
-import { Overlay } from "./Overlay";
 
 export default function Scanner() {
   const scanLock = useRef(false);
   const appState = useRef(AppState.currentState);
+  const navigation = useNavigation();
   const [permission, requestPermission] = useCameraPermissions();
   const [isScanning, setIsScanning] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isCameraReady, setIsCameraReady] = useState(false);
+
+  // Reset camera state when screen is focused
+  useEffect(() => {
+    const resetCamera = () => {
+      setIsCameraReady(false);
+      setIsScanning(false);
+      scanLock.current = false;
+      // Short delay before re-enabling camera
+      setTimeout(() => {
+        setIsScanning(true);
+      }, 100);
+    };
+
+    const unsubscribe = navigation.addListener('focus', resetCamera);
+
+    return () => {
+      unsubscribe();
+    };
+  }, [navigation]);
 
   useEffect(() => {
     // Request camera permission on mount if not already granted
@@ -36,9 +56,15 @@ export default function Scanner() {
         nextAppState === "active";
 
       if (isGoingActive) {
+        // Reset camera when app comes to foreground
+        setIsCameraReady(false);
+        setIsScanning(false);
         scanLock.current = false;
+        setTimeout(() => {
+          setIsScanning(true);
+        }, 100);
         setError(null);
-        // Re-request permission when app comes to foreground
+        
         if (!permission?.granted) {
           requestPermission();
         }
@@ -54,12 +80,12 @@ export default function Scanner() {
   const handleBarCodeScanned = async ({ data }: { data: string }) => {
     if (data && !scanLock.current && !isLoading) {
       scanLock.current = true;
-      setIsScanning(false);
       setIsLoading(true);
       setError(null);
 
       try {
         const productData = await fetchProductData(data);
+        setIsScanning(false); // Disable camera before navigation
         router.push({
           pathname: "/results",
           params: { productData: JSON.stringify(productData) },
@@ -68,11 +94,15 @@ export default function Scanner() {
         setError(
           error instanceof Error ? error.message : "Failed to fetch product data"
         );
-        // Reset lock after error
+        // Reset scanner after error
         setTimeout(() => {
           scanLock.current = false;
-          setIsScanning(true);
-          setError(null);
+          setIsCameraReady(false);
+          setIsScanning(false);
+          setTimeout(() => {
+            setIsScanning(true);
+            setError(null);
+          }, 100);
         }, 3000);
       } finally {
         setIsLoading(false);
@@ -83,10 +113,7 @@ export default function Scanner() {
   if (!permission?.granted) {
     return (
       <View style={styles.centeredContainer}>
-        <Text
-          variant="headlineMedium"
-          style={{ marginBottom: 20, textAlign: "center" }}
-        >
+        <Text variant="headlineMedium" style={{ marginBottom: 20, textAlign: "center" }}>
           Camera Permission Required
         </Text>
         <Button mode="contained" onPress={requestPermission}>
@@ -105,14 +132,23 @@ export default function Scanner() {
         }}
       />
       {Platform.OS === "android" && <StatusBar hidden />}
-      <CameraView
-        style={StyleSheet.absoluteFillObject}
-        facing="back"
-        onBarcodeScanned={isLoading ? undefined : handleBarCodeScanned}
-        onCameraReady={() => setIsCameraReady(true)}
-      />
-      {!isCameraReady && <LoadingOverlay message="Initializing camera..." opacity={1} />}
-      {isCameraReady && <Overlay />}
+      
+      {isScanning && (
+        <CameraView
+          style={StyleSheet.absoluteFillObject}
+          facing="back"
+          onBarcodeScanned={isLoading ? undefined : handleBarCodeScanned}
+          onCameraReady={() => setIsCameraReady(true)}
+        />
+      )}
+        {!isCameraReady && isScanning && (
+        <LoadingOverlay message="Initializing camera..." opacity={1} />
+      )}
+      {isCameraReady && isScanning && (
+        <View style={StyleSheet.absoluteFillObject}>
+          <Overlay />
+        </View>
+      )}
       {isLoading && <LoadingOverlay message="Fetching product data..." />}
       
       {error && (
