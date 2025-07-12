@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { HomeIcon, QrCodeIcon, DocumentTextIcon, ChatBubbleLeftRightIcon, UserIcon } from '@heroicons/react/24/outline';
 import { HomeIcon as HomeIconSolid, QrCodeIcon as QrCodeIconSolid, DocumentTextIcon as DocumentTextIconSolid, ChatBubbleLeftRightIcon as ChatBubbleLeftRightIconSolid, UserIcon as UserIconSolid } from '@heroicons/react/24/solid';
 import { useTelegram } from '@/components/providers/telegram-provider';
@@ -19,6 +19,13 @@ export const TabNavigation = () => {
   const [currentProduct, setCurrentProduct] = useState<ProductData | null>(null);
   const { hapticFeedback } = useTelegram();
 
+  // Load scan history from localStorage on mount
+  useEffect(() => {
+    const scanHistory = JSON.parse(localStorage.getItem('nutripal-scan-history') || '[]');
+    const products = scanHistory.map((scan: any) => scan.product).slice(0, 10);
+    setScannedProducts(products);
+  }, []);
+
   const handleTabChange = (tab: TabType) => {
     hapticFeedback.selection();
     setActiveTab(tab);
@@ -27,6 +34,17 @@ export const TabNavigation = () => {
   const handleScanSuccess = (product: ProductData) => {
     setCurrentProduct(product);
     setScannedProducts(prev => [product, ...prev.slice(0, 9)]); // Keep last 10 scans
+    
+    // Store scan results in localStorage
+    const scanHistory = JSON.parse(localStorage.getItem('nutripal-scan-history') || '[]');
+    const newScan = {
+      id: Date.now().toString(),
+      product,
+      timestamp: new Date().toISOString()
+    };
+    const updatedHistory = [newScan, ...scanHistory.slice(0, 49)]; // Keep last 50 scans
+    localStorage.setItem('nutripal-scan-history', JSON.stringify(updatedHistory));
+    
     setActiveTab('results');
     hapticFeedback.notification('success');
   };

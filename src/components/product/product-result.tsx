@@ -61,13 +61,13 @@ export const ProductResult = ({ product, onScanAnother, onBack, showBackButton =
         product,
         dateAdded: new Date().toISOString()
       });
+      localStorage.setItem('nutripal-favorites', JSON.stringify(favorites));
       toast.success('Added to favorites');
     } else {
       const updatedFavorites = favorites.filter((fav: any) => fav.product.code !== product.code);
       localStorage.setItem('nutripal-favorites', JSON.stringify(updatedFavorites));
       toast.success('Removed from favorites');
     }
-    localStorage.setItem('nutripal-favorites', JSON.stringify(favorites));
   };
 
   const handleToggleConsumption = () => {
@@ -84,13 +84,13 @@ export const ProductResult = ({ product, onScanAnother, onBack, showBackButton =
         quantity: 1,
         calories: product.nutriments?.energy_100g || 0
       });
+      localStorage.setItem('nutripal-consumed', JSON.stringify(consumed));
       toast.success('Added to consumption');
     } else {
       const updatedConsumed = consumed.filter((item: any) => item.product.code !== product.code);
       localStorage.setItem('nutripal-consumed', JSON.stringify(updatedConsumed));
       toast.success('Removed from consumption');
     }
-    localStorage.setItem('nutripal-consumed', JSON.stringify(consumed));
   };
 
   const handleFindAlternatives = () => {

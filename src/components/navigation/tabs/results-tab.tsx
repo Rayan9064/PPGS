@@ -45,6 +45,7 @@ export const ResultsTab = ({ currentProduct, recentScans, onScanAnother, onProdu
             product={currentProduct}
             onScanAnother={handleScanAnother}
             onBack={() => onProductSelect(currentProduct)}
+            showBackButton={false}
           />
         </div>
       </div>

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { Html5QrcodeScanner, Html5Qrcode, Html5QrcodeCameraScanConfig } from 'html5-qrcode';
+import { Html5QrcodeScanner, Html5Qrcode, Html5QrcodeCameraScanConfig, Html5QrcodeScanType } from 'html5-qrcode';
 import { ArrowLeftIcon, CameraIcon, PhotoIcon } from '@heroicons/react/24/outline';
 import { fetchProductData } from '@/lib/product-api';
 import { ProductData } from '@/types';
@@ -158,7 +158,7 @@ export const ScannerComponent = ({ onScanSuccess, onBack }: ScannerComponentProp
           showTorchButtonIfSupported: false,
           showZoomSliderIfSupported: false,
           rememberLastUsedCamera: false,
-          supportedScanTypes: [], // Only file upload, no camera
+          supportedScanTypes: [Html5QrcodeScanType.SCAN_TYPE_FILE], // Only file upload, no camera
         },
         false
       );
