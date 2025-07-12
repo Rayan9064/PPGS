@@ -66,7 +66,7 @@ export const ProfileTab = () => {
     <div className="flex-1 bg-gray-50 overflow-y-auto">
       {/* Header */}
       <div className="bg-gradient-to-r from-emerald-500 to-blue-500 text-white">
-        <div className="px-4 py-6 pt-safe">
+        <div className="px-4 py-6 pt-8">
           <div className="flex items-center gap-4">
             <div className="w-14 h-14 bg-white/20 rounded-full flex items-center justify-center">
               <UserIcon className="w-7 h-7 text-white" />

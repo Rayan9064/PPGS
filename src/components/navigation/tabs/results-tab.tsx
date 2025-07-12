@@ -40,7 +40,7 @@ export const ResultsTab = ({ currentProduct, recentScans, onScanAnother, onProdu
   if (currentProduct) {
     return (
       <div className="flex-1 overflow-y-auto">
-        <div className="px-4 py-4 pt-safe">
+        <div className="px-4 py-4 pt-8">
           <ProductResult 
             product={currentProduct}
             onScanAnother={handleScanAnother}
@@ -55,7 +55,7 @@ export const ResultsTab = ({ currentProduct, recentScans, onScanAnother, onProdu
     <div className="flex-1 bg-gray-50 overflow-y-auto">
       {/* Header */}
       <div className="bg-white border-b border-gray-200">
-        <div className="px-4 py-4 pt-safe">
+        <div className="px-4 py-4 pt-8">
           <h1 className="text-xl font-bold text-gray-900">Scan Results</h1>
           <p className="text-gray-600 text-sm">View your scanned products and nutrition analysis</p>
         </div>

@@ -39,7 +39,7 @@ export const HomeTab = ({ onStartScanning, recentScans, onProductSelect }: HomeT
     <div className="flex-1 bg-gradient-to-br from-emerald-50 to-blue-50 pb-safe">
       {/* Header */}
       <div className="bg-white/80 backdrop-blur-sm border-b border-emerald-100">
-        <div className="px-4 py-4 pt-safe">
+        <div className="px-4 py-4 pt-8">
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-2xl font-bold text-gray-900">NutriPal</h1>
