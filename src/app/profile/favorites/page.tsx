@@ -179,7 +179,7 @@ export default function Favorites() {
                 className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
                   filter === tab.key
                     ? 'bg-emerald-500 text-white'
-                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                    : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
                 }`}
               >
                 {tab.label}
@@ -192,27 +192,27 @@ export default function Favorites() {
       <div className="px-4 py-6">
         {/* Stats */}
         <div className="grid grid-cols-3 gap-4 mb-6">
-          <div className="bg-white rounded-xl p-4 text-center shadow-sm">
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-4 text-center shadow-sm">
             <StarIconSolid className="w-8 h-8 text-yellow-500 mx-auto mb-2" />
-            <p className="text-xl font-bold text-gray-900">{favorites.length}</p>
-            <p className="text-xs text-gray-500">Total Favorites</p>
+            <p className="text-xl font-bold text-gray-900 dark:text-white">{favorites.length}</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400">Total Favorites</p>
           </div>
-          <div className="bg-white rounded-xl p-4 text-center shadow-sm">
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-4 text-center shadow-sm">
             <HeartIcon className="w-8 h-8 text-red-500 mx-auto mb-2" />
-            <p className="text-xl font-bold text-gray-900">
+            <p className="text-xl font-bold text-gray-900 dark:text-white">
               {favorites.filter(fav => {
                 const grade = getNutritionGrade(fav.product);
                 return ['A', 'B'].includes(grade.grade);
               }).length}
             </p>
-            <p className="text-xs text-gray-500">Healthy</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400">Healthy</p>
           </div>
-          <div className="bg-white rounded-xl p-4 text-center shadow-sm">
-            <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-2">
-              <span className="text-blue-600 font-bold text-sm">{groupedFavorites.length}</span>
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-4 text-center shadow-sm">
+            <div className="w-8 h-8 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center mx-auto mb-2">
+              <span className="text-blue-600 dark:text-blue-400 font-bold text-sm">{groupedFavorites.length}</span>
             </div>
-            <p className="text-xl font-bold text-gray-900">{groupedFavorites.length}</p>
-            <p className="text-xs text-gray-500">Categories</p>
+            <p className="text-xl font-bold text-gray-900 dark:text-white">{groupedFavorites.length}</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400">Categories</p>
           </div>
         </div>
 
@@ -220,25 +220,25 @@ export default function Favorites() {
         {filteredFavorites.length > 0 ? (
           <div className="space-y-4">
             {groupedFavorites.map(([category, items]) => (
-              <div key={category} className="bg-white rounded-xl shadow-sm overflow-hidden">
-                <div className="px-6 py-3 bg-gray-50 border-b border-gray-100">
-                  <h3 className="text-sm font-semibold text-gray-900">{category}</h3>
+              <div key={category} className="bg-white dark:bg-gray-800 rounded-xl shadow-sm overflow-hidden">
+                <div className="px-6 py-3 bg-gray-50 dark:bg-gray-700 border-b border-gray-100 dark:border-gray-600">
+                  <h3 className="text-sm font-semibold text-gray-900 dark:text-white">{category}</h3>
                 </div>
-                <div className="divide-y divide-gray-100">
+                <div className="divide-y divide-gray-100 dark:divide-gray-700">
                   {items.map((favorite) => {
                     const grade = getNutritionGrade(favorite.product);
                     return (
-                      <div key={favorite.id} className="px-6 py-4 hover:bg-gray-50 transition-colors">
+                      <div key={favorite.id} className="px-6 py-4 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
                         <div className="flex items-center gap-3">
                           <div className={`w-10 h-10 rounded-full flex items-center justify-center text-white font-bold ${getGradeColor(grade.grade)}`}>
                             {grade.grade}
                           </div>
                           <div className="flex-1">
-                            <h3 className="font-semibold text-gray-900">{favorite.product.product_name}</h3>
+                            <h3 className="font-semibold text-gray-900 dark:text-white">{favorite.product.product_name}</h3>
                             {favorite.product.brands && (
-                              <p className="text-sm text-gray-500">{favorite.product.brands}</p>
+                              <p className="text-sm text-gray-500 dark:text-gray-400">{favorite.product.brands}</p>
                             )}
-                            <p className="text-xs text-gray-400 mt-1">
+                            <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
                               Added {formatDate(favorite.dateAdded)}
                             </p>
                           </div>
@@ -247,9 +247,9 @@ export default function Favorites() {
                             {editMode && (
                               <button
                                 onClick={() => removeFavorite(favorite.id)}
-                                className="p-2 rounded-lg hover:bg-red-100 transition-colors"
+                                className="p-2 rounded-lg hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors"
                               >
-                                <TrashIcon className="w-5 h-5 text-red-500" />
+                                <TrashIcon className="w-5 h-5 text-red-500 dark:text-red-400" />
                               </button>
                             )}
                           </div>
@@ -262,10 +262,10 @@ export default function Favorites() {
             ))}
           </div>
         ) : (
-          <div className="bg-white rounded-xl p-12 text-center shadow-sm">
-            <StarIcon className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">No favorites yet</h3>
-            <p className="text-gray-500 mb-6">
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-12 text-center shadow-sm">
+            <StarIcon className="w-16 h-16 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">No favorites yet</h3>
+            <p className="text-gray-500 dark:text-gray-400 mb-6">
               {filter === 'all' 
                 ? 'Start marking products as favorites to save them here!'
                 : `No favorites found for the selected ${filter} filter.`

@@ -46,17 +46,17 @@ export const ProductResult = ({ product, onScanAnother, onBack }: ProductResultP
       <div className="flex items-center justify-between mb-6">
         <button
           onClick={handleBack}
-          className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
+          className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
         >
-          <ArrowLeftIcon className="w-6 h-6 text-gray-600" />
+          <ArrowLeftIcon className="w-6 h-6 text-gray-600 dark:text-gray-400" />
         </button>
-        <h1 className="text-xl font-semibold text-gray-900">Product Details</h1>
+        <h1 className="text-xl font-semibold text-gray-900 dark:text-white">Product Details</h1>
         <div></div>
       </div>
 
       {/* Product Header */}
       <div className="card mb-6 text-center">
-        <h2 className="text-xl font-bold text-gray-900 mb-4">
+        <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
           {product.product_name}
         </h2>
         
@@ -65,48 +65,48 @@ export const ProductResult = ({ product, onScanAnother, onBack }: ProductResultP
           <div className={`grade-badge w-16 h-16 text-2xl ${getGradeColorClass(grade)} mb-2`}>
             {grade}
           </div>
-          <p className="text-sm text-gray-600">{gradeDescription}</p>
+          <p className="text-sm text-gray-600 dark:text-gray-400">{gradeDescription}</p>
         </div>
 
         {product.brands && (
-          <p className="text-sm text-gray-500 mb-2">Brand: {product.brands}</p>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">Brand: {product.brands}</p>
         )}
       </div>
 
       {/* Nutrition Facts */}
       <div className="card mb-6">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
           Nutrition Facts (per 100g)
         </h3>
         
         <div className="space-y-3">
-          <div className="flex justify-between items-center py-2 border-b border-gray-100">
-            <span className="text-gray-700">Sugar</span>
-            <span className="font-medium">{product.nutriments.sugars_100g}g</span>
+          <div className="flex justify-between items-center py-2 border-b border-gray-100 dark:border-gray-700">
+            <span className="text-gray-700 dark:text-gray-300">Sugar</span>
+            <span className="font-medium dark:text-white">{product.nutriments.sugars_100g}g</span>
           </div>
           
-          <div className="flex justify-between items-center py-2 border-b border-gray-100">
-            <span className="text-gray-700">Fat</span>
-            <span className="font-medium">{product.nutriments.fat_100g}g</span>
+          <div className="flex justify-between items-center py-2 border-b border-gray-100 dark:border-gray-700">
+            <span className="text-gray-700 dark:text-gray-300">Fat</span>
+            <span className="font-medium dark:text-white">{product.nutriments.fat_100g}g</span>
           </div>
           
           <div className="flex justify-between items-center py-2">
-            <span className="text-gray-700">Salt</span>
-            <span className="font-medium">{product.nutriments.salt_100g}g</span>
+            <span className="text-gray-700 dark:text-gray-300">Salt</span>
+            <span className="font-medium dark:text-white">{product.nutriments.salt_100g}g</span>
           </div>
         </div>
       </div>
 
       {/* Warnings */}
       {warnings.length > 0 && (
-        <div className="card mb-6 border-orange-200 bg-orange-50">
+        <div className="card mb-6 border-orange-200 dark:border-orange-800 bg-orange-50 dark:bg-orange-900/20">
           <div className="flex items-start space-x-3">
-            <ExclamationTriangleIcon className="w-6 h-6 text-orange-600 flex-shrink-0 mt-0.5" />
+            <ExclamationTriangleIcon className="w-6 h-6 text-orange-600 dark:text-orange-400 flex-shrink-0 mt-0.5" />
             <div>
-              <h3 className="font-semibold text-orange-900 mb-2">Health Warnings</h3>
+              <h3 className="font-semibold text-orange-900 dark:text-orange-100 mb-2">Health Warnings</h3>
               <ul className="space-y-1">
                 {warnings.map((warning, index) => (
-                  <li key={index} className="text-sm text-orange-800">
+                  <li key={index} className="text-sm text-orange-800 dark:text-orange-200">
                     • {warning}
                   </li>
                 ))}
@@ -118,8 +118,8 @@ export const ProductResult = ({ product, onScanAnother, onBack }: ProductResultP
 
       {/* Ingredients */}
       <div className="card mb-6">
-        <h3 className="text-lg font-semibold text-gray-900 mb-3">Ingredients</h3>
-        <p className="text-sm text-gray-700 leading-relaxed">
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">Ingredients</h3>
+        <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
           {product.ingredients_text}
         </p>
       </div>

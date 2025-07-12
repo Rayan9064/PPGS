@@ -111,9 +111,9 @@ export const ScannerComponent = ({ onScanSuccess, onBack }: ScannerComponentProp
         {/* Loading State */}
         {isLoading && (
           <div className="scanning-overlay">
-            <div className="bg-white rounded-lg p-6 shadow-lg text-center">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-3"></div>
-              <p className="text-gray-600">Fetching product data...</p>
+            <div className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-lg text-center">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 dark:border-blue-400 mx-auto mb-3"></div>
+              <p className="text-gray-600 dark:text-gray-300">Fetching product data...</p>
             </div>
           </div>
         )}

@@ -208,9 +208,9 @@ export default function ScanHistory() {
         {groupedHistory.length > 0 ? (
           <div className="space-y-4">
             {groupedHistory.map(([dateString, items]) => (
-              <div key={dateString} className="bg-white rounded-xl shadow-sm overflow-hidden">
-                <div className="px-6 py-3 bg-gray-50 border-b border-gray-100">
-                  <h3 className="text-sm font-semibold text-gray-900">
+              <div key={dateString} className="bg-white dark:bg-gray-800 rounded-xl shadow-sm overflow-hidden">
+                <div className="px-6 py-3 bg-gray-50 dark:bg-gray-700 border-b border-gray-100 dark:border-gray-600">
+                  <h3 className="text-sm font-semibold text-gray-900 dark:text-white">
                     {new Date(dateString).toDateString() === new Date().toDateString() 
                       ? 'Today' 
                       : new Date(dateString).toLocaleDateString('en-US', { 
@@ -221,21 +221,21 @@ export default function ScanHistory() {
                     }
                   </h3>
                 </div>
-                <div className="divide-y divide-gray-100">
+                <div className="divide-y divide-gray-100 dark:divide-gray-700">
                   {items.map((item) => {
                     const grade = getNutritionGrade(item.product);
                     return (
-                      <div key={item.id} className="px-6 py-4 hover:bg-gray-50 transition-colors cursor-pointer">
+                      <div key={item.id} className="px-6 py-4 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors cursor-pointer">
                         <div className="flex items-center gap-3">
                           <div className={`w-10 h-10 rounded-full flex items-center justify-center text-white font-bold ${getGradeColor(grade.grade)}`}>
                             {grade.grade}
                           </div>
                           <div className="flex-1">
-                            <h3 className="font-semibold text-gray-900">{item.product.product_name}</h3>
+                            <h3 className="font-semibold text-gray-900 dark:text-white">{item.product.product_name}</h3>
                             {item.product.brands && (
-                              <p className="text-sm text-gray-500">{item.product.brands}</p>
+                              <p className="text-sm text-gray-500 dark:text-gray-400">{item.product.brands}</p>
                             )}
-                            <div className="flex items-center gap-2 text-xs text-gray-400 mt-1">
+                            <div className="flex items-center gap-2 text-xs text-gray-400 dark:text-gray-500 mt-1">
                               <ClockIcon className="w-3 h-3" />
                               <span>{formatDate(item.timestamp)}</span>
                               {item.scanLocation && (
@@ -255,10 +255,10 @@ export default function ScanHistory() {
             ))}
           </div>
         ) : (
-          <div className="bg-white rounded-xl p-12 text-center shadow-sm">
-            <QrCodeIcon className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">No scans found</h3>
-            <p className="text-gray-500 mb-6">
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-12 text-center shadow-sm">
+            <QrCodeIcon className="w-16 h-16 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">No scans found</h3>
+            <p className="text-gray-500 dark:text-gray-400 mb-6">
               {filter === 'all' 
                 ? 'Start scanning products to build your history!'
                 : `No scans found for the selected ${filter} period.`
