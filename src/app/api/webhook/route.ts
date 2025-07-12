@@ -3,15 +3,25 @@ import { NextRequest, NextResponse } from 'next/server';
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
+    console.log('Received webhook:', JSON.stringify(body, null, 2));
+    
     const { message } = body;
 
-    if (!message?.text) {
+    if (!message) {
+      console.log('No message in webhook body');
+      return NextResponse.json({ ok: true });
+    }
+
+    if (!message.text) {
+      console.log('No text in message:', message);
       return NextResponse.json({ ok: true });
     }
 
     const chatId = message.chat.id;
     const text = message.text;
     const botToken = process.env.TELEGRAM_BOT_TOKEN;
+
+    console.log(`Processing message: "${text}" from chat: ${chatId}`);
 
     if (!botToken) {
       console.error('TELEGRAM_BOT_TOKEN not found');
@@ -152,6 +162,13 @@ Or just tap "<b>Open App</b>" to start scanning!`;
     }
 
     // Send response to Telegram
+    console.log('Sending response to Telegram:', {
+      chat_id: chatId,
+      text: responseText.substring(0, 100) + '...',
+      has_reply_markup: !!replyMarkup,
+      bot_token_exists: !!botToken
+    });
+    
     const telegramResponse = await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -163,11 +180,20 @@ Or just tap "<b>Open App</b>" to start scanning!`;
       })
     });
 
+    console.log('Telegram API response status:', telegramResponse.status);
+    
     if (!telegramResponse.ok) {
       const error = await telegramResponse.text();
-      console.error('Telegram API error:', error);
+      console.error('Telegram API error:', {
+        status: telegramResponse.status,
+        statusText: telegramResponse.statusText,
+        error: error
+      });
       return NextResponse.json({ error: 'Failed to send message' }, { status: 500 });
     }
+    
+    const result = await telegramResponse.json();
+    console.log('Telegram API success:', result);
 
     return NextResponse.json({ ok: true });
   } catch (error) {
