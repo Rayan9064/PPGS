@@ -78,11 +78,9 @@ export const ScannerComponent = ({ onScanSuccess, onBack }: ScannerComponentProp
   const getCameras = useCallback(async () => {
     if (hasPermission !== null) return; // Already checked
 
+    setHasPermission(null); // Set to checking state
+    
     try {
-      // Request camera permission first
-      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-      stream.getTracks().forEach(track => track.stop()); // Stop the stream immediately
-      
       const devices = await Html5Qrcode.getCameras();
       setCameras(devices);
       if (devices.length > 0) {
@@ -157,8 +155,10 @@ export const ScannerComponent = ({ onScanSuccess, onBack }: ScannerComponentProp
           fps: 10,
           qrbox: { width: 250, height: 250 },
           aspectRatio: 1.0,
-          showTorchButtonIfSupported: true,
-          showZoomSliderIfSupported: true,
+          showTorchButtonIfSupported: false,
+          showZoomSliderIfSupported: false,
+          rememberLastUsedCamera: false,
+          supportedScanTypes: [], // Only file upload, no camera
         },
         false
       );

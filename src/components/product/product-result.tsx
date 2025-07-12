@@ -1,22 +1,43 @@
 'use client';
 
-import { ArrowLeftIcon, QrCodeIcon, ExclamationTriangleIcon } from '@heroicons/react/24/outline';
+import { useState, useEffect } from 'react';
+import { ArrowLeftIcon, QrCodeIcon, ExclamationTriangleIcon, HeartIcon, PlusIcon, MinusIcon, SparklesIcon } from '@heroicons/react/24/outline';
+import { HeartIcon as HeartIconSolid } from '@heroicons/react/24/solid';
 import { ProductData, NutritionGrade } from '@/types';
 import { calculateGrade, getNutrientWarnings, getGradeColor, getGradeDescription } from '@/utils/grading-logic';
 import { useTelegram } from '@/components/providers/telegram-provider';
+import toast from 'react-hot-toast';
 
 interface ProductResultProps {
   product: ProductData;
   onScanAnother: () => void;
-  onBack: () => void;
+  onBack?: () => void;
+  showBackButton?: boolean;
 }
 
-export const ProductResult = ({ product, onScanAnother, onBack }: ProductResultProps) => {
+export const ProductResult = ({ product, onScanAnother, onBack, showBackButton = true }: ProductResultProps) => {
   const { hapticFeedback } = useTelegram();
+  const [isFavorite, setIsFavorite] = useState(false);
+  const [isConsumed, setIsConsumed] = useState(false);
+  const [showImage, setShowImage] = useState(false);
+  
   const grade = calculateGrade(product);
   const warnings = getNutrientWarnings(product);
   const gradeColor = getGradeColor(grade);
   const gradeDescription = getGradeDescription(grade);
+
+  // Load saved favorites and consumption state
+  useEffect(() => {
+    // Check if product is in favorites
+    const favorites = JSON.parse(localStorage.getItem('nutripal-favorites') || '[]');
+    const isFav = favorites.some((fav: any) => fav.product.code === product.code);
+    setIsFavorite(isFav);
+
+    // Check if product is in consumption history
+    const consumed = JSON.parse(localStorage.getItem('nutripal-consumed') || '[]');
+    const isConsume = consumed.some((item: any) => item.product.code === product.code);
+    setIsConsumed(isConsume);
+  }, [product.code]);
 
   const handleScanAnother = () => {
     hapticFeedback.impact('medium');
@@ -25,7 +46,57 @@ export const ProductResult = ({ product, onScanAnother, onBack }: ProductResultP
 
   const handleBack = () => {
     hapticFeedback.impact('light');
-    onBack();
+    onBack?.();
+  };
+
+  const handleToggleFavorite = () => {
+    hapticFeedback.impact('light');
+    setIsFavorite(!isFavorite);
+    
+    // Store in localStorage
+    const favorites = JSON.parse(localStorage.getItem('nutripal-favorites') || '[]');
+    if (!isFavorite) {
+      favorites.push({
+        id: product.code || Date.now().toString(),
+        product,
+        dateAdded: new Date().toISOString()
+      });
+      toast.success('Added to favorites');
+    } else {
+      const updatedFavorites = favorites.filter((fav: any) => fav.product.code !== product.code);
+      localStorage.setItem('nutripal-favorites', JSON.stringify(updatedFavorites));
+      toast.success('Removed from favorites');
+    }
+    localStorage.setItem('nutripal-favorites', JSON.stringify(favorites));
+  };
+
+  const handleToggleConsumption = () => {
+    hapticFeedback.impact('light');
+    setIsConsumed(!isConsumed);
+    
+    // Store in localStorage
+    const consumed = JSON.parse(localStorage.getItem('nutripal-consumed') || '[]');
+    if (!isConsumed) {
+      consumed.push({
+        id: Date.now().toString(),
+        product,
+        timestamp: new Date().toISOString(),
+        quantity: 1,
+        calories: product.nutriments?.energy_100g || 0
+      });
+      toast.success('Added to consumption');
+    } else {
+      const updatedConsumed = consumed.filter((item: any) => item.product.code !== product.code);
+      localStorage.setItem('nutripal-consumed', JSON.stringify(updatedConsumed));
+      toast.success('Removed from consumption');
+    }
+    localStorage.setItem('nutripal-consumed', JSON.stringify(consumed));
+  };
+
+  const handleFindAlternatives = () => {
+    hapticFeedback.impact('medium');
+    toast.success('Finding healthier alternatives...');
+    // TODO: Implement healthier alternatives logic
   };
 
   const getGradeColorClass = (grade: NutritionGrade) => {
@@ -42,16 +113,54 @@ export const ProductResult = ({ product, onScanAnother, onBack }: ProductResultP
 
   return (
     <div className="animate-fade-in">
-      {/* Header */}
+      {/* Header with Controls */}
       <div className="flex items-center justify-between mb-6">
-        <button
-          onClick={handleBack}
-          className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-        >
-          <ArrowLeftIcon className="w-6 h-6 text-gray-600 dark:text-gray-400" />
-        </button>
+        {showBackButton && (
+          <button
+            onClick={handleBack}
+            className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+          >
+            <ArrowLeftIcon className="w-6 h-6 text-gray-600 dark:text-gray-400" />
+          </button>
+        )}
         <h1 className="text-xl font-semibold text-gray-900 dark:text-white">Product Details</h1>
-        <div></div>
+        
+        <div className="flex items-center gap-2">
+          <button
+            onClick={handleToggleFavorite}
+            className={`p-2 rounded-lg transition-colors ${
+              isFavorite 
+                ? 'bg-red-100 dark:bg-red-900/30 text-red-600' 
+                : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+            }`}
+          >
+            {isFavorite ? (
+              <HeartIconSolid className="w-5 h-5" />
+            ) : (
+              <HeartIcon className="w-5 h-5" />
+            )}
+          </button>
+          
+          <button
+            onClick={handleToggleConsumption}
+            className={`p-2 rounded-lg transition-colors ${
+              isConsumed 
+                ? 'bg-green-100 dark:bg-green-900/30 text-green-600' 
+                : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+            }`}
+          >
+            <PlusIcon className="w-5 h-5" />
+          </button>
+          
+          {product.image_url && (
+            <button
+              onClick={() => setShowImage(true)}
+              className="p-2 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+            >
+              <QrCodeIcon className="w-5 h-5" />
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Product Header */}
@@ -127,6 +236,14 @@ export const ProductResult = ({ product, onScanAnother, onBack }: ProductResultP
       {/* Actions */}
       <div className="space-y-3">
         <button
+          onClick={handleFindAlternatives}
+          className="w-full bg-blue-500 hover:bg-blue-600 text-white py-3 text-lg font-semibold rounded-xl transition-colors"
+        >
+          <SparklesIcon className="w-5 h-5 inline mr-2" />
+          Find Healthier Alternatives
+        </button>
+        
+        <button
           onClick={handleScanAnother}
           className="w-full btn-primary py-3 text-lg font-semibold rounded-xl"
         >
@@ -134,13 +251,34 @@ export const ProductResult = ({ product, onScanAnother, onBack }: ProductResultP
           Scan Another Product
         </button>
         
-        <button
-          onClick={handleBack}
-          className="w-full btn-secondary py-3 text-lg font-semibold rounded-xl"
-        >
-          Back to Home
-        </button>
+        {showBackButton && (
+          <button
+            onClick={handleBack}
+            className="w-full btn-secondary py-3 text-lg font-semibold rounded-xl"
+          >
+            Back to Home
+          </button>
+        )}
       </div>
+
+      {/* Product Image Modal */}
+      {showImage && product.image_url && (
+        <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
+          <div className="relative max-w-lg w-full">
+            <button
+              onClick={() => setShowImage(false)}
+              className="absolute -top-10 right-0 text-white text-xl p-2"
+            >
+              ✕
+            </button>
+            <img
+              src={product.image_url}
+              alt={product.product_name}
+              className="w-full h-auto rounded-lg"
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 };
