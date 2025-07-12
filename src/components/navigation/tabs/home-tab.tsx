@@ -55,30 +55,30 @@ export const HomeTab = ({ onStartScanning, recentScans, onProductSelect }: HomeT
       <div className="px-4 py-4 space-y-6 overflow-y-auto">
         {/* Quick Stats */}
         <div className="grid grid-cols-3 gap-3">
-          <div className="bg-white rounded-xl p-3 text-center shadow-sm">
-            <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-2">
-              <QrCodeIcon className="w-4 h-4 text-blue-600" />
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-3 text-center shadow-sm">
+            <div className="w-8 h-8 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center mx-auto mb-2">
+              <QrCodeIcon className="w-4 h-4 text-blue-600 dark:text-blue-400" />
             </div>
-            <p className="text-xl font-bold text-gray-900">{recentScans.length}</p>
-            <p className="text-xs text-gray-500">Scanned</p>
+            <p className="text-xl font-bold text-gray-900 dark:text-white">{recentScans.length}</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400">Scanned</p>
           </div>
           
-          <div className="bg-white rounded-xl p-3 text-center shadow-sm">
-            <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-2">
-              <TrophyIcon className="w-4 h-4 text-green-600" />
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-3 text-center shadow-sm">
+            <div className="w-8 h-8 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mx-auto mb-2">
+              <TrophyIcon className="w-4 h-4 text-green-600 dark:text-green-400" />
             </div>
-            <p className="text-xl font-bold text-gray-900">
+            <p className="text-xl font-bold text-gray-900 dark:text-white">
               {recentScans.filter(p => ['A', 'B'].includes(getNutritionGrade(p).grade)).length}
             </p>
-            <p className="text-xs text-gray-500">Healthy</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400">Healthy</p>
           </div>
           
-          <div className="bg-white rounded-xl p-3 text-center shadow-sm">
-            <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-2">
-              <ShieldCheckIcon className="w-4 h-4 text-purple-600" />
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-3 text-center shadow-sm">
+            <div className="w-8 h-8 bg-purple-100 dark:bg-purple-900/30 rounded-full flex items-center justify-center mx-auto mb-2">
+              <ShieldCheckIcon className="w-4 h-4 text-purple-600 dark:text-purple-400" />
             </div>
-            <p className="text-xl font-bold text-gray-900">A+</p>
-            <p className="text-xs text-gray-500">Health Score</p>
+            <p className="text-xl font-bold text-gray-900 dark:text-white">A+</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400">Health Score</p>
           </div>
         </div>
 
@@ -97,8 +97,8 @@ export const HomeTab = ({ onStartScanning, recentScans, onProductSelect }: HomeT
         </div>
 
         {/* Nutrition Guide */}
-        <div className="bg-white rounded-xl p-4 shadow-sm">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Nutrition Grades</h3>
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Nutrition Grades</h3>
           <div className="space-y-3">
             {[
               { grade: 'A', label: 'Excellent', desc: 'Very healthy choice' },
@@ -112,8 +112,8 @@ export const HomeTab = ({ onStartScanning, recentScans, onProductSelect }: HomeT
                   {grade}
                 </div>
                 <div className="flex-1">
-                  <p className="font-medium text-gray-900">{label}</p>
-                  <p className="text-sm text-gray-500">{desc}</p>
+                  <p className="font-medium text-gray-900 dark:text-white">{label}</p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">{desc}</p>
                 </div>
               </div>
             ))}
@@ -122,10 +122,10 @@ export const HomeTab = ({ onStartScanning, recentScans, onProductSelect }: HomeT
 
         {/* Recent Scans */}
         {recentScans.length > 0 && (
-          <div className="bg-white rounded-xl p-6 shadow-sm">
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm">
             <div className="flex items-center gap-2 mb-4">
-              <ClockIcon className="w-5 h-5 text-gray-500" />
-              <h3 className="text-lg font-semibold text-gray-900">Recent Scans</h3>
+              <ClockIcon className="w-5 h-5 text-gray-500 dark:text-gray-400" />
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Recent Scans</h3>
             </div>
             <div className="space-y-3">
               {recentScans.map((product, index) => {

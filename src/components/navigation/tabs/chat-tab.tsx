@@ -90,17 +90,17 @@ export const ChatTab = ({ currentProduct, onScanProduct }: ChatTabProps) => {
   ];
 
   return (
-    <div className="flex-1 bg-gray-50 flex flex-col">
+    <div className="flex-1 bg-gray-50 dark:bg-gray-900 flex flex-col">
       {/* Header */}
-      <div className="bg-white border-b border-gray-200">
+      <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
         <div className="px-4 py-4 pt-8">
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center">
               <SparklesIcon className="w-4 h-4 text-white" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">AI Nutrition Assistant</h1>
-              <p className="text-gray-600">Ask me anything about nutrition and food</p>
+              <h1 className="text-2xl font-bold text-gray-900 dark:text-white">AI Nutrition Assistant</h1>
+              <p className="text-gray-600 dark:text-gray-400">Ask me anything about nutrition and food</p>
             </div>
           </div>
         </div>
@@ -117,18 +117,18 @@ export const ChatTab = ({ currentProduct, onScanProduct }: ChatTabProps) => {
               className={`max-w-xs lg:max-w-md px-4 py-3 rounded-2xl ${
                 message.type === 'user'
                   ? 'bg-emerald-500 text-white'
-                  : 'bg-white text-gray-900 shadow-sm border border-gray-100'
+                  : 'bg-white dark:bg-gray-800 text-gray-900 dark:text-white shadow-sm border border-gray-100 dark:border-gray-700'
               }`}
             >
               {message.type === 'assistant' && (
                 <div className="flex items-center gap-2 mb-1">
                   <SparklesIcon className="w-4 h-4 text-purple-500" />
-                  <span className="text-xs font-medium text-purple-600">AI Assistant</span>
+                  <span className="text-xs font-medium text-purple-600 dark:text-purple-400">AI Assistant</span>
                 </div>
               )}
               <p className="text-sm">{message.content}</p>
               <p className={`text-xs mt-1 ${
-                message.type === 'user' ? 'text-emerald-100' : 'text-gray-400'
+                message.type === 'user' ? 'text-emerald-100' : 'text-gray-400 dark:text-gray-500'
               }`}>
                 {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
               </p>
@@ -138,15 +138,15 @@ export const ChatTab = ({ currentProduct, onScanProduct }: ChatTabProps) => {
 
         {isLoading && (
           <div className="flex justify-start">
-            <div className="bg-white text-gray-900 shadow-sm border border-gray-100 px-4 py-3 rounded-2xl max-w-xs">
+            <div className="bg-white dark:bg-gray-800 text-gray-900 dark:text-white shadow-sm border border-gray-100 dark:border-gray-700 px-4 py-3 rounded-2xl max-w-xs">
               <div className="flex items-center gap-2 mb-1">
                 <SparklesIcon className="w-4 h-4 text-purple-500" />
-                <span className="text-xs font-medium text-purple-600">AI Assistant</span>
+                <span className="text-xs font-medium text-purple-600 dark:text-purple-400">AI Assistant</span>
               </div>
               <div className="flex space-x-1">
-                <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
-                <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-                <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                <div className="w-2 h-2 bg-gray-400 dark:bg-gray-500 rounded-full animate-bounce"></div>
+                <div className="w-2 h-2 bg-gray-400 dark:bg-gray-500 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+                <div className="w-2 h-2 bg-gray-400 dark:bg-gray-500 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
               </div>
             </div>
           </div>
@@ -155,13 +155,13 @@ export const ChatTab = ({ currentProduct, onScanProduct }: ChatTabProps) => {
         {/* Suggested Questions (only show when no messages besides welcome) */}
         {messages.length === 1 && (
           <div className="space-y-3">
-            <p className="text-sm text-gray-500 text-center">Try asking me one of these:</p>
+            <p className="text-sm text-gray-500 dark:text-gray-400 text-center">Try asking me one of these:</p>
             <div className="grid gap-2">
               {suggestedQuestions.map((question, index) => (
                 <button
                   key={index}
                   onClick={() => setInput(question)}
-                  className="bg-white border border-gray-200 rounded-xl p-3 text-left text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                  className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-3 text-left text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
                 >
                   {question}
                 </button>
@@ -190,11 +190,11 @@ export const ChatTab = ({ currentProduct, onScanProduct }: ChatTabProps) => {
       </div>
 
       {/* Input */}
-      <div className="bg-white border-t border-gray-200 p-4">
+      <div className="bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 p-4">
         <div className="flex gap-3">
           <button
             onClick={handleScanPress}
-            className="bg-emerald-100 hover:bg-emerald-200 text-emerald-600 p-3 rounded-xl transition-colors"
+            className="bg-emerald-100 dark:bg-emerald-900/30 hover:bg-emerald-200 dark:hover:bg-emerald-900/50 text-emerald-600 dark:text-emerald-400 p-3 rounded-xl transition-colors"
           >
             <QrCodeIcon className="w-5 h-5" />
           </button>
@@ -205,13 +205,13 @@ export const ChatTab = ({ currentProduct, onScanProduct }: ChatTabProps) => {
               onChange={(e) => setInput(e.target.value)}
               onKeyPress={(e) => e.key === 'Enter' && handleSend()}
               placeholder="Ask about nutrition, ingredients, or health..."
-              className="flex-1 border border-gray-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+              className="flex-1 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
               disabled={isLoading}
             />
             <button
               onClick={handleSend}
               disabled={!input.trim() || isLoading}
-              className="bg-emerald-500 hover:bg-emerald-600 disabled:bg-gray-300 text-white p-3 rounded-xl transition-colors"
+              className="bg-emerald-500 hover:bg-emerald-600 disabled:bg-gray-300 dark:disabled:bg-gray-600 text-white p-3 rounded-xl transition-colors"
             >
               <PaperAirplaneIcon className="w-5 h-5" />
             </button>
