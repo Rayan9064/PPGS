@@ -66,14 +66,14 @@ export const ProfileTab = () => {
     <div className="flex-1 bg-gray-50 overflow-y-auto">
       {/* Header */}
       <div className="bg-gradient-to-r from-emerald-500 to-blue-500 text-white">
-        <div className="px-4 py-4 pt-safe">
-          <div className="flex items-center gap-3">
-            <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
-              <UserIcon className="w-6 h-6 text-white" />
+        <div className="px-4 py-6 pt-safe">
+          <div className="flex items-center gap-4">
+            <div className="w-14 h-14 bg-white/20 rounded-full flex items-center justify-center">
+              <UserIcon className="w-7 h-7 text-white" />
             </div>
             <div>
-              <h1 className="text-xl font-bold">Welcome Back!</h1>
-              <p className="text-emerald-100 text-sm">
+              <h1 className="text-2xl font-bold">Welcome Back!</h1>
+              <p className="text-emerald-100">
                 {isAvailable ? 'Telegram User' : 'Nutrition Enthusiast'}
               </p>
             </div>
@@ -81,22 +81,22 @@ export const ProfileTab = () => {
         </div>
       </div>
 
-      <div className="px-4 py-4 space-y-4">
+      <div className="px-4 py-5 space-y-5">
         {/* Quick Stats */}
-        <div className="bg-white rounded-xl p-4 shadow-sm">
-          <h2 className="text-lg font-semibold text-gray-900 mb-3">Your Progress</h2>
-          <div className="grid grid-cols-3 gap-3">
+        <div className="bg-white rounded-xl p-5 shadow-sm">
+          <h2 className="text-lg font-semibold text-gray-900 mb-4">Your Progress</h2>
+          <div className="grid grid-cols-3 gap-4">
             {stats.map((stat, index) => (
               <div key={index} className="text-center">
-                <p className={`text-xl font-bold ${stat.color}`}>{stat.value}</p>
-                <p className="text-xs text-gray-500">{stat.label}</p>
+                <p className={`text-2xl font-bold ${stat.color}`}>{stat.value}</p>
+                <p className="text-sm text-gray-500">{stat.label}</p>
               </div>
             ))}
           </div>
         </div>
 
         {/* Health Score */}
-        <div className="bg-white rounded-xl p-4 shadow-sm">
+        <div className="bg-white rounded-xl p-5 shadow-sm">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold text-gray-900">Health Score</h2>
             <div className="flex items-center gap-2">
