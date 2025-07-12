@@ -7,7 +7,9 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "type-check": "tsc --noEmit"
+    "type-check": "tsc --noEmit",
+    "setup-bot": "node scripts/setup-bot.js",
+    "test-webhook": "node scripts/test-webhook.js"
   },
   "dependencies": {
     "next": "^14.0.4",
