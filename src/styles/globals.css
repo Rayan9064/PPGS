@@ -1,0 +1,103 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    font-family: Inter, system-ui, sans-serif;
+  }
+  
+  body {
+    @apply bg-gray-50 text-gray-900;
+    /* Telegram Mini App CSS variables */
+    background-color: var(--tg-color-bg, #ffffff);
+    color: var(--tg-color-text, #000000);
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200;
+  }
+  
+  .btn-secondary {
+    @apply bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium py-2 px-4 rounded-lg transition-colors duration-200;
+  }
+  
+  .card {
+    @apply bg-white rounded-xl shadow-sm border border-gray-200 p-6;
+  }
+  
+  .grade-badge {
+    @apply inline-flex items-center justify-center w-12 h-12 rounded-full text-white font-bold text-lg;
+  }
+  
+  .scanning-overlay {
+    @apply absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center;
+  }
+}
+
+/* Telegram Mini App specific styles */
+.tg-viewport {
+  height: var(--tg-viewport-height, 100vh);
+}
+
+/* Scanner styles */
+.scanner-container {
+  position: relative;
+  width: 100%;
+  height: 400px;
+  overflow: hidden;
+  border-radius: 12px;
+}
+
+.scanner-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.scanner-viewfinder {
+  width: 250px;
+  height: 250px;
+  border: 2px solid #ffffff;
+  border-radius: 12px;
+  position: relative;
+}
+
+.scanner-viewfinder::before,
+.scanner-viewfinder::after {
+  content: '';
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  border: 3px solid #4ade80;
+}
+
+.scanner-viewfinder::before {
+  top: -3px;
+  left: -3px;
+  border-right: none;
+  border-bottom: none;
+}
+
+.scanner-viewfinder::after {
+  bottom: -3px;
+  right: -3px;
+  border-left: none;
+  border-top: none;
+}
+
+/* Nutrition grade specific styles */
+.grade-a { background-color: #1fa363; }
+.grade-b { background-color: #8bc34a; }
+.grade-c { background-color: #ffeb3b; color: #000; }
+.grade-d { background-color: #ff9800; }
+.grade-e { background-color: #f44336; }
+.grade-u { background-color: #9e9e9e; }
