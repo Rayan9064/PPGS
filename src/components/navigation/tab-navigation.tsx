@@ -113,14 +113,14 @@ export const TabNavigation = () => {
   ];
 
   return (
-    <div className="h-screen flex flex-col bg-gray-50">
+    <div className="min-h-screen flex flex-col bg-gray-50">
       {/* Main Content */}
-      <div className="flex-1 overflow-hidden">
+      <div className="flex-1 overflow-y-auto mobile-scroll">
         {renderActiveTab()}
       </div>
 
       {/* Bottom Tab Navigation */}
-      <div className="bg-white border-t border-gray-200 px-2 py-1 safe-area-padding-bottom">
+      <div className="sticky bottom-0 bg-white border-t border-gray-200 px-2 py-1 safe-area-padding-bottom">
         <div className="flex justify-around items-center max-w-md mx-auto">
           {tabs.map((tab) => {
             const isActive = activeTab === tab.id;

@@ -15,6 +15,19 @@ export const useTelegramWebApp = () => {
     if (webApp) {
       webApp.ready();
       webApp.expand();
+      
+      // Disable vertical swipe to close if available
+      try {
+        (webApp as any).disableVerticalSwipes?.();
+      } catch (e) {
+        // Ignore if not available
+      }
+      
+      // Set viewport height for mobile
+      const viewportHeight = (webApp as any).viewportHeight;
+      if (viewportHeight) {
+        document.documentElement.style.setProperty('--tg-viewport-height', `${viewportHeight}px`);
+      }
     }
   };
 

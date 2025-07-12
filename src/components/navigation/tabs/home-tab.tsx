@@ -36,10 +36,10 @@ export const HomeTab = ({ onStartScanning, recentScans, onProductSelect }: HomeT
   };
 
   return (
-    <div className="flex-1 bg-gradient-to-br from-emerald-50 to-blue-50">
+    <div className="flex-1 bg-gradient-to-br from-emerald-50 to-blue-50 pb-safe">
       {/* Header */}
       <div className="bg-white/80 backdrop-blur-sm border-b border-emerald-100">
-        <div className="px-6 py-6 pt-12">
+        <div className="px-4 py-4 pt-safe">
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-2xl font-bold text-gray-900">NutriPal</h1>
@@ -52,32 +52,32 @@ export const HomeTab = ({ onStartScanning, recentScans, onProductSelect }: HomeT
         </div>
       </div>
 
-      <div className="px-6 py-6 space-y-6">
+      <div className="px-4 py-4 space-y-6 overflow-y-auto">
         {/* Quick Stats */}
-        <div className="grid grid-cols-3 gap-4">
-          <div className="bg-white rounded-xl p-4 text-center shadow-sm">
-            <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-2">
-              <QrCodeIcon className="w-5 h-5 text-blue-600" />
+        <div className="grid grid-cols-3 gap-3">
+          <div className="bg-white rounded-xl p-3 text-center shadow-sm">
+            <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-2">
+              <QrCodeIcon className="w-4 h-4 text-blue-600" />
             </div>
-            <p className="text-2xl font-bold text-gray-900">{recentScans.length}</p>
+            <p className="text-xl font-bold text-gray-900">{recentScans.length}</p>
             <p className="text-xs text-gray-500">Scanned</p>
           </div>
           
-          <div className="bg-white rounded-xl p-4 text-center shadow-sm">
-            <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-2">
-              <TrophyIcon className="w-5 h-5 text-green-600" />
+          <div className="bg-white rounded-xl p-3 text-center shadow-sm">
+            <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-2">
+              <TrophyIcon className="w-4 h-4 text-green-600" />
             </div>
-            <p className="text-2xl font-bold text-gray-900">
+            <p className="text-xl font-bold text-gray-900">
               {recentScans.filter(p => ['A', 'B'].includes(getNutritionGrade(p).grade)).length}
             </p>
             <p className="text-xs text-gray-500">Healthy</p>
           </div>
           
-          <div className="bg-white rounded-xl p-4 text-center shadow-sm">
-            <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-2">
-              <ShieldCheckIcon className="w-5 h-5 text-purple-600" />
+          <div className="bg-white rounded-xl p-3 text-center shadow-sm">
+            <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-2">
+              <ShieldCheckIcon className="w-4 h-4 text-purple-600" />
             </div>
-            <p className="text-2xl font-bold text-gray-900">A+</p>
+            <p className="text-xl font-bold text-gray-900">A+</p>
             <p className="text-xs text-gray-500">Health Score</p>
           </div>
         </div>
@@ -86,9 +86,9 @@ export const HomeTab = ({ onStartScanning, recentScans, onProductSelect }: HomeT
         <div className="text-center">
           <button
             onClick={handleScanButtonPress}
-            className="bg-emerald-500 hover:bg-emerald-600 text-white rounded-2xl px-8 py-6 text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 active:scale-95"
+            className="bg-emerald-500 hover:bg-emerald-600 text-white rounded-2xl px-6 py-4 text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 active:scale-95"
           >
-            <QrCodeIcon className="w-8 h-8 mx-auto mb-2" />
+            <QrCodeIcon className="w-6 h-6 mx-auto mb-2" />
             Scan Product
           </button>
           <p className="text-sm text-gray-600 mt-3">
@@ -97,7 +97,7 @@ export const HomeTab = ({ onStartScanning, recentScans, onProductSelect }: HomeT
         </div>
 
         {/* Nutrition Guide */}
-        <div className="bg-white rounded-xl p-6 shadow-sm">
+        <div className="bg-white rounded-xl p-4 shadow-sm">
           <h3 className="text-lg font-semibold text-gray-900 mb-4">Nutrition Grades</h3>
           <div className="space-y-3">
             {[

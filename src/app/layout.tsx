@@ -30,7 +30,7 @@ export default function RootLayout({
       </head>
       <body className={inter.className}>
         <TelegramProvider>
-          <div className="h-screen overflow-hidden">
+          <div className="min-h-screen flex flex-col">
             {children}
           </div>
           <Toaster 
