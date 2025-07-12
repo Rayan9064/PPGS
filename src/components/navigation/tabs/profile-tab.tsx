@@ -24,26 +24,31 @@ export const ProfileTab = () => {
     setter(!currentValue);
   };
 
-  const handleMenuPress = (action: string) => {
+  const handleMenuPress = (action: string, route?: string) => {
     hapticFeedback.impact('light');
-    console.log(`Profile action: ${action}`);
+    if (route) {
+      // Navigate to the route
+      window.location.href = route;
+    } else {
+      console.log(`Profile action: ${action}`);
+    }
   };
 
   const menuSections = [
     {
       title: 'Health & Preferences',
       items: [
-        { icon: HeartIcon, label: 'Dietary Restrictions', value: dietaryRestrictions.join(', '), action: 'dietary' },
+        { icon: HeartIcon, label: 'Dietary Preferences', value: dietaryRestrictions.join(', '), action: 'dietary', route: '/preferences' },
         { icon: ShieldCheckIcon, label: 'Health Goals', value: 'Balanced nutrition', action: 'goals' },
         { icon: BellIcon, label: 'Notifications', value: notificationsEnabled ? 'On' : 'Off', action: 'notifications' },
       ]
     },
     {
-      title: 'App Settings',
+      title: 'Your Data',
       items: [
-        { icon: CogIcon, label: 'Scan Settings', value: 'Auto-scan enabled', action: 'scan-settings' },
-        { icon: StarIcon, label: 'Grade Preferences', value: 'Standard scoring', action: 'grading' },
-        { icon: InformationCircleIcon, label: 'Data Sources', value: 'Open Food Facts', action: 'data' },
+        { icon: CogIcon, label: 'Consumed Products', value: 'Track daily intake', action: 'consumed', route: '/profile/consumed' },
+        { icon: StarIcon, label: 'Scan History', value: 'View all scans', action: 'history', route: '/profile/history' },
+        { icon: InformationCircleIcon, label: 'Favorites', value: 'Saved products', action: 'favorites', route: '/profile/favorites' },
       ]
     },
     {
@@ -124,7 +129,7 @@ export const ProfileTab = () => {
               {section.items.map((item, itemIndex) => (
                 <button
                   key={itemIndex}
-                  onClick={() => handleMenuPress(item.action)}
+                  onClick={() => handleMenuPress(item.action, (item as any).route)}
                   className="w-full px-6 py-4 flex items-center justify-between hover:bg-gray-50 transition-colors"
                 >
                   <div className="flex items-center gap-3">
