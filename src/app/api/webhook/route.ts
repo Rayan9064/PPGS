@@ -169,15 +169,22 @@ Or just tap "<b>Open App</b>" to start scanning!`;
       bot_token_exists: !!botToken
     });
     
+    // Prepare the message payload
+    const messagePayload: any = {
+      chat_id: chatId,
+      text: responseText,
+      parse_mode: 'HTML'
+    };
+    
+    // Only include reply_markup if it's not null
+    if (replyMarkup) {
+      messagePayload.reply_markup = replyMarkup;
+    }
+    
     const telegramResponse = await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        chat_id: chatId,
-        text: responseText,
-        reply_markup: replyMarkup,
-        parse_mode: 'HTML'
-      })
+      body: JSON.stringify(messagePayload)
     });
 
     console.log('Telegram API response status:', telegramResponse.status);
