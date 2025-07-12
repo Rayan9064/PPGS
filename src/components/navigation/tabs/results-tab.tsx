@@ -39,27 +39,29 @@ export const ResultsTab = ({ currentProduct, recentScans, onScanAnother, onProdu
 
   if (currentProduct) {
     return (
-      <div className="flex-1">
-        <ProductResult 
-          product={currentProduct}
-          onScanAnother={handleScanAnother}
-          onBack={() => onProductSelect(currentProduct)}
-        />
+      <div className="flex-1 overflow-y-auto">
+        <div className="px-4 py-4 pt-safe">
+          <ProductResult 
+            product={currentProduct}
+            onScanAnother={handleScanAnother}
+            onBack={() => onProductSelect(currentProduct)}
+          />
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="flex-1 bg-gray-50">
+    <div className="flex-1 bg-gray-50 overflow-y-auto">
       {/* Header */}
       <div className="bg-white border-b border-gray-200">
-        <div className="px-6 py-6 pt-12">
-          <h1 className="text-2xl font-bold text-gray-900">Scan Results</h1>
-          <p className="text-gray-600">View your scanned products and nutrition analysis</p>
+        <div className="px-4 py-4 pt-safe">
+          <h1 className="text-xl font-bold text-gray-900">Scan Results</h1>
+          <p className="text-gray-600 text-sm">View your scanned products and nutrition analysis</p>
         </div>
       </div>
 
-      <div className="px-6 py-6">
+      <div className="px-4 py-4">
         {recentScans.length === 0 ? (
           // Empty State
           <div className="text-center py-20">

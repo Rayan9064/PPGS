@@ -93,10 +93,10 @@ export const ChatTab = ({ currentProduct, onScanProduct }: ChatTabProps) => {
     <div className="flex-1 bg-gray-50 flex flex-col">
       {/* Header */}
       <div className="bg-white border-b border-gray-200">
-        <div className="px-6 py-6 pt-12">
+        <div className="px-4 py-3 pt-safe">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center">
-              <SparklesIcon className="w-6 h-6 text-white" />
+            <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center">
+              <SparklesIcon className="w-4 h-4 text-white" />
             </div>
             <div>
               <h1 className="text-2xl font-bold text-gray-900">AI Nutrition Assistant</h1>
