@@ -130,21 +130,21 @@ export default function Favorites() {
   const groupedFavorites = groupFavoritesByCategory();
 
   return (
-    <div className="min-h-screen bg-gray-50 overflow-y-auto">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 overflow-y-auto">
       {/* Header */}
-      <div className="bg-white border-b border-gray-200">
-        <div className="px-4 py-4 pt-8">
+      <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+        <div className="px-4 py-4 pt-4">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
               <button 
                 onClick={() => window.history.back()}
-                className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
+                className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
               >
-                <ArrowLeftIcon className="w-6 h-6 text-gray-600" />
+                <ArrowLeftIcon className="w-6 h-6 text-gray-600 dark:text-gray-300" />
               </button>
               <div>
-                <h1 className="text-xl font-bold text-gray-900">Favorites</h1>
-                <p className="text-gray-600 text-sm">Your saved healthy products</p>
+                <h1 className="text-xl font-bold text-gray-900 dark:text-white">Favorites</h1>
+                <p className="text-gray-600 dark:text-gray-400 text-sm">Your saved healthy products</p>
               </div>
             </div>
             
@@ -155,8 +155,8 @@ export default function Favorites() {
               }}
               className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                 editMode 
-                  ? 'bg-red-100 text-red-600' 
-                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                  ? 'bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400' 
+                  : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
               }`}
             >
               {editMode ? 'Done' : 'Edit'}

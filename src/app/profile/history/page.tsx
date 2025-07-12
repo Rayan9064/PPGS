@@ -131,20 +131,20 @@ export default function ScanHistory() {
   const groupedHistory = groupHistoryByDate();
 
   return (
-    <div className="min-h-screen bg-gray-50 overflow-y-auto">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 overflow-y-auto">
       {/* Header */}
-      <div className="bg-white border-b border-gray-200">
-        <div className="px-4 py-4 pt-8">
+      <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+        <div className="px-4 py-4 pt-4">
           <div className="flex items-center gap-3 mb-4">
             <button 
               onClick={() => window.history.back()}
-              className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
+              className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
             >
-              <ArrowLeftIcon className="w-6 h-6 text-gray-600" />
+              <ArrowLeftIcon className="w-6 h-6 text-gray-600 dark:text-gray-300" />
             </button>
             <div>
-              <h1 className="text-xl font-bold text-gray-900">Scan History</h1>
-              <p className="text-gray-600 text-sm">View all your scanned products</p>
+              <h1 className="text-xl font-bold text-gray-900 dark:text-white">Scan History</h1>
+              <p className="text-gray-600 dark:text-gray-400 text-sm">View all your scanned products</p>
             </div>
           </div>
 
@@ -165,7 +165,7 @@ export default function ScanHistory() {
                 className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
                   filter === tab.key
                     ? 'bg-emerald-500 text-white'
-                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                    : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
                 }`}
               >
                 {tab.label}
@@ -178,23 +178,23 @@ export default function ScanHistory() {
       <div className="px-4 py-6">
         {/* Stats */}
         <div className="grid grid-cols-3 gap-4 mb-6">
-          <div className="bg-white rounded-xl p-4 text-center shadow-sm">
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-4 text-center shadow-sm">
             <QrCodeIcon className="w-8 h-8 text-blue-600 mx-auto mb-2" />
-            <p className="text-xl font-bold text-gray-900">{filteredHistory.length}</p>
-            <p className="text-xs text-gray-500">Total Scans</p>
+            <p className="text-xl font-bold text-gray-900 dark:text-white">{filteredHistory.length}</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400">Total Scans</p>
           </div>
-          <div className="bg-white rounded-xl p-4 text-center shadow-sm">
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-4 text-center shadow-sm">
             <CalendarIcon className="w-8 h-8 text-green-600 mx-auto mb-2" />
-            <p className="text-xl font-bold text-gray-900">
+            <p className="text-xl font-bold text-gray-900 dark:text-white">
               {new Set(filteredHistory.map(item => item.timestamp.toDateString())).size}
             </p>
-            <p className="text-xs text-gray-500">Active Days</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400">Active Days</p>
           </div>
-          <div className="bg-white rounded-xl p-4 text-center shadow-sm">
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-4 text-center shadow-sm">
             <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-2">
               <span className="text-white font-bold text-sm">A</span>
             </div>
-            <p className="text-xl font-bold text-gray-900">
+            <p className="text-xl font-bold text-gray-900 dark:text-white">
               {filteredHistory.filter(item => {
                 const grade = getNutritionGrade(item.product);
                 return ['A', 'B'].includes(grade.grade);

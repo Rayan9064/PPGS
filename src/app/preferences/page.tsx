@@ -54,20 +54,20 @@ export default function DietaryPreferences() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 overflow-y-auto">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 overflow-y-auto">
       {/* Header */}
-      <div className="bg-white border-b border-gray-200">
-        <div className="px-4 py-4 pt-8">
+      <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+        <div className="px-4 py-4 pt-4">
           <div className="flex items-center gap-3">
             <button 
               onClick={() => window.history.back()}
-              className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
+              className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
             >
-              <ArrowLeftIcon className="w-6 h-6 text-gray-600" />
+              <ArrowLeftIcon className="w-6 h-6 text-gray-600 dark:text-gray-300" />
             </button>
             <div>
-              <h1 className="text-xl font-bold text-gray-900">Dietary Preferences</h1>
-              <p className="text-gray-600 text-sm">Customize your nutrition filters</p>
+              <h1 className="text-xl font-bold text-gray-900 dark:text-white">Dietary Preferences</h1>
+              <p className="text-gray-600 dark:text-gray-400 text-sm">Customize your nutrition filters</p>
             </div>
           </div>
         </div>
@@ -75,33 +75,33 @@ export default function DietaryPreferences() {
 
       <div className="px-4 py-6 space-y-6">
         {Object.entries(categories).map(([categoryKey, category]) => (
-          <div key={categoryKey} className="bg-white rounded-xl shadow-sm overflow-hidden">
-            <div className="px-6 py-4 border-b border-gray-100">
-              <h2 className="text-lg font-semibold text-gray-900">{category.title}</h2>
+          <div key={categoryKey} className="bg-white dark:bg-gray-800 rounded-xl shadow-sm overflow-hidden">
+            <div className="px-6 py-4 border-b border-gray-100 dark:border-gray-700">
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">{category.title}</h2>
             </div>
-            <div className="divide-y divide-gray-100">
+            <div className="divide-y divide-gray-100 dark:divide-gray-700">
               {preferences
                 .filter(pref => pref.category === categoryKey)
                 .map((preference) => (
                   <button
                     key={preference.id}
                     onClick={() => togglePreference(preference.id)}
-                    className="w-full px-6 py-4 flex items-center justify-between hover:bg-gray-50 transition-colors"
+                    className="w-full px-6 py-4 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
                   >
                     <div className="flex-1 text-left">
                       <div className="flex items-center gap-3">
                         <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors ${
                           selectedPreferences.includes(preference.id)
                             ? `bg-${category.color}-500 border-${category.color}-500`
-                            : 'border-gray-300'
+                            : 'border-gray-300 dark:border-gray-600'
                         }`}>
                           {selectedPreferences.includes(preference.id) && (
                             <CheckIcon className="w-4 h-4 text-white" />
                           )}
                         </div>
                         <div>
-                          <span className="font-medium text-gray-900">{preference.name}</span>
-                          <p className="text-sm text-gray-500">{preference.description}</p>
+                          <span className="font-medium text-gray-900 dark:text-white">{preference.name}</span>
+                          <p className="text-sm text-gray-500 dark:text-gray-400">{preference.description}</p>
                         </div>
                       </div>
                     </div>

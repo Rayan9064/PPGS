@@ -76,20 +76,20 @@ export default function ConsumedProducts() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 overflow-y-auto">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 overflow-y-auto">
       {/* Header */}
-      <div className="bg-white border-b border-gray-200">
-        <div className="px-4 py-4 pt-8">
+      <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+        <div className="px-4 py-4 pt-4">
           <div className="flex items-center gap-3">
             <button 
               onClick={() => window.history.back()}
-              className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
+              className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
             >
-              <ArrowLeftIcon className="w-6 h-6 text-gray-600" />
+              <ArrowLeftIcon className="w-6 h-6 text-gray-600 dark:text-gray-300" />
             </button>
             <div>
-              <h1 className="text-xl font-bold text-gray-900">Consumed Products</h1>
-              <p className="text-gray-600 text-sm">Track your daily nutrition intake</p>
+              <h1 className="text-xl font-bold text-gray-900 dark:text-white">Consumed Products</h1>
+              <p className="text-gray-600 dark:text-gray-400 text-sm">Track your daily nutrition intake</p>
             </div>
           </div>
         </div>
@@ -97,44 +97,44 @@ export default function ConsumedProducts() {
 
       <div className="px-4 py-6 space-y-6">
         {/* Daily Summary */}
-        <div className="bg-white rounded-xl p-6 shadow-sm">
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-gray-900">Today&apos;s Summary</h2>
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Today&apos;s Summary</h2>
             <FireIcon className="w-6 h-6 text-orange-500" />
           </div>
           
           <div className="grid grid-cols-2 gap-4 mb-4">
             <div className="text-center">
-              <p className="text-2xl font-bold text-gray-900">{totalCaloriesToday}</p>
-              <p className="text-sm text-gray-500">Calories Consumed</p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white">{totalCaloriesToday}</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">Calories Consumed</p>
             </div>
             <div className="text-center">
-              <p className="text-2xl font-bold text-gray-900">{dailyCalorieGoal - totalCaloriesToday}</p>
-              <p className="text-sm text-gray-500">Remaining</p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white">{dailyCalorieGoal - totalCaloriesToday}</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">Remaining</p>
             </div>
           </div>
 
           {/* Progress Bar */}
-          <div className="w-full bg-gray-200 rounded-full h-3">
+          <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3">
             <div 
               className="bg-emerald-500 h-3 rounded-full transition-all duration-500"
               style={{ width: `${Math.min((totalCaloriesToday / dailyCalorieGoal) * 100, 100)}%` }}
             ></div>
           </div>
-          <div className="flex justify-between text-sm text-gray-500 mt-2">
+          <div className="flex justify-between text-sm text-gray-500 dark:text-gray-400 mt-2">
             <span>0</span>
             <span>{dailyCalorieGoal} cal goal</span>
           </div>
         </div>
 
         {/* Consumed Products List */}
-        <div className="bg-white rounded-xl shadow-sm overflow-hidden">
-          <div className="px-6 py-4 border-b border-gray-100">
-            <h2 className="text-lg font-semibold text-gray-900">Recent Consumption</h2>
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm overflow-hidden">
+          <div className="px-6 py-4 border-b border-gray-100 dark:border-gray-700">
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Recent Consumption</h2>
           </div>
           
           {todayConsumed.length > 0 ? (
-            <div className="divide-y divide-gray-100">
+            <div className="divide-y divide-gray-100 dark:divide-gray-700">
               {todayConsumed.map((item) => {
                 const grade = getNutritionGrade(item.product);
                 return (
@@ -146,13 +146,13 @@ export default function ConsumedProducts() {
                             {grade.grade}
                           </div>
                           <div>
-                            <h3 className="font-semibold text-gray-900">{item.product.product_name}</h3>
+                            <h3 className="font-semibold text-gray-900 dark:text-white">{item.product.product_name}</h3>
                             {item.product.brands && (
-                              <p className="text-sm text-gray-500">{item.product.brands}</p>
+                              <p className="text-sm text-gray-500 dark:text-gray-400">{item.product.brands}</p>
                             )}
                           </div>
                         </div>
-                        <div className="flex items-center gap-4 text-sm text-gray-500">
+                        <div className="flex items-center gap-4 text-sm text-gray-500 dark:text-gray-400">
                           <div className="flex items-center gap-1">
                             <ClockIcon className="w-4 h-4" />
                             <span>{formatTime(item.timestamp)}</span>
