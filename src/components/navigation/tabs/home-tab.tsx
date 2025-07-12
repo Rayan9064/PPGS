@@ -36,17 +36,17 @@ export const HomeTab = ({ onStartScanning, recentScans, onProductSelect }: HomeT
   };
 
   return (
-    <div className="flex-1 bg-gradient-to-br from-emerald-50 to-blue-50 pb-safe">
+    <div className="flex-1 bg-gradient-to-br from-emerald-50 to-blue-50 dark:from-gray-800 dark:to-gray-900 pb-safe">
       {/* Header */}
-      <div className="bg-white/80 backdrop-blur-sm border-b border-emerald-100">
+      <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border-b border-emerald-100 dark:border-gray-700">
         <div className="px-4 py-4 pt-8">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">NutriPal</h1>
-              <p className="text-emerald-600 font-medium">Smart Nutrition Scanner</p>
+              <h1 className="text-2xl font-bold text-gray-900 dark:text-white">NutriPal</h1>
+              <p className="text-emerald-600 dark:text-emerald-400 font-medium">Smart Nutrition Scanner</p>
             </div>
-            <div className="bg-emerald-100 p-3 rounded-full">
-              <ShieldCheckIcon className="w-6 h-6 text-emerald-600" />
+            <div className="bg-emerald-100 dark:bg-emerald-900/50 p-3 rounded-full">
+              <ShieldCheckIcon className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />
             </div>
           </div>
         </div>

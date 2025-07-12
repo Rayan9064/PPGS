@@ -113,14 +113,14 @@ export const TabNavigation = () => {
   ];
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50">
+    <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-gray-900">
       {/* Main Content */}
       <div className="flex-1 overflow-y-auto mobile-scroll">
         {renderActiveTab()}
       </div>
 
       {/* Bottom Tab Navigation */}
-      <div className="sticky bottom-0 bg-white border-t border-gray-200 px-2 py-1 safe-area-padding-bottom">
+      <div className="sticky bottom-0 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 px-2 py-1 safe-area-padding-bottom">
         <div className="flex justify-around items-center max-w-md mx-auto">
           {tabs.map((tab) => {
             const isActive = activeTab === tab.id;
@@ -132,8 +132,8 @@ export const TabNavigation = () => {
                 onClick={() => handleTabChange(tab.id)}
                 className={`flex flex-col items-center justify-center p-2 rounded-lg transition-all duration-200 min-w-0 flex-1 ${
                   isActive 
-                    ? 'text-emerald-600 bg-emerald-50' 
-                    : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
+                    ? 'text-emerald-600 bg-emerald-50 dark:bg-emerald-900/30' 
+                    : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
                 }`}
               >
                 <IconComponent className="w-6 h-6 mb-1" />

@@ -10,14 +10,18 @@ import {
   InformationCircleIcon,
   ChevronRightIcon,
   StarIcon,
-  ShareIcon
+  ShareIcon,
+  MoonIcon,
+  SunIcon
 } from '@heroicons/react/24/outline';
 import { useTelegram } from '@/components/providers/telegram-provider';
+import { useTheme } from '@/components/providers/theme-provider';
 
 export const ProfileTab = () => {
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
   const [dietaryRestrictions, setDietaryRestrictions] = useState<string[]>(['vegetarian']);
   const { hapticFeedback, isAvailable } = useTelegram();
+  const { theme, toggleTheme, isDark } = useTheme();
 
   const handleToggle = (setter: (value: boolean) => void, currentValue: boolean) => {
     hapticFeedback.impact('light');
@@ -26,7 +30,9 @@ export const ProfileTab = () => {
 
   const handleMenuPress = (action: string, route?: string) => {
     hapticFeedback.impact('light');
-    if (route) {
+    if (action === 'theme') {
+      toggleTheme();
+    } else if (route) {
       // Navigate to the route
       window.location.href = route;
     } else {
@@ -36,8 +42,15 @@ export const ProfileTab = () => {
 
   const menuSections = [
     {
-      title: 'Health & Preferences',
+      title: 'Appearance & Preferences',
       items: [
+        { 
+          icon: isDark ? SunIcon : MoonIcon, 
+          label: 'Dark Mode', 
+          value: isDark ? 'On' : 'Off', 
+          action: 'theme',
+          isToggle: true
+        },
         { icon: HeartIcon, label: 'Dietary Preferences', value: dietaryRestrictions.join(', '), action: 'dietary', route: '/preferences' },
         { icon: ShieldCheckIcon, label: 'Health Goals', value: 'Balanced nutrition', action: 'goals' },
         { icon: BellIcon, label: 'Notifications', value: notificationsEnabled ? 'On' : 'Off', action: 'notifications' },
@@ -68,7 +81,7 @@ export const ProfileTab = () => {
   ];
 
   return (
-    <div className="flex-1 bg-gray-50 overflow-y-auto">
+    <div className="flex-1 bg-gray-50 dark:bg-gray-900 overflow-y-auto">
       {/* Header */}
       <div className="bg-gradient-to-r from-emerald-500 to-blue-500 text-white">
         <div className="px-4 py-6 pt-8">
@@ -88,22 +101,22 @@ export const ProfileTab = () => {
 
       <div className="px-4 py-5 space-y-5">
         {/* Quick Stats */}
-        <div className="bg-white rounded-xl p-5 shadow-sm">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Your Progress</h2>
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-5 shadow-sm">
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Your Progress</h2>
           <div className="grid grid-cols-3 gap-4">
             {stats.map((stat, index) => (
               <div key={index} className="text-center">
                 <p className={`text-2xl font-bold ${stat.color}`}>{stat.value}</p>
-                <p className="text-sm text-gray-500">{stat.label}</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400">{stat.label}</p>
               </div>
             ))}
           </div>
         </div>
 
         {/* Health Score */}
-        <div className="bg-white rounded-xl p-5 shadow-sm">
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-5 shadow-sm">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-gray-900">Health Score</h2>
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Health Score</h2>
             <div className="flex items-center gap-2">
               <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center text-white text-sm font-bold">
                 A
@@ -111,36 +124,36 @@ export const ProfileTab = () => {
               <span className="text-lg font-bold text-green-600">85/100</span>
             </div>
           </div>
-          <div className="w-full bg-gray-200 rounded-full h-3">
+          <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3">
             <div className="bg-green-500 h-3 rounded-full" style={{ width: '85%' }}></div>
           </div>
-          <p className="text-sm text-gray-600 mt-2">
+          <p className="text-sm text-gray-600 dark:text-gray-300 mt-2">
             Great job! You&apos;re making healthy choices consistently.
           </p>
         </div>
 
         {/* Menu Sections */}
         {menuSections.map((section, sectionIndex) => (
-          <div key={sectionIndex} className="bg-white rounded-xl shadow-sm overflow-hidden">
-            <div className="px-6 py-4 border-b border-gray-100">
-              <h2 className="text-lg font-semibold text-gray-900">{section.title}</h2>
+          <div key={sectionIndex} className="bg-white dark:bg-gray-800 rounded-xl shadow-sm overflow-hidden">
+            <div className="px-6 py-4 border-b border-gray-100 dark:border-gray-700">
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">{section.title}</h2>
             </div>
-            <div className="divide-y divide-gray-100">
+            <div className="divide-y divide-gray-100 dark:divide-gray-700">
               {section.items.map((item, itemIndex) => (
                 <button
                   key={itemIndex}
                   onClick={() => handleMenuPress(item.action, (item as any).route)}
-                  className="w-full px-6 py-4 flex items-center justify-between hover:bg-gray-50 transition-colors"
+                  className="w-full px-6 py-4 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
                 >
                   <div className="flex items-center gap-3">
-                    <item.icon className="w-5 h-5 text-gray-500" />
-                    <span className="font-medium text-gray-900">{item.label}</span>
+                    <item.icon className="w-5 h-5 text-gray-500 dark:text-gray-400" />
+                    <span className="font-medium text-gray-900 dark:text-white">{item.label}</span>
                   </div>
                   <div className="flex items-center gap-2">
                     {item.value && (
-                      <span className="text-sm text-gray-500">{item.value}</span>
+                      <span className="text-sm text-gray-500 dark:text-gray-400">{item.value}</span>
                     )}
-                    <ChevronRightIcon className="w-4 h-4 text-gray-400" />
+                    <ChevronRightIcon className="w-4 h-4 text-gray-400 dark:text-gray-500" />
                   </div>
                 </button>
               ))}
@@ -149,8 +162,8 @@ export const ProfileTab = () => {
         ))}
 
         {/* Dietary Restrictions Quick Edit */}
-        <div className="bg-white rounded-xl p-6 shadow-sm">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Quick Filters</h2>
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm">
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Quick Filters</h2>
           <div className="flex flex-wrap gap-2">
             {['Vegetarian', 'Vegan', 'Gluten-Free', 'Low Sugar', 'Low Sodium', 'Organic'].map((filter) => (
               <button
@@ -166,7 +179,7 @@ export const ProfileTab = () => {
                 className={`px-3 py-2 rounded-full text-sm font-medium transition-colors ${
                   dietaryRestrictions.includes(filter.toLowerCase())
                     ? 'bg-emerald-500 text-white'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
                 }`}
               >
                 {filter}

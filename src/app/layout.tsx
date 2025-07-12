@@ -2,6 +2,7 @@ import '../styles/globals.css'
 import { Inter } from 'next/font/google'
 import { Toaster } from 'react-hot-toast'
 import { TelegramProvider } from '@/components/providers/telegram-provider'
+import { ThemeProvider } from '@/components/providers/theme-provider'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -29,21 +30,23 @@ export default function RootLayout({
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
       </head>
       <body className={inter.className}>
-        <TelegramProvider>
-          <div className="min-h-screen flex flex-col">
-            {children}
-          </div>
-          <Toaster 
-            position="top-center"
-            toastOptions={{
-              duration: 3000,
-              style: {
-                background: 'var(--tg-color-bg, #ffffff)',
-                color: 'var(--tg-color-text, #000000)',
-              },
-            }}
-          />
-        </TelegramProvider>
+        <ThemeProvider>
+          <TelegramProvider>
+            <div className="min-h-screen flex flex-col bg-white dark:bg-gray-900 transition-colors">
+              {children}
+            </div>
+            <Toaster 
+              position="top-center"
+              toastOptions={{
+                duration: 3000,
+                style: {
+                  background: 'var(--tg-color-bg, #ffffff)',
+                  color: 'var(--tg-color-text, #000000)',
+                },
+              }}
+            />
+          </TelegramProvider>
+        </ThemeProvider>
       </body>
     </html>
   )
