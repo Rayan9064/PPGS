@@ -15,18 +15,21 @@ interface ScannerComponentProps {
 
 export const ScannerComponent = ({ onScanSuccess, onBack }: ScannerComponentProps) => {
   const [isLoading, setIsLoading] = useState(false);
-  const [hasPermission, setHasPermission] = useState(false);
+  const [hasPermission, setHasPermission] = useState<boolean | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [scanMode, setScanMode] = useState<'camera' | 'gallery'>('camera');
   const [cameras, setCameras] = useState<any[]>([]);
   const [selectedCamera, setSelectedCamera] = useState<string>('');
+  const [isScanning, setIsScanning] = useState(false);
   const scannerRef = useRef<Html5QrcodeScanner | null>(null);
   const html5QrCodeRef = useRef<Html5Qrcode | null>(null);
+  const scanLockRef = useRef(false);
   const { hapticFeedback } = useTelegram();
 
   const handleScanSuccess = useCallback(async (barcode: string) => {
-    if (isLoading) return;
+    if (isLoading || scanLockRef.current) return;
 
+    scanLockRef.current = true;
     setIsLoading(true);
     setError(null);
     hapticFeedback.impact('medium');
@@ -36,9 +39,7 @@ export const ScannerComponent = ({ onScanSuccess, onBack }: ScannerComponentProp
       hapticFeedback.notification('success');
       
       // Stop camera before navigating
-      if (html5QrCodeRef.current && scanMode === 'camera') {
-        await html5QrCodeRef.current.stop();
-      }
+      await cleanupScanner();
       
       onScanSuccess(productData);
     } catch (error) {
@@ -51,12 +52,32 @@ export const ScannerComponent = ({ onScanSuccess, onBack }: ScannerComponentProp
       setTimeout(() => {
         setError(null);
         setIsLoading(false);
+        scanLockRef.current = false;
       }, 3000);
     }
-  }, [isLoading, hapticFeedback, onScanSuccess, scanMode]);
+  }, [isLoading, hapticFeedback, onScanSuccess]);
 
-  // Get available cameras
+  // Cleanup function
+  const cleanupScanner = useCallback(async () => {
+    try {
+      if (html5QrCodeRef.current) {
+        await html5QrCodeRef.current.stop();
+        html5QrCodeRef.current = null;
+      }
+      if (scannerRef.current) {
+        scannerRef.current.clear();
+        scannerRef.current = null;
+      }
+      setIsScanning(false);
+    } catch (err) {
+      console.log('Cleanup error:', err);
+    }
+  }, []);
+
+  // Get available cameras (called only once)
   const getCameras = useCallback(async () => {
+    if (hasPermission !== null) return; // Already checked
+
     try {
       // Request camera permission first
       const stream = await navigator.mediaDevices.getUserMedia({ video: true });
@@ -75,19 +96,22 @@ export const ScannerComponent = ({ onScanSuccess, onBack }: ScannerComponentProp
         setHasPermission(true);
       } else {
         setError('No cameras found on this device');
+        setHasPermission(false);
       }
     } catch (err) {
       console.error('Error getting cameras:', err);
       setError('Camera access denied. Please allow camera access to use scanner.');
       setHasPermission(false);
     }
-  }, []);
+  }, [hasPermission]);
 
   // Initialize camera scanner
   const initializeCameraScanner = useCallback(async () => {
-    if (!selectedCamera) return;
+    if (!selectedCamera || isScanning || scanLockRef.current) return;
 
     try {
+      await cleanupScanner(); // Clean up any existing scanner
+      
       const html5QrCode = new Html5Qrcode('qr-reader');
       html5QrCodeRef.current = html5QrCode;
 
@@ -101,72 +125,82 @@ export const ScannerComponent = ({ onScanSuccess, onBack }: ScannerComponentProp
         selectedCamera,
         config,
         async (decodedText) => {
-          await handleScanSuccess(decodedText);
+          if (!scanLockRef.current) {
+            await handleScanSuccess(decodedText);
+          }
         },
         (error) => {
           // Handle scan errors silently - they're usually just failed attempts
           console.log('Scan error:', error);
         }
       );
+      
+      setIsScanning(true);
+      setError(null);
     } catch (err) {
       console.error('Error starting camera:', err);
       setError('Failed to start camera. Please try again.');
+      setIsScanning(false);
     }
-  }, [selectedCamera, handleScanSuccess]);
+  }, [selectedCamera, isScanning, handleScanSuccess, cleanupScanner]);
 
   // Initialize gallery scanner
   const initializeGalleryScanner = useCallback(() => {
-    const scanner = new Html5QrcodeScanner(
-      'qr-reader',
-      {
-        fps: 10,
-        qrbox: { width: 250, height: 250 },
-        aspectRatio: 1.0,
-        showTorchButtonIfSupported: true,
-        showZoomSliderIfSupported: true,
-      },
-      false
-    );
+    if (isScanning || scanLockRef.current) return;
+    
+    try {
+      cleanupScanner(); // Clean up any existing scanner
+      
+      const scanner = new Html5QrcodeScanner(
+        'qr-reader',
+        {
+          fps: 10,
+          qrbox: { width: 250, height: 250 },
+          aspectRatio: 1.0,
+          showTorchButtonIfSupported: true,
+          showZoomSliderIfSupported: true,
+        },
+        false
+      );
 
-    scanner.render(
-      async (decodedText) => {
-        await handleScanSuccess(decodedText);
-      },
-      (error) => {
-        console.log('Scan error:', error);
-      }
-    );
+      scanner.render(
+        async (decodedText) => {
+          if (!scanLockRef.current) {
+            await handleScanSuccess(decodedText);
+          }
+        },
+        (error) => {
+          console.log('Scan error:', error);
+        }
+      );
 
-    scannerRef.current = scanner;
-  }, [handleScanSuccess]);
+      scannerRef.current = scanner;
+      setIsScanning(true);
+      setError(null);
+    } catch (err) {
+      console.error('Error starting gallery scanner:', err);
+      setError('Failed to initialize scanner. Please try again.');
+    }
+  }, [isScanning, handleScanSuccess, cleanupScanner]);
 
   // Handle scan mode change
   const handleScanModeChange = useCallback(async (mode: 'camera' | 'gallery') => {
+    if (isLoading || scanLockRef.current) return;
+    
     hapticFeedback.impact('light');
     setScanMode(mode);
     setError(null);
+    scanLockRef.current = false;
 
-    // Clean up current scanner
-    if (html5QrCodeRef.current) {
-      try {
-        await html5QrCodeRef.current.stop();
-        html5QrCodeRef.current = null;
-      } catch (err) {
-        console.log('Error stopping camera:', err);
-      }
-    }
-    
-    if (scannerRef.current) {
-      scannerRef.current.clear();
-      scannerRef.current = null;
-    }
-  }, [hapticFeedback]);
+    await cleanupScanner();
+  }, [hapticFeedback, isLoading, cleanupScanner]);
 
   // Handle file upload for gallery mode
   const handleFileUpload = useCallback(async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    if (!file) return;
+    if (!file || scanLockRef.current) return;
 
+    scanLockRef.current = true;
     setIsLoading(true);
     setError(null);
 
@@ -178,34 +212,45 @@ export const ScannerComponent = ({ onScanSuccess, onBack }: ScannerComponentProp
     } catch (err) {
       setError('No barcode found in the selected image. Please try a clearer image.');
       setIsLoading(false);
+      scanLockRef.current = false;
     }
+
+    // Reset file input
+    event.target.value = '';
   }, [handleScanSuccess]);
 
   // Initialize scanner based on mode
   useEffect(() => {
-    getCameras();
-  }, [getCameras]);
+    if (hasPermission === null) {
+      getCameras();
+    }
+  }, [getCameras, hasPermission]);
 
   useEffect(() => {
-    if (scanMode === 'camera' && selectedCamera && hasPermission) {
-      initializeCameraScanner();
-    } else if (scanMode === 'gallery') {
-      initializeGalleryScanner();
+    if (hasPermission === true && scanMode === 'camera' && selectedCamera && !isScanning) {
+      const timer = setTimeout(() => {
+        initializeCameraScanner();
+      }, 100);
+      return () => clearTimeout(timer);
+    } else if (scanMode === 'gallery' && !isScanning) {
+      const timer = setTimeout(() => {
+        initializeGalleryScanner();
+      }, 100);
+      return () => clearTimeout(timer);
     }
+  }, [scanMode, selectedCamera, hasPermission, isScanning, initializeCameraScanner, initializeGalleryScanner]);
 
+  // Cleanup on unmount
+  useEffect(() => {
     return () => {
-      // Cleanup on unmount or mode change
-      if (html5QrCodeRef.current) {
-        html5QrCodeRef.current.stop().catch(console.error);
-      }
-      if (scannerRef.current) {
-        scannerRef.current.clear();
-      }
+      cleanupScanner();
+      scanLockRef.current = false;
     };
-  }, [scanMode, selectedCamera, hasPermission, initializeCameraScanner, initializeGalleryScanner]);
+  }, [cleanupScanner]);
 
   const handleBack = () => {
     hapticFeedback.impact('light');
+    cleanupScanner();
     onBack();
   };
 
@@ -243,9 +288,12 @@ export const ScannerComponent = ({ onScanSuccess, onBack }: ScannerComponentProp
       <div className="flex bg-gray-100 dark:bg-gray-800 rounded-lg p-1 mb-6">
         <button
           onClick={() => handleScanModeChange('camera')}
+          disabled={hasPermission === false}
           className={`flex-1 flex items-center justify-center gap-2 py-2 px-4 rounded-md transition-colors ${
             scanMode === 'camera'
               ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm'
+              : hasPermission === false
+              ? 'text-gray-400 dark:text-gray-600 cursor-not-allowed'
               : 'text-gray-600 dark:text-gray-400'
           }`}
         >
@@ -267,7 +315,16 @@ export const ScannerComponent = ({ onScanSuccess, onBack }: ScannerComponentProp
 
       {/* Scanner Container */}
       <div className="card mb-6 relative">
-        {!hasPermission && scanMode === 'camera' ? (
+        {hasPermission === null ? (
+          <div className="text-center py-8">
+            <CameraIcon className="w-16 h-16 text-gray-400 dark:text-gray-500 mx-auto mb-4" />
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Checking Camera Access</h3>
+            <p className="text-gray-600 dark:text-gray-400 mb-4">
+              Please wait while we check camera permissions...
+            </p>
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 dark:border-blue-400 mx-auto"></div>
+          </div>
+        ) : hasPermission === false && scanMode === 'camera' ? (
           <div className="text-center py-8">
             <CameraIcon className="w-16 h-16 text-gray-400 dark:text-gray-500 mx-auto mb-4" />
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Camera Access Required</h3>
@@ -275,7 +332,10 @@ export const ScannerComponent = ({ onScanSuccess, onBack }: ScannerComponentProp
               To scan barcodes with your camera, please allow camera access when prompted.
             </p>
             <button
-              onClick={getCameras}
+              onClick={() => {
+                setHasPermission(null);
+                getCameras();
+              }}
               className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors"
             >
               Enable Camera
@@ -312,14 +372,19 @@ export const ScannerComponent = ({ onScanSuccess, onBack }: ScannerComponentProp
                   onChange={handleFileUpload}
                   className="hidden"
                   id="file-upload"
+                  disabled={isLoading}
                 />
                 <label
                   htmlFor="file-upload"
-                  className="block w-full p-4 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg text-center cursor-pointer hover:border-blue-500 dark:hover:border-blue-400 transition-colors"
+                  className={`block w-full p-4 border-2 border-dashed rounded-lg text-center transition-colors ${
+                    isLoading 
+                      ? 'border-gray-200 dark:border-gray-700 cursor-not-allowed' 
+                      : 'border-gray-300 dark:border-gray-600 cursor-pointer hover:border-blue-500 dark:hover:border-blue-400'
+                  }`}
                 >
                   <PhotoIcon className="w-8 h-8 text-gray-400 dark:text-gray-500 mx-auto mb-2" />
                   <span className="text-gray-600 dark:text-gray-400">
-                    Click to select image from gallery
+                    {isLoading ? 'Processing...' : 'Click to select image from gallery'}
                   </span>
                 </label>
               </div>
