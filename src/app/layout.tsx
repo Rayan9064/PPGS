@@ -8,7 +8,13 @@ const inter = Inter({ subsets: ['latin'] })
 export const metadata = {
   title: 'Nutripal - Product Nutrition Scanner',
   description: 'Scan product barcodes to get detailed nutrition information and health grading',
-  viewport: 'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no',
+}
+
+export const viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
 }
 
 export default function RootLayout({
@@ -24,10 +30,8 @@ export default function RootLayout({
       </head>
       <body className={inter.className}>
         <TelegramProvider>
-          <div className="min-h-screen bg-gray-50">
-            <main className="container mx-auto px-4 py-6 max-w-md">
-              {children}
-            </main>
+          <div className="h-screen overflow-hidden">
+            {children}
           </div>
           <Toaster 
             position="top-center"

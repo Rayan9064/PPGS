@@ -69,3 +69,12 @@ export const getGradeDescription = (grade: NutritionGrade): string => {
   };
   return descriptions[grade];
 };
+
+export const getNutritionGrade = (product: ProductData) => {
+  const grade = calculateGrade(product);
+  return {
+    grade,
+    color: getGradeColor(grade),
+    description: getGradeDescription(grade),
+  };
+};

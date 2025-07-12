@@ -1,5 +1,6 @@
 // Product data interface based on Open Food Facts API
 export interface ProductData {
+  code: string;
   product_name: string;
   ingredients_text: string;
   nutrition_grades: string;

@@ -1,0 +1,150 @@
+'use client';
+
+import { ClockIcon, QrCodeIcon } from '@heroicons/react/24/outline';
+import { ProductData } from '@/types';
+import { ProductResult } from '@/components/product/product-result';
+import { getNutritionGrade } from '@/utils/grading-logic';
+import { useTelegram } from '@/components/providers/telegram-provider';
+
+interface ResultsTabProps {
+  currentProduct: ProductData | null;
+  recentScans: ProductData[];
+  onScanAnother: () => void;
+  onProductSelect: (product: ProductData) => void;
+}
+
+export const ResultsTab = ({ currentProduct, recentScans, onScanAnother, onProductSelect }: ResultsTabProps) => {
+  const { hapticFeedback } = useTelegram();
+
+  const handleProductSelect = (product: ProductData) => {
+    hapticFeedback.impact('light');
+    onProductSelect(product);
+  };
+
+  const handleScanAnother = () => {
+    hapticFeedback.impact('medium');
+    onScanAnother();
+  };
+
+  const getGradeColor = (grade: string) => {
+    const colors = {
+      'A': 'bg-green-500',
+      'B': 'bg-lime-500', 
+      'C': 'bg-yellow-500',
+      'D': 'bg-orange-500',
+      'E': 'bg-red-500'
+    };
+    return colors[grade as keyof typeof colors] || 'bg-gray-500';
+  };
+
+  if (currentProduct) {
+    return (
+      <div className="flex-1">
+        <ProductResult 
+          product={currentProduct}
+          onScanAnother={handleScanAnother}
+          onBack={() => onProductSelect(currentProduct)}
+        />
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex-1 bg-gray-50">
+      {/* Header */}
+      <div className="bg-white border-b border-gray-200">
+        <div className="px-6 py-6 pt-12">
+          <h1 className="text-2xl font-bold text-gray-900">Scan Results</h1>
+          <p className="text-gray-600">View your scanned products and nutrition analysis</p>
+        </div>
+      </div>
+
+      <div className="px-6 py-6">
+        {recentScans.length === 0 ? (
+          // Empty State
+          <div className="text-center py-20">
+            <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
+              <QrCodeIcon className="w-12 h-12 text-gray-400" />
+            </div>
+            <h3 className="text-xl font-semibold text-gray-900 mb-2">No Scans Yet</h3>
+            <p className="text-gray-500 mb-8 max-w-sm mx-auto">
+              Start scanning products to see their nutrition analysis and health recommendations here.
+            </p>
+            <button
+              onClick={handleScanAnother}
+              className="bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl px-6 py-3 font-semibold transition-colors"
+            >
+              Scan Your First Product
+            </button>
+          </div>
+        ) : (
+          // Results List
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <ClockIcon className="w-5 h-5 text-gray-500" />
+                <h2 className="text-lg font-semibold text-gray-900">Recent Scans</h2>
+                <span className="bg-gray-100 text-gray-600 text-sm px-2 py-1 rounded-full">
+                  {recentScans.length}
+                </span>
+              </div>
+              <button
+                onClick={handleScanAnother}
+                className="bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg px-4 py-2 text-sm font-medium transition-colors"
+              >
+                Scan Another
+              </button>
+            </div>
+
+            <div className="grid gap-4">
+              {recentScans.map((product, index) => {
+                const gradeInfo = getNutritionGrade(product);
+                return (
+                  <button
+                    key={`${product.code}-${index}`}
+                    onClick={() => handleProductSelect(product)}
+                    className="bg-white rounded-xl p-4 shadow-sm hover:shadow-md transition-all text-left border border-gray-100"
+                  >
+                    <div className="flex items-start gap-4">
+                      {/* Grade Badge */}
+                      <div className={`w-14 h-14 rounded-xl flex items-center justify-center text-white text-lg font-bold ${getGradeColor(gradeInfo.grade)}`}>
+                        {gradeInfo.grade}
+                      </div>
+                      
+                      {/* Product Info */}
+                      <div className="flex-1 min-w-0">
+                        <h3 className="font-semibold text-gray-900 truncate">
+                          {product.product_name || 'Unknown Product'}
+                        </h3>
+                        <p className="text-sm text-gray-500 truncate">
+                          {product.brands || 'Unknown Brand'}
+                        </p>
+                        <p className="text-sm text-gray-400 mt-1">
+                          {gradeInfo.description}
+                        </p>
+                        {product.categories && (
+                          <p className="text-xs text-gray-400 mt-1 truncate">
+                            {product.categories}
+                          </p>
+                        )}
+                      </div>
+
+                      {/* Nutrition Preview */}
+                      <div className="text-right">
+                        <div className="text-xs text-gray-500 space-y-1">
+                          <div>Sugar: {product.nutriments.sugars_100g}g</div>
+                          <div>Fat: {product.nutriments.fat_100g}g</div>
+                          <div>Salt: {product.nutriments.salt_100g}g</div>
+                        </div>
+                      </div>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
