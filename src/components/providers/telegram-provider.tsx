@@ -25,7 +25,7 @@ export const TelegramProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     telegram.initializeApp();
-  }, []);
+  }, [telegram]);
 
   return (
     <TelegramContext.Provider value={telegram}>

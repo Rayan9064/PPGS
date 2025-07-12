@@ -22,7 +22,7 @@ export const ChatTab = ({ currentProduct, onScanProduct }: ChatTabProps) => {
     {
       id: '1',
       type: 'assistant',
-      content: "Hi! I'm your nutrition assistant. I can help you understand product labels, suggest healthier alternatives, and answer any food-related questions. Try scanning a product or ask me anything!",
+      content: "Hi! I&apos;m your nutrition assistant. I can help you understand product labels, suggest healthier alternatives, and answer any food-related questions. Try scanning a product or ask me anything!",
       timestamp: new Date(),
     }
   ]);
@@ -181,7 +181,7 @@ export const ChatTab = ({ currentProduct, onScanProduct }: ChatTabProps) => {
               {currentProduct.product_name || 'Unknown Product'}
             </p>
             <p className="text-xs text-emerald-600 mt-1">
-              Ask me about this product's nutrition or ingredients!
+              Ask me about this product&apos;s nutrition or ingredients!
             </p>
           </div>
         )}

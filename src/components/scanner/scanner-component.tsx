@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { Html5QrcodeScanner } from 'html5-qrcode';
 import { ArrowLeftIcon, CameraIcon } from '@heroicons/react/24/outline';
 import { fetchProductData } from '@/lib/product-api';
@@ -20,40 +20,7 @@ export const ScannerComponent = ({ onScanSuccess, onBack }: ScannerComponentProp
   const scannerRef = useRef<Html5QrcodeScanner | null>(null);
   const { hapticFeedback } = useTelegram();
 
-  useEffect(() => {
-    initializeScanner();
-    return () => {
-      if (scannerRef.current) {
-        scannerRef.current.clear();
-      }
-    };
-  }, []);
-
-  const initializeScanner = () => {
-    const scanner = new Html5QrcodeScanner(
-      'qr-reader',
-      {
-        fps: 10,
-        qrbox: { width: 250, height: 250 },
-        aspectRatio: 1.0,
-      },
-      false
-    );
-
-    scanner.render(
-      async (decodedText) => {
-        await handleScanSuccess(decodedText);
-      },
-      (error) => {
-        // Handle scan errors silently - they're usually just failed attempts
-        console.log('Scan error:', error);
-      }
-    );
-
-    scannerRef.current = scanner;
-  };
-
-  const handleScanSuccess = async (barcode: string) => {
+  const handleScanSuccess = useCallback(async (barcode: string) => {
     if (isLoading) return;
 
     setIsLoading(true);
@@ -76,7 +43,40 @@ export const ScannerComponent = ({ onScanSuccess, onBack }: ScannerComponentProp
         setIsLoading(false);
       }, 3000);
     }
-  };
+  }, [isLoading, hapticFeedback, onScanSuccess]);
+
+  const initializeScanner = useCallback(() => {
+    const scanner = new Html5QrcodeScanner(
+      'qr-reader',
+      {
+        fps: 10,
+        qrbox: { width: 250, height: 250 },
+        aspectRatio: 1.0,
+      },
+      false
+    );
+
+    scanner.render(
+      async (decodedText) => {
+        await handleScanSuccess(decodedText);
+      },
+      (error) => {
+        // Handle scan errors silently - they're usually just failed attempts
+        console.log('Scan error:', error);
+      }
+    );
+
+    scannerRef.current = scanner;
+  }, [handleScanSuccess]);
+
+  useEffect(() => {
+    initializeScanner();
+    return () => {
+      if (scannerRef.current) {
+        scannerRef.current.clear();
+      }
+    };
+  }, [initializeScanner]);
 
   const handleBack = () => {
     hapticFeedback.impact('light');

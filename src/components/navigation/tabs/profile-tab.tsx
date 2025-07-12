@@ -110,7 +110,7 @@ export const ProfileTab = () => {
             <div className="bg-green-500 h-3 rounded-full" style={{ width: '85%' }}></div>
           </div>
           <p className="text-sm text-gray-600 mt-2">
-            Great job! You're making healthy choices consistently.
+            Great job! You&apos;re making healthy choices consistently.
           </p>
         </div>
 
