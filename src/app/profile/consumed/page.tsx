@@ -99,7 +99,7 @@ export default function ConsumedProducts() {
         {/* Daily Summary */}
         <div className="bg-white rounded-xl p-6 shadow-sm">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-gray-900">Today's Summary</h2>
+            <h2 className="text-lg font-semibold text-gray-900">Today&apos;s Summary</h2>
             <FireIcon className="w-6 h-6 text-orange-500" />
           </div>
           
