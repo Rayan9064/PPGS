@@ -1,26 +1,41 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ArrowLeftIcon, StarIcon, HeartIcon, TrashIcon } from '@heroicons/react/24/outline';
 import { StarIcon as StarIconSolid } from '@heroicons/react/24/solid';
 import { useTelegram } from '@/components/providers/telegram-provider';
 import { ProductData } from '@/types';
 import { getNutritionGrade } from '@/utils/grading-logic';
+import toast from 'react-hot-toast';
 
 interface FavoriteProduct {
   id: string;
   product: ProductData;
   dateAdded: Date;
   category?: string;
+  isUserData?: boolean; // Add flag to distinguish user vs demo data
 }
+
+// Data source indicator component
+const DataSourceBadge = ({ isUserData }: { isUserData: boolean }) => (
+  <div className={`inline-flex items-center px-2 py-1 rounded-full text-xs ${
+    isUserData 
+      ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400'
+      : 'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400'
+  }`}>
+    {isUserData ? '❤️ Your Favorite' : '📋 Demo Data'}
+  </div>
+);
 
 export default function Favorites() {
   const { hapticFeedback } = useTelegram();
+  const [favorites, setFavorites] = useState<FavoriteProduct[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   
-  // Mock favorites data
-  const [favorites, setFavorites] = useState<FavoriteProduct[]>([
+  // Mock favorites data for demo purposes
+  const mockFavorites: FavoriteProduct[] = [
     {
-      id: '1',
+      id: 'demo-1',
       product: {
         code: '123456789',
         product_name: 'Organic Greek Yogurt',
@@ -30,10 +45,11 @@ export default function Favorites() {
         nutriments: { sugars_100g: 6, fat_100g: 0, salt_100g: 0.1 }
       },
       dateAdded: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
-      category: 'Dairy'
+      category: 'Dairy',
+      isUserData: false
     },
     {
-      id: '2',
+      id: 'demo-2',
       product: {
         code: '987654321',
         product_name: 'Whole Grain Bread',
@@ -43,10 +59,11 @@ export default function Favorites() {
         nutriments: { sugars_100g: 5, fat_100g: 4, salt_100g: 1.2 }
       },
       dateAdded: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000),
-      category: 'Grains'
+      category: 'Grains',
+      isUserData: false
     },
     {
-      id: '3',
+      id: 'demo-3',
       product: {
         code: '456789123',
         product_name: 'Organic Almonds',
@@ -56,16 +73,81 @@ export default function Favorites() {
         nutriments: { sugars_100g: 4, fat_100g: 50, salt_100g: 0.01 }
       },
       dateAdded: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
-      category: 'Nuts'
+      category: 'Nuts',
+      isUserData: false
     }
-  ]);
+  ];
+
+  // Load combined data (real + mock)
+  useEffect(() => {
+    const loadFavorites = () => {
+      setIsLoading(true);
+      
+      try {
+        // Load real favorites from localStorage
+        const realFavorites = JSON.parse(localStorage.getItem('nutripal-favorites') || '[]');
+        
+        // Convert localStorage format to component format
+        const userFavorites: FavoriteProduct[] = realFavorites.map((fav: any) => ({
+          id: fav.id,
+          product: fav.product,
+          dateAdded: new Date(fav.dateAdded),
+          category: fav.category || 'User Favorite',
+          isUserData: true
+        }));
+        
+        // Combine with mock data, filtering out duplicates
+        const combinedFavorites = [
+          ...userFavorites, // Real user favorites first
+          ...mockFavorites.filter(mock => 
+            !userFavorites.some(real => real.product.code === mock.product.code)
+          ) // Mock data for products not favorited by user
+        ].sort((a, b) => b.dateAdded.getTime() - a.dateAdded.getTime()); // Sort by date, newest first
+        
+        setFavorites(combinedFavorites);
+      } catch (error) {
+        console.error('Error loading favorites:', error);
+        // Fallback to mock data if localStorage fails
+        setFavorites(mockFavorites);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadFavorites();
+
+    // Listen for favorites updates
+    const handleFavoritesUpdate = () => {
+      loadFavorites();
+    };
+
+    window.addEventListener('favoritesUpdated', handleFavoritesUpdate);
+    return () => {
+      window.removeEventListener('favoritesUpdated', handleFavoritesUpdate);
+    };
+  }, []);
 
   const [filter, setFilter] = useState<'all' | 'recent' | 'healthy'>('all');
   const [editMode, setEditMode] = useState(false);
 
-  const removeFavorite = (id: string) => {
+  const removeFavorite = (id: string, isUserData: boolean) => {
     hapticFeedback.impact('medium');
-    setFavorites(prev => prev.filter(fav => fav.id !== id));
+    
+    if (isUserData) {
+      // Remove from localStorage
+      const currentFavorites = JSON.parse(localStorage.getItem('nutripal-favorites') || '[]');
+      const updatedFavorites = currentFavorites.filter((fav: any) => fav.id !== id);
+      localStorage.setItem('nutripal-favorites', JSON.stringify(updatedFavorites));
+      
+      // Dispatch event for real-time updates
+      window.dispatchEvent(new CustomEvent('favoritesUpdated'));
+      
+      toast.success('Removed from favorites');
+    } else {
+      // For demo data, just remove from local state
+      setFavorites(prev => prev.filter(fav => fav.id !== id));
+      toast.success('Demo item removed');
+    }
   };
 
   const getFilteredFavorites = () => {
@@ -217,7 +299,12 @@ export default function Favorites() {
         </div>
 
         {/* Favorites List */}
-        {filteredFavorites.length > 0 ? (
+        {isLoading ? (
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-8 text-center shadow-sm">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-600 dark:border-emerald-400 mx-auto mb-4"></div>
+            <p className="text-gray-600 dark:text-gray-400">Loading your favorites...</p>
+          </div>
+        ) : filteredFavorites.length > 0 ? (
           <div className="space-y-4">
             {groupedFavorites.map(([category, items]) => (
               <div key={category} className="bg-white dark:bg-gray-800 rounded-xl shadow-sm overflow-hidden">
@@ -234,7 +321,10 @@ export default function Favorites() {
                             {grade.grade}
                           </div>
                           <div className="flex-1">
-                            <h3 className="font-semibold text-gray-900 dark:text-white">{favorite.product.product_name}</h3>
+                            <div className="flex items-center gap-2 mb-1">
+                              <h3 className="font-semibold text-gray-900 dark:text-white">{favorite.product.product_name}</h3>
+                              <DataSourceBadge isUserData={favorite.isUserData || false} />
+                            </div>
                             {favorite.product.brands && (
                               <p className="text-sm text-gray-500 dark:text-gray-400">{favorite.product.brands}</p>
                             )}
@@ -246,7 +336,7 @@ export default function Favorites() {
                             <StarIconSolid className="w-5 h-5 text-yellow-500" />
                             {editMode && (
                               <button
-                                onClick={() => removeFavorite(favorite.id)}
+                                onClick={() => removeFavorite(favorite.id, favorite.isUserData || false)}
                                 className="p-2 rounded-lg hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors"
                               >
                                 <TrashIcon className="w-5 h-5 text-red-500 dark:text-red-400" />

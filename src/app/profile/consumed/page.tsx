@@ -1,10 +1,11 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ArrowLeftIcon, ClockIcon, FireIcon } from '@heroicons/react/24/outline';
 import { useTelegram } from '@/components/providers/telegram-provider';
 import { ProductData } from '@/types';
 import { getNutritionGrade } from '@/utils/grading-logic';
+import toast from 'react-hot-toast';
 
 interface ConsumedProduct {
   id: string;
@@ -12,15 +13,29 @@ interface ConsumedProduct {
   timestamp: Date;
   quantity: number;
   calories: number;
+  isUserData?: boolean; // Add flag to distinguish user vs demo data
 }
+
+// Data source indicator component
+const DataSourceBadge = ({ isUserData }: { isUserData: boolean }) => (
+  <div className={`inline-flex items-center px-2 py-1 rounded-full text-xs ${
+    isUserData 
+      ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400'
+      : 'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400'
+  }`}>
+    {isUserData ? '🍽️ You Consumed' : '📋 Demo Data'}
+  </div>
+);
 
 export default function ConsumedProducts() {
   const { hapticFeedback } = useTelegram();
+  const [consumedProducts, setConsumedProducts] = useState<ConsumedProduct[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   
-  // Mock data for demonstration
-  const [consumedProducts] = useState<ConsumedProduct[]>([
+  // Mock data for demo purposes
+  const mockConsumedProducts: ConsumedProduct[] = [
     {
-      id: '1',
+      id: 'demo-1',
       product: {
         code: '123456789',
         product_name: 'Organic Greek Yogurt',
@@ -31,10 +46,11 @@ export default function ConsumedProducts() {
       },
       timestamp: new Date(),
       quantity: 1,
-      calories: 150
+      calories: 150,
+      isUserData: false
     },
     {
-      id: '2', 
+      id: 'demo-2',
       product: {
         code: '987654321',
         product_name: 'Whole Grain Bread',
@@ -45,9 +61,60 @@ export default function ConsumedProducts() {
       },
       timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000), // 2 hours ago
       quantity: 2,
-      calories: 140
+      calories: 140,
+      isUserData: false
     }
-  ]);
+  ];
+
+  // Load combined data (real + mock)
+  useEffect(() => {
+    const loadConsumedProducts = () => {
+      setIsLoading(true);
+      
+      try {
+        // Load real consumed products from localStorage
+        const realConsumed = JSON.parse(localStorage.getItem('nutripal-consumed') || '[]');
+        
+        // Convert localStorage format to component format
+        const userConsumed: ConsumedProduct[] = realConsumed.map((item: any) => ({
+          id: item.id,
+          product: item.product,
+          timestamp: new Date(item.timestamp),
+          quantity: item.quantity,
+          calories: item.calories,
+          isUserData: true
+        }));
+        
+        // Combine with mock data, filtering out duplicates
+        const combinedConsumed = [
+          ...userConsumed, // Real user consumption first
+          ...mockConsumedProducts.filter(mock => 
+            !userConsumed.some(real => real.product.code === mock.product.code)
+          ) // Mock data for products not consumed by user
+        ].sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime()); // Sort by timestamp, newest first
+        
+        setConsumedProducts(combinedConsumed);
+      } catch (error) {
+        console.error('Error loading consumed products:', error);
+        // Fallback to mock data if localStorage fails
+        setConsumedProducts(mockConsumedProducts);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadConsumedProducts();
+
+    // Listen for consumption updates
+    const handleConsumptionUpdate = () => {
+      loadConsumedProducts();
+    };
+
+    window.addEventListener('consumptionUpdated', handleConsumptionUpdate);
+    return () => {
+      window.removeEventListener('consumptionUpdated', handleConsumptionUpdate);
+    };
+  }, []);
 
   const todayConsumed = consumedProducts.filter(item => 
     new Date(item.timestamp).toDateString() === new Date().toDateString()
@@ -133,7 +200,12 @@ export default function ConsumedProducts() {
             <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Recent Consumption</h2>
           </div>
           
-          {todayConsumed.length > 0 ? (
+          {isLoading ? (
+            <div className="px-6 py-8 text-center">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-600 dark:border-orange-400 mx-auto mb-4"></div>
+              <p className="text-gray-600 dark:text-gray-400">Loading consumption data...</p>
+            </div>
+          ) : todayConsumed.length > 0 ? (
             <div className="divide-y divide-gray-100 dark:divide-gray-700">
               {todayConsumed.map((item) => {
                 const grade = getNutritionGrade(item.product);
@@ -145,8 +217,11 @@ export default function ConsumedProducts() {
                           <div className={`w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-sm ${getGradeColor(grade.grade)}`}>
                             {grade.grade}
                           </div>
-                          <div>
-                            <h3 className="font-semibold text-gray-900 dark:text-white">{item.product.product_name}</h3>
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2 mb-1">
+                              <h3 className="font-semibold text-gray-900 dark:text-white">{item.product.product_name}</h3>
+                              <DataSourceBadge isUserData={item.isUserData || false} />
+                            </div>
                             {item.product.brands && (
                               <p className="text-sm text-gray-500 dark:text-gray-400">{item.product.brands}</p>
                             )}
