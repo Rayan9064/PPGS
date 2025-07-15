@@ -32,7 +32,7 @@ export default function RootLayout({
       <body className={inter.className}>
         <ThemeProvider>
           <TelegramProvider>
-            <div className="min-h-screen flex flex-col bg-white dark:bg-gray-900 transition-colors">
+            <div className="min-h-screen w-full flex flex-col bg-white dark:bg-gray-900 transition-colors overflow-x-hidden">
               {children}
             </div>
             <Toaster 
