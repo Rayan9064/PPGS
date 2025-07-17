@@ -31,7 +31,18 @@ export default function Favorites() {
   const { hapticFeedback } = useTelegram();
   const [favorites, setFavorites] = useState<FavoriteProduct[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  
+  // Telegram user info
+  const [tgUser, setTgUser] = useState<any>(null);
+
+  // Get Telegram user info on mount
+  useEffect(() => {
+    // Type assertion to access initDataUnsafe
+    const tgWebApp = (window as any)?.Telegram?.WebApp;
+    if (tgWebApp && tgWebApp.initDataUnsafe && tgWebApp.initDataUnsafe.user) {
+      setTgUser(tgWebApp.initDataUnsafe.user);
+    }
+  }, []);
+
   // Mock favorites data for demo purposes
   const mockFavorites: FavoriteProduct[] = [
     {
@@ -215,60 +226,50 @@ export default function Favorites() {
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 overflow-y-auto">
       {/* Header */}
       <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
-        <div className="px-4 py-4 pt-4">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-3">
-              <button 
-                onClick={() => window.history.back()}
-                className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-              >
-                <ArrowLeftIcon className="w-6 h-6 text-gray-600 dark:text-gray-300" />
-              </button>
-              <div>
-                <h1 className="text-xl font-bold text-gray-900 dark:text-white">Favorites</h1>
-                <p className="text-gray-600 dark:text-gray-400 text-sm">Your saved healthy products</p>
-              </div>
-            </div>
-            
-            <button
-              onClick={() => {
-                hapticFeedback.impact('light');
-                setEditMode(!editMode);
-              }}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                editMode 
-                  ? 'bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400' 
-                  : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
-              }`}
-            >
-              {editMode ? 'Done' : 'Edit'}
-            </button>
+        <div className="px-4 py-4 pt-4 flex items-center gap-4">
+          <button 
+            onClick={() => window.history.back()}
+            className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+          >
+            <ArrowLeftIcon className="w-6 h-6 text-gray-600 dark:text-gray-300" />
+          </button>
+          <div className="flex-1">
+            <h1 className="text-xl font-bold text-gray-900 dark:text-white">Favorites</h1>
+            <p className="text-gray-600 dark:text-gray-400 text-sm">Your saved healthy products</p>
           </div>
-
-          {/* Filter Tabs */}
-          <div className="flex gap-2">
-            {[
-              { key: 'all', label: 'All' },
-              { key: 'recent', label: 'Recent' },
-              { key: 'healthy', label: 'Healthy' }
-            ].map((tab) => (
-              <button
-                key={tab.key}
-                onClick={() => {
-                  hapticFeedback.impact('light');
-                  setFilter(tab.key as any);
-                }}
-                className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-                  filter === tab.key
-                    ? 'bg-emerald-500 text-white'
-                    : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
-                }`}
-              >
-                {tab.label}
-              </button>
-            ))}
-          </div>
+          <button
+            onClick={() => {
+              hapticFeedback.impact('light');
+              setEditMode(!editMode);
+            }}
+            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+              editMode 
+                ? 'bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400' 
+                : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+            }`}
+          >
+            {editMode ? 'Done' : 'Edit'}
+          </button>
         </div>
+
+        {/* Telegram User Info */}
+        {tgUser && (
+          <div className="px-4 pb-2 flex items-center gap-3">
+            {tgUser.photo_url && (
+              <img
+                src={tgUser.photo_url}
+                alt="Telegram Avatar"
+                className="w-10 h-10 rounded-full border border-gray-300 dark:border-gray-700"
+                onError={e => (e.currentTarget.style.display = 'none')}
+              />
+            )}
+            <div>
+              <div className="font-semibold text-gray-900 dark:text-white">{tgUser.first_name} {tgUser.last_name}</div>
+              {tgUser.username && <div className="text-xs text-gray-500 dark:text-gray-400">@{tgUser.username}</div>}
+              <div className="text-xs text-gray-400 dark:text-gray-500">Telegram ID: {tgUser.id}</div>
+            </div>
+          </div>
+        )}
       </div>
 
       <div className="px-4 py-6">
