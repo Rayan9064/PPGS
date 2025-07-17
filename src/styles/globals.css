@@ -3,8 +3,17 @@
 @tailwind utilities;
 
 @layer base {
+  /* CSS Reset for full width layout */
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
   html {
     font-family: Inter, system-ui, sans-serif;
+    width: 100%;
+    overflow-x: hidden;
   }
   
   body {
@@ -12,6 +21,17 @@
     /* Telegram Mini App CSS variables */
     background-color: var(--tg-color-bg, #ffffff);
     color: var(--tg-color-text, #000000);
+    width: 100%;
+    overflow-x: hidden;
+    margin: 0;
+    padding: 0;
+  }
+  
+  /* Ensure all containers use full width */
+  #__next {
+    width: 100%;
+    margin: 0;
+    padding: 0;
   }
 }
 
@@ -34,6 +54,29 @@
   
   .scanning-overlay {
     @apply absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center;
+  }
+  
+  /* Attractive stat cards */
+  .stat-card {
+    @apply relative overflow-hidden rounded-2xl p-4 text-center shadow-xl transform transition-all duration-300;
+  }
+  
+  .stat-card:hover {
+    @apply scale-105 shadow-2xl;
+  }
+  
+  .stat-card::before {
+    content: '';
+    @apply absolute top-0 right-0 w-16 h-16 bg-white bg-opacity-10 rounded-full;
+    margin-right: -2rem;
+    margin-top: -2rem;
+  }
+  
+  .stat-card::after {
+    content: '';
+    @apply absolute bottom-0 left-0 w-12 h-12 bg-white bg-opacity-5 rounded-full;
+    margin-left: -1.5rem;
+    margin-bottom: -1.5rem;
   }
 }
 
@@ -61,12 +104,56 @@
   .mobile-scroll {
     -webkit-overflow-scrolling: touch;
     overscroll-behavior: contain;
+    /* Hide scrollbar for WebKit browsers */
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* Internet Explorer and Edge */
+  }
+  
+  /* Hide scrollbar for WebKit browsers */
+  .mobile-scroll::-webkit-scrollbar {
+    display: none;
+  }
+  
+  /* Apply to all scrollable elements */
+  .no-scrollbar {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  
+  /* Full width container utilities */
+  .full-width-container {
+    width: 100%;
+    max-width: 100vw;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  /* Prevent horizontal overflow */
+  .no-horizontal-overflow {
+    overflow-x: hidden;
+    max-width: 100vw;
+  }
+  
+  /* Ensure full viewport width */
+  .viewport-full {
+    width: 100vw;
+    max-width: 100vw;
+    margin-left: calc(-50vw + 50%);
+    margin-right: calc(-50vw + 50%);
   }
 }
 
 /* Telegram Mini App specific styles */
 .tg-viewport {
   height: var(--tg-viewport-height, 100vh);
+  width: 100vw;
+  max-width: 100vw;
+  overflow-x: hidden;
 }
 
 /* Mobile viewport fixes */
@@ -74,6 +161,44 @@
   .min-h-screen {
     min-height: -webkit-fill-available;
   }
+}
+
+/* Prevent horizontal scrolling and ensure full width */
+html, body {
+  overflow-x: hidden;
+  width: 100%;
+  max-width: 100vw;
+  /* Hide scrollbar globally */
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* Internet Explorer and Edge */
+}
+
+/* Hide scrollbar for WebKit browsers globally */
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  display: none;
+}
+
+/* Fix for any potential container width issues */
+.container, .max-w-md, .mx-auto {
+  width: 100% !important;
+  max-width: 100vw !important;
+}
+
+/* Fixed bottom navigation styles */
+.fixed-bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+/* Ensure content doesn't get hidden behind fixed nav */
+.content-with-fixed-nav {
+  padding-bottom: 80px;
 }
 
 /* Scanner styles */
@@ -129,9 +254,405 @@
 }
 
 /* Nutrition grade specific styles */
-.grade-a { background-color: #1fa363; }
-.grade-b { background-color: #8bc34a; }
-.grade-c { background-color: #ffeb3b; color: #000; }
-.grade-d { background-color: #ff9800; }
-.grade-e { background-color: #f44336; }
-.grade-u { background-color: #9e9e9e; }
+.grade-a { 
+  background: linear-gradient(135deg, #1fa363, #059669);
+  box-shadow: 0 4px 20px rgba(31, 163, 99, 0.3);
+}
+.grade-b { 
+  background: linear-gradient(135deg, #8bc34a, #65a30d);
+  box-shadow: 0 4px 20px rgba(139, 195, 74, 0.3);
+}
+.grade-c { 
+  background: linear-gradient(135deg, #ffeb3b, #fbbf24);
+  color: #000;
+  box-shadow: 0 4px 20px rgba(255, 235, 59, 0.3);
+}
+.grade-d { 
+  background: linear-gradient(135deg, #ff9800, #f59e0b);
+  box-shadow: 0 4px 20px rgba(255, 152, 0, 0.3);
+}
+.grade-e { 
+  background: linear-gradient(135deg, #f44336, #dc2626);
+  box-shadow: 0 4px 20px rgba(244, 67, 54, 0.3);
+}
+.grade-u { 
+  background: linear-gradient(135deg, #9e9e9e, #6b7280);
+  box-shadow: 0 4px 20px rgba(158, 158, 158, 0.3);
+}
+
+/* Custom gradient animations for stat cards */
+@keyframes gradient-shift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.stat-card-animated {
+  background-size: 200% 200%;
+  animation: gradient-shift 3s ease infinite;
+}
+
+/* Floating animation for icons */
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-3px); }
+}
+
+.float-animation {
+  animation: float 2s ease-in-out infinite;
+}
+
+/* Pulse glow effect */
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 20px rgba(6, 182, 212, 0.3); }
+  50% { box-shadow: 0 0 30px rgba(6, 182, 212, 0.6); }
+}
+
+.pulse-glow-blue {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+@keyframes pulse-glow-green {
+  0%, 100% { box-shadow: 0 0 20px rgba(249, 115, 22, 0.3); }
+  50% { box-shadow: 0 0 30px rgba(249, 115, 22, 0.6); }
+}
+
+.pulse-glow-green {
+  animation: pulse-glow-green 2s ease-in-out infinite;
+}
+
+@keyframes pulse-glow-purple {
+  0%, 100% { box-shadow: 0 0 20px rgba(139, 92, 246, 0.3); }
+  50% { box-shadow: 0 0 30px rgba(139, 92, 246, 0.6); }
+}
+
+.pulse-glow-purple {
+  animation: pulse-glow-purple 2s ease-in-out infinite;
+}
+
+/* Nutrition grade hover and animation effects */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.6s ease-out forwards;
+}
+
+/* Enhanced grade badge effects */
+.grade-badge-enhanced {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.grade-badge-enhanced::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  transition: left 0.5s;
+}
+
+.grade-badge-enhanced:hover::before {
+  left: 100%;
+}
+
+.grade-badge-enhanced:hover {
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+/* Nutrition card background effects */
+.nutrition-card {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: all 0.3s ease;
+}
+
+.nutrition-card:hover {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.1));
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+/* Grade indicator bar animation */
+@keyframes slideIn {
+  from {
+    width: 0;
+    opacity: 0;
+  }
+  to {
+    width: 8px;
+    opacity: 1;
+  }
+}
+
+.grade-indicator {
+  animation: slideIn 0.4s ease-out forwards;
+}
+
+/* General glow pulse effect for scanner */
+@keyframes glow-pulse {
+  0%, 100% { 
+    box-shadow: 0 0 20px rgba(16, 185, 129, 0.4), 0 0 40px rgba(16, 185, 129, 0.2);
+  }
+  50% { 
+    box-shadow: 0 0 30px rgba(16, 185, 129, 0.7), 0 0 60px rgba(16, 185, 129, 0.4);
+  }
+}
+
+.glow-pulse {
+  animation: glow-pulse 2s ease-in-out infinite;
+}
+
+/* HTML5 QR Code Scanner theme adaptation */
+#qr-reader {
+  background: transparent !important;
+  border: none !important;
+  width: 100% !important;
+  max-width: 400px !important;
+  margin: 0 auto !important;
+}
+
+#qr-reader > div {
+  background: transparent !important;
+  border: none !important;
+  border-radius: 1rem !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+.dark #qr-reader > div {
+  background: transparent !important;
+  border: none !important;
+}
+
+#qr-reader video {
+  border-radius: 1rem !important;
+  width: 100% !important;
+  max-width: 300px !important;
+  height: auto !important;
+  margin: 0 auto !important;
+  display: block !important;
+}
+
+#qr-reader canvas {
+  border-radius: 1rem !important;
+  margin: 0 auto !important;
+  display: block !important;
+}
+
+/* Hide ALL text elements and headers */
+#qr-reader div[style*="text-align"] {
+  display: none !important;
+}
+
+#qr-reader div:first-child {
+  display: none !important;
+}
+
+#qr-reader__header_message {
+  display: none !important;
+}
+
+#qr-reader__dashboard_section_csr > div:first-child,
+#qr-reader__dashboard_section_fsr > div:first-child,
+#qr-reader__dashboard_section > div:first-child {
+  display: none !important;
+}
+
+/* Hide any text content */
+#qr-reader div:contains("Upload an image"),
+#qr-reader div:contains("use camera to scan"),
+#qr-reader div:contains("barcode") {
+  display: none !important;
+}
+
+/* Hide all paragraph and span elements that might contain text */
+#qr-reader p,
+#qr-reader span:not([class*="icon"]) {
+  display: none !important;
+}
+
+/* Only show video and essential controls */
+#qr-reader > div > div:not(:has(video)):not(:has(canvas)):not(:has(button)):not(:has(select)) {
+  display: none !important;
+}
+
+/* Ultra aggressive text hiding */
+#qr-reader h1,
+#qr-reader h2,
+#qr-reader h3,
+#qr-reader h4,
+#qr-reader h5,
+#qr-reader h6,
+#qr-reader div:not([id]):not([class]):not([style*="video"]):not([style*="canvas"]),
+#qr-reader div[style*="margin-top"],
+#qr-reader div[style*="padding"],
+#qr-reader div[style*="text"] {
+  font-size: 0 !important;
+  line-height: 0 !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+  display: none !important;
+}
+
+/* Hide any element that doesn't contain video/canvas/button/select */
+#qr-reader > div > div:empty,
+#qr-reader > div > div:not(:has(video)):not(:has(canvas)):not(:has(button)):not(:has(select)):not(:has(input)) {
+  display: none !important;
+  font-size: 0 !important;
+}
+
+/* Extreme text content hiding */
+#qr-reader * {
+  text-indent: -9999px !important;
+}
+
+#qr-reader video,
+#qr-reader canvas,
+#qr-reader button,
+#qr-reader select,
+#qr-reader input {
+  text-indent: 0 !important;
+}
+
+#qr-reader button {
+  background: linear-gradient(135deg, #10b981, #06b6d4) !important;
+  color: white !important;
+  border: none !important;
+  border-radius: 0.75rem !important;
+  font-weight: 600 !important;
+  padding: 0.5rem 1rem !important;
+  margin: 0.25rem !important;
+  transition: all 0.3s ease !important;
+  cursor: pointer !important;
+  font-size: 0.75rem !important;
+  text-transform: none !important;
+  box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.1) !important;
+}
+
+#qr-reader button:hover {
+  background: linear-gradient(135deg, #059669, #0891b2) !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
+}
+
+#qr-reader select {
+  background: rgba(255, 255, 255, 0.95) !important;
+  border: 1px solid rgba(16, 185, 129, 0.3) !important;
+  border-radius: 0.5rem !important;
+  color: #374151 !important;
+  padding: 0.25rem 0.5rem !important;
+  margin: 0.25rem !important;
+  font-size: 0.75rem !important;
+  backdrop-filter: blur(10px) !important;
+}
+
+.dark #qr-reader select {
+  background: rgba(0, 0, 0, 0.8) !important;
+  border: 1px solid rgba(16, 185, 129, 0.4) !important;
+  color: white !important;
+}
+
+#qr-reader__scan_region {
+  border: 2px solid rgba(16, 185, 129, 0.6) !important;
+  border-radius: 1rem !important;
+  background: transparent !important;
+}
+
+#qr-reader__dashboard {
+  background: transparent !important;
+  padding: 0 !important;
+}
+
+#qr-reader__dashboard_section {
+  background: transparent !important;
+  border: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.dark #qr-reader__dashboard_section {
+  background: transparent !important;
+  border: none !important;
+}
+
+#qr-reader__camera_selection {
+  text-align: center !important;
+  margin: 0.5rem 0 !important;
+}
+
+#qr-reader__camera_selection label {
+  display: none !important;
+}
+
+#qr-reader__dashboard_section_swaplink {
+  display: none !important;
+}
+
+/* File input styling */
+#qr-reader input[type="file"] {
+  display: none !important;
+}
+
+#qr-reader__filescan_input {
+  background: linear-gradient(135deg, #10b981, #06b6d4) !important;
+  color: white !important;
+  border: none !important;
+  border-radius: 0.75rem !important;
+  padding: 1rem 2rem !important;
+  font-weight: 600 !important;
+  cursor: pointer !important;
+  transition: all 0.3s ease !important;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
+  width: 100% !important;
+  text-align: center !important;
+  margin: 1rem 0 !important;
+}
+
+#qr-reader__filescan_input:hover {
+  background: linear-gradient(135deg, #059669, #0891b2) !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Completely hide any remaining text content */
+#qr-reader * {
+  font-size: 0 !important;
+}
+
+#qr-reader button,
+#qr-reader select,
+#qr-reader input {
+  font-size: 0.75rem !important;
+}
+
+/* Custom border utilities */
+.border-l-3 {
+  border-left-width: 3px;
+}
+
+.border-r-3 {
+  border-right-width: 3px;
+}
+
+.border-t-3 {
+  border-top-width: 3px;
+}
+
+.border-b-3 {
+  border-bottom-width: 3px;
+}
