@@ -1,9 +1,9 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
-import { PaperAirplaneIcon, SparklesIcon, QrCodeIcon } from '@heroicons/react/24/outline';
-import { ProductData } from '@/types';
 import { useTelegram } from '@/components/providers/telegram-provider';
+import { ProductData } from '@/types';
+import { PaperAirplaneIcon, QrCodeIcon, SparklesIcon } from '@heroicons/react/24/outline';
+import { useEffect, useRef, useState } from 'react';
 
 interface ChatMessage {
   id: string;
@@ -90,45 +90,48 @@ export const ChatTab = ({ currentProduct, onScanProduct }: ChatTabProps) => {
   ];
 
   return (
-    <div className="flex-1 bg-gray-50 dark:bg-gray-900 flex flex-col">
-      {/* Header */}
-      <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+    <div className="flex-1 w-full bg-gradient-to-br from-purple-50 to-pink-50 dark:from-gray-800 dark:to-gray-900 flex flex-col">
+      {/* Enhanced Header */}
+      <div className="w-full bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border-b border-purple-100 dark:border-gray-700">
         <div className="px-4 py-4 pt-8">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center">
-              <SparklesIcon className="w-4 h-4 text-white" />
+          <div className="flex items-center gap-3 animate-fade-in-up">
+            <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-2xl flex items-center justify-center shadow-lg float-animation">
+              <SparklesIcon className="w-6 h-6 text-white" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-gray-900 dark:text-white">AI Nutrition Assistant</h1>
-              <p className="text-gray-600 dark:text-gray-400">Ask me anything about nutrition and food</p>
+              <h1 className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">AI Nutrition Assistant</h1>
+              <p className="text-purple-600 dark:text-purple-400 font-medium">Ask me anything about nutrition and food</p>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Messages */}
-      <div className="flex-1 overflow-y-auto px-6 py-4 space-y-4">
-        {messages.map((message) => (
+      {/* Enhanced Messages */}
+      <div className="flex-1 w-full overflow-y-auto px-6 py-6 space-y-6 no-scrollbar">
+        {messages.map((message, index) => (
           <div
             key={message.id}
-            className={`flex ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}
+            className={`flex ${message.type === 'user' ? 'justify-end' : 'justify-start'} animate-fade-in-up`}
+            style={{ animationDelay: `${index * 100}ms` }}
           >
             <div
-              className={`max-w-xs lg:max-w-md px-4 py-3 rounded-2xl ${
+              className={`max-w-xs lg:max-w-md px-5 py-4 rounded-2xl shadow-lg transition-all duration-300 hover:shadow-xl ${
                 message.type === 'user'
-                  ? 'bg-emerald-500 text-white'
-                  : 'bg-white dark:bg-gray-800 text-gray-900 dark:text-white shadow-sm border border-gray-100 dark:border-gray-700'
+                  ? 'bg-gradient-to-r from-emerald-500 to-teal-500 text-white'
+                  : 'bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm text-gray-900 dark:text-white border border-white/50 dark:border-gray-600/50'
               }`}
             >
               {message.type === 'assistant' && (
-                <div className="flex items-center gap-2 mb-1">
-                  <SparklesIcon className="w-4 h-4 text-purple-500" />
-                  <span className="text-xs font-medium text-purple-600 dark:text-purple-400">AI Assistant</span>
+                <div className="flex items-center gap-2 mb-2">
+                  <div className="w-6 h-6 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg flex items-center justify-center">
+                    <SparklesIcon className="w-4 h-4 text-white" />
+                  </div>
+                  <span className="text-xs font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">AI Assistant</span>
                 </div>
               )}
-              <p className="text-sm">{message.content}</p>
-              <p className={`text-xs mt-1 ${
-                message.type === 'user' ? 'text-emerald-100' : 'text-gray-400 dark:text-gray-500'
+              <p className="text-sm leading-relaxed">{message.content}</p>
+              <p className={`text-xs mt-2 ${
+                message.type === 'user' ? 'text-emerald-100' : 'text-gray-500 dark:text-gray-400'
               }`}>
                 {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
               </p>
@@ -137,50 +140,65 @@ export const ChatTab = ({ currentProduct, onScanProduct }: ChatTabProps) => {
         ))}
 
         {isLoading && (
-          <div className="flex justify-start">
-            <div className="bg-white dark:bg-gray-800 text-gray-900 dark:text-white shadow-sm border border-gray-100 dark:border-gray-700 px-4 py-3 rounded-2xl max-w-xs">
-              <div className="flex items-center gap-2 mb-1">
-                <SparklesIcon className="w-4 h-4 text-purple-500" />
-                <span className="text-xs font-medium text-purple-600 dark:text-purple-400">AI Assistant</span>
+          <div className="flex justify-start animate-fade-in-up">
+            <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm text-gray-900 dark:text-white shadow-lg border border-white/50 dark:border-gray-600/50 px-5 py-4 rounded-2xl max-w-xs">
+              <div className="flex items-center gap-2 mb-2">
+                <div className="w-6 h-6 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg flex items-center justify-center">
+                  <SparklesIcon className="w-4 h-4 text-white" />
+                </div>
+                <span className="text-xs font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">AI Assistant</span>
               </div>
               <div className="flex space-x-1">
-                <div className="w-2 h-2 bg-gray-400 dark:bg-gray-500 rounded-full animate-bounce"></div>
-                <div className="w-2 h-2 bg-gray-400 dark:bg-gray-500 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-                <div className="w-2 h-2 bg-gray-400 dark:bg-gray-500 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                <div className="w-2 h-2 bg-purple-400 dark:bg-purple-500 rounded-full animate-bounce"></div>
+                <div className="w-2 h-2 bg-purple-400 dark:bg-purple-500 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+                <div className="w-2 h-2 bg-purple-400 dark:bg-purple-500 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
               </div>
             </div>
           </div>
         )}
 
-        {/* Suggested Questions (only show when no messages besides welcome) */}
+        {/* Enhanced Suggested Questions */}
         {messages.length === 1 && (
-          <div className="space-y-3">
-            <p className="text-sm text-gray-500 dark:text-gray-400 text-center">Try asking me one of these:</p>
-            <div className="grid gap-2">
+          <div className="space-y-4 animate-fade-in-up" style={{ animationDelay: '300ms' }}>
+            <div className="text-center">
+              <div className="inline-flex items-center gap-2 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm px-4 py-2 rounded-full border border-white/50 dark:border-gray-600/50">
+                <SparklesIcon className="w-4 h-4 text-purple-500" />
+                <p className="text-sm text-gray-600 dark:text-gray-400 font-medium">Try asking me one of these:</p>
+              </div>
+            </div>
+            <div className="grid gap-3">
               {suggestedQuestions.map((question, index) => (
                 <button
                   key={index}
                   onClick={() => setInput(question)}
-                  className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-3 text-left text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                  className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border border-white/50 dark:border-gray-600/50 rounded-2xl p-4 text-left text-sm text-gray-700 dark:text-gray-300 hover:bg-white dark:hover:bg-gray-700 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl animate-fade-in-up"
+                  style={{ animationDelay: `${(index + 1) * 100}ms` }}
                 >
-                  {question}
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 bg-gradient-to-r from-purple-100 to-pink-100 dark:from-purple-900/50 dark:to-pink-900/50 rounded-lg flex items-center justify-center">
+                      <SparklesIcon className="w-4 h-4 text-purple-600 dark:text-purple-400" />
+                    </div>
+                    <span className="font-medium">{question}</span>
+                  </div>
                 </button>
               ))}
             </div>
           </div>
         )}
 
-        {/* Product Context */}
+        {/* Enhanced Product Context */}
         {currentProduct && (
-          <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-4">
-            <div className="flex items-center gap-2 mb-2">
-              <QrCodeIcon className="w-4 h-4 text-emerald-600" />
-              <span className="text-sm font-medium text-emerald-800">Recently Scanned</span>
+          <div className="bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-900/30 dark:to-teal-900/30 border border-emerald-200 dark:border-emerald-700/50 rounded-2xl p-5 shadow-lg animate-fade-in-up">
+            <div className="flex items-center gap-3 mb-3">
+              <div className="w-10 h-10 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-xl flex items-center justify-center">
+                <QrCodeIcon className="w-5 h-5 text-white" />
+              </div>
+              <span className="text-sm font-bold bg-gradient-to-r from-emerald-700 to-teal-700 bg-clip-text text-transparent">Recently Scanned</span>
             </div>
-            <p className="text-sm text-emerald-700">
+            <p className="text-sm font-semibold text-emerald-800 dark:text-emerald-300 mb-2">
               {currentProduct.product_name || 'Unknown Product'}
             </p>
-            <p className="text-xs text-emerald-600 mt-1">
+            <p className="text-xs text-emerald-600 dark:text-emerald-400 font-medium">
               Ask me about this product&apos;s nutrition or ingredients!
             </p>
           </div>
@@ -189,14 +207,14 @@ export const ChatTab = ({ currentProduct, onScanProduct }: ChatTabProps) => {
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Input */}
-      <div className="bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 p-4">
+      {/* Enhanced Input */}
+      <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border-t border-purple-100 dark:border-gray-700 p-4">
         <div className="flex gap-3">
           <button
             onClick={handleScanPress}
-            className="bg-emerald-100 dark:bg-emerald-900/30 hover:bg-emerald-200 dark:hover:bg-emerald-900/50 text-emerald-600 dark:text-emerald-400 p-3 rounded-xl transition-colors"
+            className="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white p-3 rounded-2xl transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
           >
-            <QrCodeIcon className="w-5 h-5" />
+            <QrCodeIcon className="w-6 h-6" />
           </button>
           <div className="flex-1 flex gap-2">
             <input
@@ -205,15 +223,15 @@ export const ChatTab = ({ currentProduct, onScanProduct }: ChatTabProps) => {
               onChange={(e) => setInput(e.target.value)}
               onKeyPress={(e) => e.key === 'Enter' && handleSend()}
               placeholder="Ask about nutrition, ingredients, or health..."
-              className="flex-1 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+              className="flex-1 border border-purple-200 dark:border-gray-600 bg-white/90 dark:bg-gray-700/90 backdrop-blur-sm text-gray-900 dark:text-white rounded-2xl px-5 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent shadow-lg transition-all duration-300"
               disabled={isLoading}
             />
             <button
               onClick={handleSend}
               disabled={!input.trim() || isLoading}
-              className="bg-emerald-500 hover:bg-emerald-600 disabled:bg-gray-300 dark:disabled:bg-gray-600 text-white p-3 rounded-xl transition-colors"
+              className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 disabled:from-gray-300 disabled:to-gray-400 dark:disabled:from-gray-600 dark:disabled:to-gray-700 text-white p-3 rounded-2xl transition-all duration-300 transform hover:scale-105 disabled:scale-100 shadow-lg hover:shadow-xl disabled:shadow-md"
             >
-              <PaperAirplaneIcon className="w-5 h-5" />
+              <PaperAirplaneIcon className="w-6 h-6" />
             </button>
           </div>
         </div>

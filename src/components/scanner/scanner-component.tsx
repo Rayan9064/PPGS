@@ -1,11 +1,11 @@
 'use client';
 
-import { useState, useEffect, useRef, useCallback } from 'react';
-import { Html5QrcodeScanner, Html5Qrcode, Html5QrcodeCameraScanConfig, Html5QrcodeScanType } from 'html5-qrcode';
-import { ArrowLeftIcon, CameraIcon, PhotoIcon } from '@heroicons/react/24/outline';
+import { useTelegram } from '@/components/providers/telegram-provider';
 import { fetchProductData } from '@/lib/product-api';
 import { ProductData } from '@/types';
-import { useTelegram } from '@/components/providers/telegram-provider';
+import { ArrowLeftIcon, CameraIcon, PhotoIcon } from '@heroicons/react/24/outline';
+import { Html5Qrcode, Html5QrcodeCameraScanConfig, Html5QrcodeScanner, Html5QrcodeScanType } from 'html5-qrcode';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import toast from 'react-hot-toast';
 
 interface ScannerComponentProps {
@@ -135,6 +135,45 @@ export const ScannerComponent = ({ onScanSuccess, onBack }: ScannerComponentProp
       
       setIsScanning(true);
       setError(null);
+
+      // Remove unwanted text elements after scanner starts
+      setTimeout(() => {
+        const qrReader = document.getElementById('qr-reader');
+        if (qrReader) {
+          // Remove all text nodes and unwanted divs
+          const walker = document.createTreeWalker(
+            qrReader,
+            NodeFilter.SHOW_TEXT
+          );
+          
+          const textNodes = [];
+          let node;
+          while (node = walker.nextNode()) {
+            if (node.textContent && node.textContent.trim()) {
+              textNodes.push(node);
+            }
+          }
+          
+          textNodes.forEach(textNode => {
+            if (!textNode.parentElement?.tagName.match(/BUTTON|SELECT|INPUT/)) {
+              textNode.textContent = '';
+            }
+          });
+
+          // Remove specific divs with text content
+          const divsWithText = qrReader.querySelectorAll('div');
+          divsWithText.forEach(div => {
+            if (div.textContent && 
+                (div.textContent.includes('Upload an image') || 
+                 div.textContent.includes('use camera to scan') ||
+                 div.textContent.includes('barcode') ||
+                 div.textContent.includes('Position'))) {
+              div.style.display = 'none';
+            }
+          });
+        }
+      }, 500);
+      
     } catch (err) {
       console.error('Error starting camera:', err);
       setError('Failed to start camera. Please try again.');
@@ -177,6 +216,45 @@ export const ScannerComponent = ({ onScanSuccess, onBack }: ScannerComponentProp
       scannerRef.current = scanner;
       setIsScanning(true);
       setError(null);
+
+      // Remove unwanted text elements after scanner renders
+      setTimeout(() => {
+        const qrReader = document.getElementById('qr-reader');
+        if (qrReader) {
+          // Remove all text content except from buttons and inputs
+          const walker = document.createTreeWalker(
+            qrReader,
+            NodeFilter.SHOW_TEXT
+          );
+          
+          const textNodes = [];
+          let node;
+          while (node = walker.nextNode()) {
+            if (node.textContent && node.textContent.trim()) {
+              textNodes.push(node);
+            }
+          }
+          
+          textNodes.forEach(textNode => {
+            if (!textNode.parentElement?.tagName.match(/BUTTON|SELECT|INPUT/)) {
+              textNode.textContent = '';
+            }
+          });
+
+          // Hide unwanted divs
+          const divsWithText = qrReader.querySelectorAll('div');
+          divsWithText.forEach(div => {
+            if (div.textContent && 
+                (div.textContent.includes('Upload an image') || 
+                 div.textContent.includes('use camera to scan') ||
+                 div.textContent.includes('barcode') ||
+                 div.textContent.includes('drop an image'))) {
+              div.style.display = 'none';
+            }
+          });
+        }
+      }, 500);
+      
     } catch (err) {
       console.error('Error starting gallery scanner:', err);
       setError('Failed to initialize scanner. Please try again.');
@@ -255,184 +333,215 @@ export const ScannerComponent = ({ onScanSuccess, onBack }: ScannerComponentProp
   };
 
   return (
-    <div className="animate-fade-in">
+    <div className="w-full h-full relative flex flex-col">
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center">
-          <button
-            onClick={handleBack}
-            className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors mr-3"
-          >
-            <ArrowLeftIcon className="w-6 h-6 text-gray-600 dark:text-gray-400" />
-          </button>
-          <h1 className="text-xl font-semibold text-gray-900 dark:text-white">Scan Product</h1>
+      <div className="relative z-30 px-6 py-4 pt-12">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center">
+            <button
+              onClick={handleBack}
+              className="p-3 rounded-xl bg-white/80 dark:bg-white/10 backdrop-blur-md border border-gray-200/50 dark:border-white/20 hover:bg-white/90 dark:hover:bg-white/20 transition-all duration-300 mr-4 shadow-lg"
+            >
+              <ArrowLeftIcon className="w-6 h-6 text-gray-700 dark:text-white drop-shadow-lg" />
+            </button>
+            <div>
+              <h1 className="text-2xl font-bold text-gray-900 dark:text-white drop-shadow-lg">Scan Product</h1>
+              <p className="text-emerald-600 dark:text-emerald-200 text-sm font-medium">Position barcode in the frame</p>
+            </div>
+          </div>
+          
+          {/* Camera Selection */}
+          {cameras.length > 1 && scanMode === 'camera' && (
+            <select
+              value={selectedCamera}
+              onChange={(e) => setSelectedCamera(e.target.value)}
+              className="px-3 py-2 text-sm rounded-xl bg-white/80 dark:bg-white/10 backdrop-blur-md border border-gray-200/50 dark:border-white/20 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 dark:focus:ring-emerald-400"
+            >
+              {cameras.map((camera) => (
+                <option key={camera.id} value={camera.id} className="text-gray-900 dark:text-white bg-white dark:bg-gray-800">
+                  {camera.label || `Camera ${camera.id}`}
+                </option>
+              ))}
+            </select>
+          )}
         </div>
-        
-        {/* Camera Selection */}
-        {cameras.length > 1 && scanMode === 'camera' && (
-          <select
-            value={selectedCamera}
-            onChange={(e) => setSelectedCamera(e.target.value)}
-            className="px-3 py-1 text-sm border rounded-lg bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white"
-          >
-            {cameras.map((camera) => (
-              <option key={camera.id} value={camera.id}>
-                {camera.label || `Camera ${camera.id}`}
-              </option>
-            ))}
-          </select>
-        )}
       </div>
 
       {/* Scan Mode Toggle */}
-      <div className="flex bg-gray-100 dark:bg-gray-800 rounded-lg p-1 mb-6">
-        <button
-          onClick={() => handleScanModeChange('camera')}
-          disabled={hasPermission === false}
-          className={`flex-1 flex items-center justify-center gap-2 py-2 px-4 rounded-md transition-colors ${
-            scanMode === 'camera'
-              ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm'
-              : hasPermission === false
-              ? 'text-gray-400 dark:text-gray-600 cursor-not-allowed'
-              : 'text-gray-600 dark:text-gray-400'
-          }`}
-        >
-          <CameraIcon className="w-4 h-4" />
-          <span className="text-sm font-medium">Camera</span>
-        </button>
-        <button
-          onClick={() => handleScanModeChange('gallery')}
-          className={`flex-1 flex items-center justify-center gap-2 py-2 px-4 rounded-md transition-colors ${
-            scanMode === 'gallery'
-              ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm'
-              : 'text-gray-600 dark:text-gray-400'
-          }`}
-        >
-          <PhotoIcon className="w-4 h-4" />
-          <span className="text-sm font-medium">Gallery</span>
-        </button>
+      <div className="relative z-30 px-6 mb-6">
+        <div className="flex bg-white/60 dark:bg-white/10 backdrop-blur-md rounded-2xl p-1 border border-gray-200/50 dark:border-white/20 shadow-lg">
+          <button
+            onClick={() => handleScanModeChange('camera')}
+            disabled={hasPermission === false}
+            className={`flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-xl transition-all duration-300 ${
+              scanMode === 'camera'
+                ? 'bg-emerald-500 text-white shadow-lg'
+                : hasPermission === false
+                ? 'text-gray-400 dark:text-gray-500 cursor-not-allowed'
+                : 'text-gray-700 dark:text-white/80 hover:bg-white/50 dark:hover:bg-white/10'
+            }`}
+          >
+            <CameraIcon className="w-5 h-5" />
+            <span className="font-medium">Camera</span>
+          </button>
+          <button
+            onClick={() => handleScanModeChange('gallery')}
+            className={`flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-xl transition-all duration-300 ${
+              scanMode === 'gallery'
+                ? 'bg-emerald-500 text-white shadow-lg'
+                : 'text-gray-700 dark:text-white/80 hover:bg-white/50 dark:hover:bg-white/10'
+            }`}
+          >
+            <PhotoIcon className="w-5 h-5" />
+            <span className="font-medium">Gallery</span>
+          </button>
+        </div>
       </div>
 
       {/* Scanner Container */}
-      <div className="card mb-6 relative">
-        {hasPermission === null ? (
-          <div className="text-center py-8">
-            <CameraIcon className="w-16 h-16 text-gray-400 dark:text-gray-500 mx-auto mb-4" />
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Checking Camera Access</h3>
-            <p className="text-gray-600 dark:text-gray-400 mb-4">
-              Please wait while we check camera permissions...
-            </p>
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 dark:border-blue-400 mx-auto"></div>
-          </div>
-        ) : hasPermission === false && scanMode === 'camera' ? (
-          <div className="text-center py-8">
-            <CameraIcon className="w-16 h-16 text-gray-400 dark:text-gray-500 mx-auto mb-4" />
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Camera Access Required</h3>
-            <p className="text-gray-600 dark:text-gray-400 mb-4">
-              To scan barcodes with your camera, please allow camera access when prompted.
-            </p>
-            <button
-              onClick={() => {
-                setHasPermission(null);
-                getCameras();
-              }}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors"
-            >
-              Enable Camera
-            </button>
-          </div>
-        ) : (
-          <>
-            <div className="text-center mb-4">
-              {scanMode === 'camera' ? (
-                <CameraIcon className="w-12 h-12 text-gray-400 dark:text-gray-500 mx-auto mb-2" />
-              ) : (
-                <PhotoIcon className="w-12 h-12 text-gray-400 dark:text-gray-500 mx-auto mb-2" />
-              )}
-              <p className="text-gray-600 dark:text-gray-400">
-                {scanMode === 'camera' 
-                  ? 'Point your camera at a product barcode'
-                  : 'Upload an image or use camera to scan barcode'
-                }
-              </p>
-            </div>
-
-            {/* QR Scanner */}
-            <div id="qr-reader" className="mx-auto"></div>
-            
-            {/* Hidden div for file scanning */}
-            <div id="temp-qr-reader" className="hidden"></div>
-
-            {/* File Upload for Gallery Mode */}
-            {scanMode === 'gallery' && (
-              <div className="mt-4">
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleFileUpload}
-                  className="hidden"
-                  id="file-upload"
-                  disabled={isLoading}
-                />
-                <label
-                  htmlFor="file-upload"
-                  className={`block w-full p-4 border-2 border-dashed rounded-lg text-center transition-colors ${
-                    isLoading 
-                      ? 'border-gray-200 dark:border-gray-700 cursor-not-allowed' 
-                      : 'border-gray-300 dark:border-gray-600 cursor-pointer hover:border-blue-500 dark:hover:border-blue-400'
-                  }`}
-                >
-                  <PhotoIcon className="w-8 h-8 text-gray-400 dark:text-gray-500 mx-auto mb-2" />
-                  <span className="text-gray-600 dark:text-gray-400">
-                    {isLoading ? 'Processing...' : 'Click to select image from gallery'}
-                  </span>
-                </label>
+      <div className="flex-1 px-6 relative z-30">
+        <div className="bg-white/60 dark:bg-white/5 backdrop-blur-md rounded-3xl p-4 border border-gray-200/50 dark:border-white/10 h-full shadow-xl min-h-[400px] flex flex-col">
+          {hasPermission === null ? (
+            <div className="text-center py-12 h-full flex flex-col items-center justify-center">
+              <div className="w-20 h-20 bg-emerald-100 dark:bg-emerald-500/20 rounded-full flex items-center justify-center mb-6 shadow-lg">
+                <CameraIcon className="w-10 h-10 text-emerald-600 dark:text-emerald-400" />
               </div>
-            )}
-          </>
-        )}
-
-        {/* Loading State */}
-        {isLoading && (
-          <div className="scanning-overlay">
-            <div className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-lg text-center">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 dark:border-blue-400 mx-auto mb-3"></div>
-              <p className="text-gray-600 dark:text-gray-300">Fetching product data...</p>
+              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3">Checking Camera Access</h3>
+              <p className="text-gray-600 dark:text-white/80 mb-6 text-center max-w-sm">
+                Please wait while we check camera permissions...
+              </p>
+              <div className="animate-spin rounded-full h-10 w-10 border-4 border-emerald-200 dark:border-emerald-400/30 border-t-emerald-600 dark:border-t-emerald-400"></div>
             </div>
-          </div>
-        )}
+          ) : hasPermission === false && scanMode === 'camera' ? (
+            <div className="text-center py-12 h-full flex flex-col items-center justify-center">
+              <div className="w-20 h-20 bg-red-100 dark:bg-red-500/20 rounded-full flex items-center justify-center mb-6 shadow-lg">
+                <CameraIcon className="w-10 h-10 text-red-600 dark:text-red-400" />
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3">Camera Access Required</h3>
+              <p className="text-gray-600 dark:text-white/80 mb-6 text-center max-w-sm">
+                To scan barcodes with your camera, please allow camera access when prompted.
+              </p>
+              <button
+                onClick={() => {
+                  setHasPermission(null);
+                  getCameras();
+                }}
+                className="bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-600 hover:to-cyan-600 text-white px-8 py-3 rounded-xl font-semibold transition-all duration-300 shadow-lg hover:shadow-xl"
+              >
+                Enable Camera
+              </button>
+            </div>
+          ) : (
+            <div className="flex flex-col h-full">
+              {/* QR Scanner */}
+              <div className="flex-1 flex items-center justify-center">
+                <div id="qr-reader" className="w-full max-w-md"></div>
+              </div>
+              
+              {/* Hidden div for file scanning */}
+              <div id="temp-qr-reader" className="hidden"></div>
 
-        {/* Error State */}
-        {error && (
-          <div className="mt-4 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
-            <p className="text-red-800 dark:text-red-200 text-sm">{error}</p>
-            <p className="text-red-600 dark:text-red-400 text-xs mt-1">Try scanning again</p>
-          </div>
-        )}
+              {/* File Upload for Gallery Mode */}
+              {scanMode === 'gallery' && (
+                <div className="mt-4">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleFileUpload}
+                    className="hidden"
+                    id="file-upload"
+                    disabled={isLoading}
+                  />
+                  <label
+                    htmlFor="file-upload"
+                    className={`block w-full p-6 border-2 border-dashed rounded-2xl text-center transition-all duration-300 ${
+                      isLoading 
+                        ? 'border-gray-300 dark:border-white/20 cursor-not-allowed opacity-50' 
+                        : 'border-gray-400 dark:border-white/30 cursor-pointer hover:border-emerald-500 dark:hover:border-emerald-400 hover:bg-gray-50 dark:hover:bg-white/5'
+                    }`}
+                  >
+                    <div className="w-12 h-12 bg-emerald-100 dark:bg-emerald-500/20 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
+                      <PhotoIcon className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />
+                    </div>
+                    <span className="text-gray-700 dark:text-white/90 font-medium">
+                      {isLoading ? 'Processing...' : 'Click to select image from gallery'}
+                    </span>
+                  </label>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Loading State */}
+          {isLoading && (
+            <div className="absolute inset-0 bg-white/70 dark:bg-black/50 backdrop-blur-sm flex items-center justify-center rounded-3xl z-40">
+              <div className="bg-white/90 dark:bg-white/10 backdrop-blur-md rounded-2xl p-8 shadow-2xl text-center border border-gray-200/50 dark:border-white/20">
+                <div className="animate-spin rounded-full h-12 w-12 border-4 border-emerald-200 dark:border-emerald-400/30 border-t-emerald-600 dark:border-t-emerald-400 mx-auto mb-4"></div>
+                <p className="text-gray-900 dark:text-white font-semibold text-lg">Fetching product data...</p>
+                <p className="text-gray-600 dark:text-white/70 text-sm mt-1">Please wait a moment</p>
+              </div>
+            </div>
+          )}
+
+          {/* Error State */}
+          {error && (
+            <div className="mt-6 p-4 bg-red-50 dark:bg-red-500/20 backdrop-blur-md border border-red-200 dark:border-red-400/30 rounded-2xl">
+              <p className="text-red-800 dark:text-red-200 font-medium">{error}</p>
+              <p className="text-red-600 dark:text-red-300 text-sm mt-1">Try scanning again</p>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Instructions */}
-      <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
-        <h3 className="font-medium text-blue-900 dark:text-blue-100 mb-2">
-          {scanMode === 'camera' ? 'Camera Scanning Tips' : 'Gallery Scanning Tips'}
-        </h3>
-        <ul className="text-sm text-blue-800 dark:text-blue-200 space-y-1">
-          {scanMode === 'camera' ? (
-            <>
-              <li>• Hold your phone steady</li>
-              <li>• Ensure good lighting</li>
-              <li>• Position barcode within the frame</li>
-              <li>• Wait for automatic detection</li>
-            </>
-          ) : (
-            <>
-              <li>• Select clear, well-lit images</li>
-              <li>• Ensure barcode is visible and unobstructed</li>
-              <li>• Use camera for live scanning</li>
-              <li>• Upload from gallery for existing photos</li>
-            </>
-          )}
-        </ul>
+      <div className="relative z-30 px-6 py-4">
+        <div className="bg-white/60 dark:bg-white/5 backdrop-blur-md border border-gray-200/50 dark:border-white/10 rounded-2xl p-4 shadow-lg">
+          <h3 className="font-semibold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
+            <div className="w-2 h-2 bg-emerald-500 dark:bg-emerald-400 rounded-full"></div>
+            {scanMode === 'camera' ? 'Camera Scanning Tips' : 'Gallery Scanning Tips'}
+          </h3>
+          <ul className="text-sm text-gray-600 dark:text-white/80 space-y-2">
+            {scanMode === 'camera' ? (
+              <>
+                <li className="flex items-center gap-2">
+                  <div className="w-1 h-1 bg-emerald-500 dark:bg-emerald-400 rounded-full"></div>
+                  Hold your phone steady
+                </li>
+                <li className="flex items-center gap-2">
+                  <div className="w-1 h-1 bg-emerald-500 dark:bg-emerald-400 rounded-full"></div>
+                  Ensure good lighting
+                </li>
+                <li className="flex items-center gap-2">
+                  <div className="w-1 h-1 bg-emerald-500 dark:bg-emerald-400 rounded-full"></div>
+                  Position barcode within the frame
+                </li>
+                <li className="flex items-center gap-2">
+                  <div className="w-1 h-1 bg-emerald-500 dark:bg-emerald-400 rounded-full"></div>
+                  Wait for automatic detection
+                </li>
+              </>
+            ) : (
+              <>
+                <li className="flex items-center gap-2">
+                  <div className="w-1 h-1 bg-emerald-500 dark:bg-emerald-400 rounded-full"></div>
+                  Select clear, well-lit images
+                </li>
+                <li className="flex items-center gap-2">
+                  <div className="w-1 h-1 bg-emerald-500 dark:bg-emerald-400 rounded-full"></div>
+                  Ensure barcode is visible and unobstructed
+                </li>
+                <li className="flex items-center gap-2">
+                  <div className="w-1 h-1 bg-emerald-500 dark:bg-emerald-400 rounded-full"></div>
+                  Use camera for live scanning
+                </li>
+                <li className="flex items-center gap-2">
+                  <div className="w-1 h-1 bg-emerald-500 dark:bg-emerald-400 rounded-full"></div>
+                  Upload from gallery for existing photos
+                </li>
+              </>
+            )}
+          </ul>
+        </div>
       </div>
     </div>
   );

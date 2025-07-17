@@ -1,7 +1,7 @@
 'use client';
 
-import { QrCodeIcon, SparklesIcon, ShieldCheckIcon } from '@heroicons/react/24/outline';
 import { useTelegram } from '@/components/providers/telegram-provider';
+import { QrCodeIcon, ShieldCheckIcon, SparklesIcon } from '@heroicons/react/24/outline';
 
 interface WelcomeScreenProps {
   onStartScanning: () => void;
@@ -69,15 +69,34 @@ export const WelcomeScreen = ({ onStartScanning }: WelcomeScreenProps) => {
       </div>
 
       {/* Grading System */}
-      <div className="card">
-        <h3 className="font-semibold text-gray-900 dark:text-white mb-4">Nutrition Grading System</h3>
-        <div className="space-y-3">
-          {gradeExamples.map((item) => (
-            <div key={item.grade} className="flex items-center space-x-3">
-              <span className={`grade-badge w-8 h-8 text-sm ${item.color}`}>
-                {item.grade}
-              </span>
-              <span className="text-sm text-gray-600 dark:text-gray-400">{item.description}</span>
+      <div className="bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-gray-800 dark:to-gray-700 rounded-2xl p-6 shadow-lg border border-indigo-100 dark:border-gray-600">
+        <div className="flex items-center gap-3 mb-6">
+          <div className="w-10 h-10 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-xl flex items-center justify-center float-animation">
+            <SparklesIcon className="w-6 h-6 text-white" />
+          </div>
+          <h3 className="text-xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+            Nutrition Grading System
+          </h3>
+        </div>
+        <div className="grid gap-4">
+          {gradeExamples.map((item, index) => (
+            <div 
+              key={item.grade} 
+              className="flex items-center space-x-4 p-4 bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm rounded-xl border border-white/50 dark:border-gray-600/50 animate-fade-in-up"
+              style={{ animationDelay: `${index * 100}ms` }}
+            >
+              <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-white text-lg font-bold ${item.color} shadow-lg`}>
+                <span className="relative z-10">{item.grade}</span>
+              </div>
+              <div className="flex-1">
+                <p className="font-bold text-gray-900 dark:text-white mb-1 text-lg">
+                  {item.description.split(' ')[0]} {/* First word like "Excellent" */}
+                </p>
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  {item.description}
+                </p>
+              </div>
+              <div className="w-2 h-8 bg-gradient-to-b from-indigo-400 to-purple-400 rounded-full grade-indicator"></div>
             </div>
           ))}
         </div>

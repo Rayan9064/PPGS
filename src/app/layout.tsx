@@ -1,9 +1,8 @@
-import '../styles/globals.css'
-import { Inter } from 'next/font/google'
-import { Toaster } from 'react-hot-toast'
+import { GlobalTelegramHeader } from '@/components/global-telegram-header'
 import { TelegramProvider } from '@/components/providers/telegram-provider'
 import { ThemeProvider } from '@/components/providers/theme-provider'
-import { GlobalTelegramHeader } from '@/components/global-telegram-header'
+import { Inter } from 'next/font/google'
+import { Toaster } from 'react-hot-toast'
 
 const inter = Inter({ subsets: ['latin'] })
 

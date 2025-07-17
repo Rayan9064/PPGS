@@ -1,21 +1,21 @@
 'use client';
 
-import { useState } from 'react';
-import { 
-  UserIcon, 
-  CogIcon, 
-  ShieldCheckIcon, 
-  HeartIcon, 
-  BellIcon, 
-  InformationCircleIcon,
-  ChevronRightIcon,
-  StarIcon,
-  ShareIcon,
-  MoonIcon,
-  SunIcon
-} from '@heroicons/react/24/outline';
 import { useTelegram } from '@/components/providers/telegram-provider';
 import { useTheme } from '@/components/providers/theme-provider';
+import {
+    BellIcon,
+    ChevronRightIcon,
+    CogIcon,
+    HeartIcon,
+    InformationCircleIcon,
+    MoonIcon,
+    ShareIcon,
+    ShieldCheckIcon,
+    StarIcon,
+    SunIcon,
+    UserIcon
+} from '@heroicons/react/24/outline';
+import { useState } from 'react';
 
 export const ProfileTab = () => {
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
@@ -81,17 +81,20 @@ export const ProfileTab = () => {
   ];
 
   return (
-    <div className="flex-1 bg-gray-50 dark:bg-gray-900 overflow-y-auto">
-      {/* Header */}
-      <div className="bg-gradient-to-r from-emerald-500 to-blue-500 text-white">
-        <div className="px-4 py-6 pt-8">
-          <div className="flex items-center gap-4">
-            <div className="w-14 h-14 bg-white/20 rounded-full flex items-center justify-center">
-              <UserIcon className="w-7 h-7 text-white" />
+    <div className="flex-1 w-full bg-gradient-to-br from-emerald-50 to-blue-50 dark:from-gray-800 dark:to-gray-900 overflow-y-auto no-scrollbar">
+      {/* Enhanced Header */}
+      <div className="w-full bg-gradient-to-br from-emerald-500 via-teal-500 to-blue-500 text-white relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-emerald-400 to-blue-600 opacity-90"></div>
+        <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16"></div>
+        <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/5 rounded-full -ml-12 -mb-12"></div>
+        <div className="relative z-10 px-4 py-8 pt-12">
+          <div className="flex items-center gap-4 animate-fade-in-up">
+            <div className="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center shadow-lg float-animation">
+              <UserIcon className="w-8 h-8 text-white" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold">Welcome Back!</h1>
-              <p className="text-emerald-100">
+              <h1 className="text-3xl font-bold text-white drop-shadow-lg">Welcome Back!</h1>
+              <p className="text-emerald-100 font-medium">
                 {isAvailable ? 'Telegram User' : 'Nutrition Enthusiast'}
               </p>
             </div>
@@ -99,61 +102,73 @@ export const ProfileTab = () => {
         </div>
       </div>
 
-      <div className="px-4 py-5 space-y-5">
-        {/* Quick Stats */}
-        <div className="bg-white dark:bg-gray-800 rounded-xl p-5 shadow-sm">
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Your Progress</h2>
+      <div className="w-full px-4 py-6 space-y-6">
+        {/* Enhanced Quick Stats */}
+        <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-white/50 dark:border-gray-600/50 animate-fade-in-up">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-xl flex items-center justify-center float-animation">
+              <StarIcon className="w-6 h-6 text-white" />
+            </div>
+            <h2 className="text-xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">Your Progress</h2>
+          </div>
           <div className="grid grid-cols-3 gap-4">
             {stats.map((stat, index) => (
-              <div key={index} className="text-center">
-                <p className={`text-2xl font-bold ${stat.color}`}>{stat.value}</p>
-                <p className="text-sm text-gray-500 dark:text-gray-400">{stat.label}</p>
+              <div key={index} className="text-center p-4 bg-white/80 dark:bg-gray-700/80 rounded-xl border border-white/60 dark:border-gray-600/60 animate-fade-in-up" style={{ animationDelay: `${index * 100}ms` }}>
+                <p className={`text-3xl font-bold ${stat.color} drop-shadow-sm`}>{stat.value}</p>
+                <p className="text-sm text-gray-600 dark:text-gray-400 font-medium mt-1">{stat.label}</p>
               </div>
             ))}
           </div>
         </div>
 
-        {/* Health Score */}
-        <div className="bg-white dark:bg-gray-800 rounded-xl p-5 shadow-sm">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Health Score</h2>
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center text-white text-sm font-bold">
+        {/* Enhanced Health Score */}
+        <div className="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-gray-800/70 dark:to-gray-700/70 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-green-100 dark:border-gray-600/50 animate-fade-in-up" style={{ animationDelay: '100ms' }}>
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-gradient-to-r from-green-500 to-emerald-500 rounded-xl flex items-center justify-center float-animation">
+                <ShieldCheckIcon className="w-6 h-6 text-white" />
+              </div>
+              <h2 className="text-xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">Health Score</h2>
+            </div>
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 bg-gradient-to-r from-green-500 to-emerald-500 rounded-2xl flex items-center justify-center text-white text-lg font-bold shadow-lg">
                 A
               </div>
-              <span className="text-lg font-bold text-green-600">85/100</span>
+              <span className="text-2xl font-bold text-green-600 dark:text-green-400">85/100</span>
             </div>
           </div>
-          <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3">
-            <div className="bg-green-500 h-3 rounded-full" style={{ width: '85%' }}></div>
+          <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-4 shadow-inner">
+            <div className="bg-gradient-to-r from-green-500 to-emerald-500 h-4 rounded-full shadow-lg transition-all duration-1000" style={{ width: '85%' }}></div>
           </div>
-          <p className="text-sm text-gray-600 dark:text-gray-300 mt-2">
+          <p className="text-sm text-gray-600 dark:text-gray-300 mt-3 font-medium">
             Great job! You&apos;re making healthy choices consistently.
           </p>
         </div>
 
-        {/* Menu Sections */}
+        {/* Enhanced Menu Sections */}
         {menuSections.map((section, sectionIndex) => (
-          <div key={sectionIndex} className="bg-white dark:bg-gray-800 rounded-xl shadow-sm overflow-hidden">
-            <div className="px-6 py-4 border-b border-gray-100 dark:border-gray-700">
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">{section.title}</h2>
+          <div key={sectionIndex} className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm rounded-2xl shadow-lg border border-white/50 dark:border-gray-600/50 overflow-hidden animate-fade-in-up" style={{ animationDelay: `${(sectionIndex + 2) * 100}ms` }}>
+            <div className="px-6 py-4 bg-gradient-to-r from-gray-50 to-white dark:from-gray-700 dark:to-gray-800 border-b border-gray-100 dark:border-gray-600">
+              <h2 className="text-lg font-bold text-gray-900 dark:text-white">{section.title}</h2>
             </div>
-            <div className="divide-y divide-gray-100 dark:divide-gray-700">
+            <div className="divide-y divide-gray-100 dark:divide-gray-600">
               {section.items.map((item, itemIndex) => (
                 <button
                   key={itemIndex}
                   onClick={() => handleMenuPress(item.action, (item as any).route)}
-                  className="w-full px-6 py-4 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                  className="w-full px-6 py-4 flex items-center justify-between hover:bg-white/90 dark:hover:bg-gray-700/90 transition-all duration-300 group"
                 >
-                  <div className="flex items-center gap-3">
-                    <item.icon className="w-5 h-5 text-gray-500 dark:text-gray-400" />
-                    <span className="font-medium text-gray-900 dark:text-white">{item.label}</span>
+                  <div className="flex items-center gap-4">
+                    <div className="w-10 h-10 bg-gradient-to-r from-gray-100 to-gray-200 dark:from-gray-600 dark:to-gray-700 rounded-xl flex items-center justify-center group-hover:from-emerald-100 group-hover:to-teal-100 dark:group-hover:from-emerald-900/50 dark:group-hover:to-teal-900/50 transition-all duration-300">
+                      <item.icon className="w-5 h-5 text-gray-600 dark:text-gray-400 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors duration-300" />
+                    </div>
+                    <span className="font-semibold text-gray-900 dark:text-white group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors duration-300">{item.label}</span>
                   </div>
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-3">
                     {item.value && (
-                      <span className="text-sm text-gray-500 dark:text-gray-400">{item.value}</span>
+                      <span className="text-sm text-gray-500 dark:text-gray-400 font-medium">{item.value}</span>
                     )}
-                    <ChevronRightIcon className="w-4 h-4 text-gray-400 dark:text-gray-500" />
+                    <ChevronRightIcon className="w-5 h-5 text-gray-400 dark:text-gray-500 group-hover:text-emerald-500 dark:group-hover:text-emerald-400 transition-all duration-300 group-hover:translate-x-1" />
                   </div>
                 </button>
               ))}
@@ -161,10 +176,15 @@ export const ProfileTab = () => {
           </div>
         ))}
 
-        {/* Dietary Restrictions Quick Edit */}
-        <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm">
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Quick Filters</h2>
-          <div className="flex flex-wrap gap-2">
+        {/* Enhanced Dietary Restrictions */}
+        <div className="bg-gradient-to-br from-orange-50 to-amber-50 dark:from-gray-800/70 dark:to-gray-700/70 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-orange-100 dark:border-gray-600/50 animate-fade-in-up" style={{ animationDelay: '500ms' }}>
+          <div className="flex items-center gap-3 mb-6">
+            <div className="w-10 h-10 bg-gradient-to-r from-orange-500 to-amber-500 rounded-xl flex items-center justify-center float-animation">
+              <HeartIcon className="w-6 h-6 text-white" />
+            </div>
+            <h2 className="text-xl font-bold bg-gradient-to-r from-orange-600 to-amber-600 bg-clip-text text-transparent">Quick Filters</h2>
+          </div>
+          <div className="flex flex-wrap gap-3">
             {['Vegetarian', 'Vegan', 'Gluten-Free', 'Low Sugar', 'Low Sodium', 'Organic'].map((filter) => (
               <button
                 key={filter}
@@ -176,10 +196,10 @@ export const ProfileTab = () => {
                       : [...prev, filter.toLowerCase()]
                   );
                 }}
-                className={`px-3 py-2 rounded-full text-sm font-medium transition-colors ${
+                className={`px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg ${
                   dietaryRestrictions.includes(filter.toLowerCase())
-                    ? 'bg-emerald-500 text-white'
-                    : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                    ? 'bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-emerald-200 dark:shadow-emerald-900/50'
+                    : 'bg-white/80 dark:bg-gray-700/80 text-gray-700 dark:text-gray-300 hover:bg-white dark:hover:bg-gray-600 shadow-gray-200 dark:shadow-gray-900/50'
                 }`}
               >
                 {filter}
@@ -188,16 +208,18 @@ export const ProfileTab = () => {
           </div>
         </div>
 
-        {/* App Version */}
-        <div className="text-center py-4">
-          <p className="text-sm text-gray-500">
-            NutriPal v1.0.0 • Made with ❤️ for better nutrition
-          </p>
-          {isAvailable && (
-            <p className="text-xs text-gray-400 mt-1">
-              Optimized for Telegram Mini Apps
+        {/* Enhanced App Version */}
+        <div className="text-center py-6 animate-fade-in-up" style={{ animationDelay: '600ms' }}>
+          <div className="bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm rounded-2xl p-4 border border-white/50 dark:border-gray-600/50">
+            <p className="text-sm text-gray-600 dark:text-gray-400 font-medium">
+              NutriPal v1.0.0 • Made with ❤️ for better nutrition
             </p>
-          )}
+            {isAvailable && (
+              <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">
+                Optimized for Telegram Mini Apps
+              </p>
+            )}
+          </div>
         </div>
       </div>
     </div>
