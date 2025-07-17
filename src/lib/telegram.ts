@@ -10,6 +10,7 @@ declare global {
 
 export const useTelegramWebApp = () => {
   const webApp = typeof window !== 'undefined' ? window.Telegram?.WebApp : null;
+  const tgUser = webApp?.initDataUnsafe?.user || null;
 
   const initializeApp = () => {
     if (webApp) {
@@ -76,6 +77,7 @@ export const useTelegramWebApp = () => {
 
   return {
     webApp,
+    tgUser,
     initializeApp,
     showMainButton,
     hideMainButton,

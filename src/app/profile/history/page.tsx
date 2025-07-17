@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ArrowLeftIcon, ClockIcon, QrCodeIcon, CalendarIcon } from '@heroicons/react/24/outline';
 import { useTelegram } from '@/components/providers/telegram-provider';
 import { ProductData } from '@/types';
@@ -11,15 +11,29 @@ interface ScanHistoryItem {
   product: ProductData;
   timestamp: Date;
   scanLocation?: string;
+  isUserData?: boolean; // Add flag to distinguish user vs demo data
 }
+
+// Data source indicator component
+const DataSourceBadge = ({ isUserData }: { isUserData: boolean }) => (
+  <div className={`inline-flex items-center px-2 py-1 rounded-full text-xs ${
+    isUserData 
+      ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400'
+      : 'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400'
+  }`}>
+    {isUserData ? '✓ Your Scan' : '📋 Demo Data'}
+  </div>
+);
 
 export default function ScanHistory() {
   const { hapticFeedback } = useTelegram();
+  const [scanHistory, setScanHistory] = useState<ScanHistoryItem[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   
-  // Mock scan history data
-  const [scanHistory] = useState<ScanHistoryItem[]>([
+  // Mock scan history data for demo purposes
+  const mockScanHistory: ScanHistoryItem[] = [
     {
-      id: '1',
+      id: 'demo-1',
       product: {
         code: '123456789',
         product_name: 'Organic Greek Yogurt',
@@ -28,11 +42,12 @@ export default function ScanHistory() {
         nutrition_grades: 'a',
         nutriments: { sugars_100g: 6, fat_100g: 0, salt_100g: 0.1 }
       },
-      timestamp: new Date(),
-      scanLocation: 'Home'
+      timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000),
+      scanLocation: 'Demo Location',
+      isUserData: false
     },
     {
-      id: '2',
+      id: 'demo-2',
       product: {
         code: '987654321',
         product_name: 'Whole Grain Bread',
@@ -42,10 +57,11 @@ export default function ScanHistory() {
         nutriments: { sugars_100g: 5, fat_100g: 4, salt_100g: 1.2 }
       },
       timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000),
-      scanLocation: 'Grocery Store'
+      scanLocation: 'Demo Location',
+      isUserData: false
     },
     {
-      id: '3',
+      id: 'demo-3',
       product: {
         code: '456789123',
         product_name: 'Energy Drink',
@@ -55,9 +71,59 @@ export default function ScanHistory() {
         nutriments: { sugars_100g: 28, fat_100g: 0, salt_100g: 0.2 }
       },
       timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000),
-      scanLocation: 'Office'
+      scanLocation: 'Demo Location',
+      isUserData: false
     }
-  ]);
+  ];
+
+  // Load combined data (real + mock)
+  useEffect(() => {
+    const loadScanHistory = () => {
+      setIsLoading(true);
+      
+      try {
+        // Load real scan history from localStorage
+        const realScanHistory = JSON.parse(localStorage.getItem('nutripal-scan-history') || '[]');
+        
+        // Convert localStorage format to component format
+        const userScans: ScanHistoryItem[] = realScanHistory.map((scan: any) => ({
+          id: scan.id,
+          product: scan.product,
+          timestamp: new Date(scan.timestamp),
+          scanLocation: 'Your Scan',
+          isUserData: true
+        }));
+        
+        // Combine with mock data, filtering out duplicates
+        const combinedHistory = [
+          ...userScans, // Real user scans first
+          ...mockScanHistory.filter(mock => 
+            !userScans.some(real => real.product.code === mock.product.code)
+          ) // Mock data for products not scanned by user
+        ].sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime()); // Sort by timestamp, newest first
+        
+        setScanHistory(combinedHistory);
+      } catch (error) {
+        console.error('Error loading scan history:', error);
+        // Fallback to mock data if localStorage fails
+        setScanHistory(mockScanHistory);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadScanHistory();
+
+    // Listen for scan history updates
+    const handleScanHistoryUpdate = () => {
+      loadScanHistory();
+    };
+
+    window.addEventListener('scanHistoryUpdated', handleScanHistoryUpdate);
+    return () => {
+      window.removeEventListener('scanHistoryUpdated', handleScanHistoryUpdate);
+    };
+  }, []);
 
   const [filter, setFilter] = useState<'all' | 'today' | 'week' | 'month'>('all');
 
@@ -204,8 +270,16 @@ export default function ScanHistory() {
           </div>
         </div>
 
-        {/* History List */}
-        {groupedHistory.length > 0 ? (
+        {/* Loading State */}
+        {isLoading ? (
+          <div className="flex flex-col items-center justify-center py-12">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-500 mb-4"></div>
+            <p className="text-gray-600 dark:text-gray-400">Loading scan history...</p>
+          </div>
+        ) : (
+          <>
+            {/* History List */}
+            {groupedHistory.length > 0 ? (
           <div className="space-y-4">
             {groupedHistory.map(([dateString, items]) => (
               <div key={dateString} className="bg-white dark:bg-gray-800 rounded-xl shadow-sm overflow-hidden">
@@ -231,7 +305,10 @@ export default function ScanHistory() {
                             {grade.grade}
                           </div>
                           <div className="flex-1">
-                            <h3 className="font-semibold text-gray-900 dark:text-white">{item.product.product_name}</h3>
+                            <div className="flex items-center gap-2 mb-1">
+                              <h3 className="font-semibold text-gray-900 dark:text-white">{item.product.product_name}</h3>
+                              <DataSourceBadge isUserData={item.isUserData || false} />
+                            </div>
                             {item.product.brands && (
                               <p className="text-sm text-gray-500 dark:text-gray-400">{item.product.brands}</p>
                             )}
@@ -274,6 +351,8 @@ export default function ScanHistory() {
               Scan a Product
             </button>
           </div>
+        )}
+        </>
         )}
       </div>
     </div>

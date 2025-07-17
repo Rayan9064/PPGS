@@ -35,8 +35,31 @@ export const ProductResult = ({ product, onScanAnother, onBack, showBackButton =
 
     // Check if product is in consumption history
     const consumed = JSON.parse(localStorage.getItem('nutripal-consumed') || '[]');
-    const isConsume = consumed.some((item: any) => item.product.code === product.code);
+    const isConsume = consumed.some((item: any) => item.product.code !== product.code);
     setIsConsumed(isConsume);
+
+    // Add to scan history
+    const scanHistory = JSON.parse(localStorage.getItem('nutripal-scan-history') || '[]');
+    const existingScan = scanHistory.find((scan: any) => scan.product.code === product.code);
+    
+    if (!existingScan) {
+      const newScan = {
+        id: Date.now().toString(),
+        product,
+        timestamp: new Date().toISOString()
+      };
+      scanHistory.unshift(newScan); // Add to beginning of array
+      
+      // Keep only last 100 scans to prevent storage bloat
+      if (scanHistory.length > 100) {
+        scanHistory.splice(100);
+      }
+      
+      localStorage.setItem('nutripal-scan-history', JSON.stringify(scanHistory));
+      
+      // Dispatch event to update scan history page
+      window.dispatchEvent(new CustomEvent('scanHistoryUpdated'));
+    }
   }, [product.code]);
 
   const handleScanAnother = () => {
@@ -68,6 +91,9 @@ export const ProductResult = ({ product, onScanAnother, onBack, showBackButton =
       localStorage.setItem('nutripal-favorites', JSON.stringify(updatedFavorites));
       toast.success('Removed from favorites');
     }
+
+    // Dispatch event to update other components
+    window.dispatchEvent(new CustomEvent('favoritesUpdated'));
   };
 
   const handleToggleConsumption = () => {
@@ -91,6 +117,9 @@ export const ProductResult = ({ product, onScanAnother, onBack, showBackButton =
       localStorage.setItem('nutripal-consumed', JSON.stringify(updatedConsumed));
       toast.success('Removed from consumption');
     }
+
+    // Dispatch event to update other components
+    window.dispatchEvent(new CustomEvent('consumedUpdated'));
   };
 
   const handleFindAlternatives = () => {

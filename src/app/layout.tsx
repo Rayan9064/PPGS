@@ -1,8 +1,6 @@
 import { TelegramProvider } from '@/components/providers/telegram-provider'
 import { ThemeProvider } from '@/components/providers/theme-provider'
-import { Inter } from 'next/font/google'
-import { Toaster } from 'react-hot-toast'
-import '../styles/globals.css'
+import { GlobalTelegramHeader } from '@/components/global-telegram-header'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -23,6 +21,8 @@ export default function RootLayout({
 }: {
   children: React.ReactNode
 }) {
+  // ...existing code...
+
   return (
     <html lang="en">
       <head>
@@ -32,7 +32,9 @@ export default function RootLayout({
       <body className={inter.className}>
         <ThemeProvider>
           <TelegramProvider>
-            <div className="min-h-screen w-full max-w-none flex flex-col bg-white dark:bg-gray-900 transition-colors m-0 p-0">
+            {/* Global Telegram Profile Header */}
+            <GlobalTelegramHeader />
+            <div className="min-h-screen w-full flex flex-col bg-white dark:bg-gray-900 transition-colors overflow-x-hidden">
               {children}
             </div>
             <Toaster 

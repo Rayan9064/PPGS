@@ -5,6 +5,7 @@ import { useTelegramWebApp } from '@/lib/telegram';
 
 interface TelegramContextType {
   webApp: any;
+  tgUser: any;
   initializeApp: () => void;
   showMainButton: (text: string, onClick: () => void) => void;
   hideMainButton: () => void;

@@ -131,15 +131,15 @@ export const TabNavigation = () => {
   ];
 
   return (
-    <div className="min-h-screen w-full max-w-none flex flex-col bg-gray-50 dark:bg-gray-900 m-0 p-0">
+    <div className="min-h-screen w-full flex flex-col bg-gray-50 dark:bg-gray-900 no-horizontal-scroll">
       {/* Main Content */}
-      <div className="flex-1 w-full overflow-y-auto mobile-scroll no-scrollbar pb-20">
+      <div className="flex-1 w-full overflow-y-auto mobile-scroll">
         {renderActiveTab()}
       </div>
 
-      {/* Bottom Tab Navigation - Fixed to bottom */}
-      <div className="fixed-bottom-nav w-full bg-white/90 dark:bg-gray-800/90 border-t border-gray-200 dark:border-gray-700 px-4 py-3 safe-area-padding-bottom shadow-lg backdrop-blur-md">
-        <div className="flex justify-around items-center w-full max-w-md mx-auto">
+      {/* Bottom Tab Navigation */}
+      <div className="sticky bottom-0 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 safe-area-padding-bottom">
+        <div className="flex justify-around items-center w-full px-4 py-1">
           {tabs.map((tab) => {
             const isActive = activeTab === tab.id;
             const IconComponent = isActive ? tab.activeIcon : tab.icon;
