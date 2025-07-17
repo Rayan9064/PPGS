@@ -1,4 +1,5 @@
-import React from 'react';
+'use client';
+
 import { useTelegram } from '@/components/providers/telegram-provider';
 
 export const GlobalTelegramHeader = () => {

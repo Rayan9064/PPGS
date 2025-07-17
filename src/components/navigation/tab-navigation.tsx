@@ -1,15 +1,15 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { HomeIcon, QrCodeIcon, DocumentTextIcon, ChatBubbleLeftRightIcon, UserIcon } from '@heroicons/react/24/outline';
-import { HomeIcon as HomeIconSolid, QrCodeIcon as QrCodeIconSolid, DocumentTextIcon as DocumentTextIconSolid, ChatBubbleLeftRightIcon as ChatBubbleLeftRightIconSolid, UserIcon as UserIconSolid } from '@heroicons/react/24/solid';
-import { useTelegram } from '@/components/providers/telegram-provider';
-import { HomeTab } from '@/components/navigation/tabs/home-tab';
-import { ScanTab } from '@/components/navigation/tabs/scan-tab';
-import { ResultsTab } from '@/components/navigation/tabs/results-tab';
 import { ChatTab } from '@/components/navigation/tabs/chat-tab';
+import { HomeTab } from '@/components/navigation/tabs/home-tab';
 import { ProfileTab } from '@/components/navigation/tabs/profile-tab';
+import { ResultsTab } from '@/components/navigation/tabs/results-tab';
+import { ScanTab } from '@/components/navigation/tabs/scan-tab';
+import { useTelegram } from '@/components/providers/telegram-provider';
 import { ProductData } from '@/types';
+import { ChatBubbleLeftRightIcon, DocumentTextIcon, HomeIcon, QrCodeIcon, UserIcon } from '@heroicons/react/24/outline';
+import { ChatBubbleLeftRightIcon as ChatBubbleLeftRightIconSolid, DocumentTextIcon as DocumentTextIconSolid, HomeIcon as HomeIconSolid, QrCodeIcon as QrCodeIconSolid, UserIcon as UserIconSolid } from '@heroicons/react/24/solid';
+import { useEffect, useState } from 'react';
 
 export type TabType = 'home' | 'scan' | 'results' | 'chat' | 'profile';
 
@@ -133,13 +133,13 @@ export const TabNavigation = () => {
   return (
     <div className="min-h-screen w-full flex flex-col bg-gray-50 dark:bg-gray-900 no-horizontal-scroll">
       {/* Main Content */}
-      <div className="flex-1 w-full overflow-y-auto mobile-scroll">
+      <div className="flex-1 w-full overflow-y-auto mobile-scroll pb-20">
         {renderActiveTab()}
       </div>
 
-      {/* Bottom Tab Navigation */}
-      <div className="sticky bottom-0 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 safe-area-padding-bottom">
-        <div className="flex justify-around items-center w-full px-4 py-1">
+      {/* Bottom Tab Navigation - Fixed at bottom */}
+      <div className="fixed bottom-0 left-0 right-0 z-50 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 bottom-nav-safe-area shadow-lg">
+        <div className="flex justify-around items-center w-full px-4 py-2">
           {tabs.map((tab) => {
             const isActive = activeTab === tab.id;
             const IconComponent = isActive ? tab.activeIcon : tab.icon;

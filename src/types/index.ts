@@ -44,6 +44,8 @@ export interface TelegramWebApp {
   ready: () => void;
   expand: () => void;
   close: () => void;
+  version?: string;
+  viewportHeight?: number;
   MainButton: {
     text: string;
     color: string;
