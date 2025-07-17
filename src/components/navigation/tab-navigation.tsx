@@ -1,15 +1,15 @@
 'use client';
 
-import { ChatTab } from '@/components/navigation/tabs/chat-tab';
-import { HomeTab } from '@/components/navigation/tabs/home-tab';
-import { ProfileTab } from '@/components/navigation/tabs/profile-tab';
-import { ResultsTab } from '@/components/navigation/tabs/results-tab';
-import { ScanTab } from '@/components/navigation/tabs/scan-tab';
+import { useState, useEffect } from 'react';
+import { HomeIcon, QrCodeIcon, DocumentTextIcon, ChatBubbleLeftRightIcon, UserIcon } from '@heroicons/react/24/outline';
+import { HomeIcon as HomeIconSolid, QrCodeIcon as QrCodeIconSolid, DocumentTextIcon as DocumentTextIconSolid, ChatBubbleLeftRightIcon as ChatBubbleLeftRightIconSolid, UserIcon as UserIconSolid } from '@heroicons/react/24/solid';
 import { useTelegram } from '@/components/providers/telegram-provider';
+import { HomeTab } from '@/components/navigation/tabs/home-tab';
+import { ScanTab } from '@/components/navigation/tabs/scan-tab';
+import { ResultsTab } from '@/components/navigation/tabs/results-tab';
+import { ChatTab } from '@/components/navigation/tabs/chat-tab';
+import { ProfileTab } from '@/components/navigation/tabs/profile-tab';
 import { ProductData } from '@/types';
-import { ChatBubbleLeftRightIcon, DocumentTextIcon, HomeIcon, QrCodeIcon, UserIcon } from '@heroicons/react/24/outline';
-import { ChatBubbleLeftRightIcon as ChatBubbleLeftRightIconSolid, DocumentTextIcon as DocumentTextIconSolid, HomeIcon as HomeIconSolid, QrCodeIcon as QrCodeIconSolid, UserIcon as UserIconSolid } from '@heroicons/react/24/solid';
-import { useEffect, useState } from 'react';
 
 export type TabType = 'home' | 'scan' | 'results' | 'chat' | 'profile';
 
@@ -148,9 +148,9 @@ export const TabNavigation = () => {
               <button
                 key={tab.id}
                 onClick={() => handleTabChange(tab.id)}
-                className={`flex flex-col items-center justify-center p-3 rounded-xl transition-all duration-200 min-w-0 flex-1 mx-1 ${
+                className={`flex flex-col items-center justify-center p-2 rounded-lg transition-all duration-200 min-w-0 flex-1 ${
                   isActive 
-                    ? 'text-emerald-600 bg-emerald-50 dark:bg-emerald-900/30 scale-105' 
+                    ? 'text-emerald-600 bg-emerald-50 dark:bg-emerald-900/30' 
                     : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
                 }`}
               >
