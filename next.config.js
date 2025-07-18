@@ -8,6 +8,8 @@ const nextConfig = {
   images: {
     domains: ['images.openfoodfacts.org'],
   },
+  // Disable font optimization to avoid network issues during build
+  optimizeFonts: false,
   // Telegram Mini App optimizations
   async headers() {
     return [
