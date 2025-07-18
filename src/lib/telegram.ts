@@ -1,4 +1,5 @@
 import { TelegramWebApp } from '@/types';
+import { useEffect, useState } from 'react';
 
 declare global {
   interface Window {
@@ -9,19 +10,34 @@ declare global {
 }
 
 export const useTelegramWebApp = () => {
-  const webApp = typeof window !== 'undefined' ? window.Telegram?.WebApp : null;
-  const tgUser = webApp?.initDataUnsafe?.user || null;
+  const [webApp, setWebApp] = useState<TelegramWebApp | null>(null);
+  const [tgUser, setTgUser] = useState<any>(null);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const app = window.Telegram?.WebApp || null;
+      setWebApp(app);
+      setTgUser(app?.initDataUnsafe?.user || null);
+    }
+  }, []);
 
   const initializeApp = () => {
     if (webApp) {
       webApp.ready();
       webApp.expand();
       
-      // Disable vertical swipe to close if available
+      // Disable vertical swipe to close if available and supported
+      // This feature is only supported in newer versions of Telegram WebApp
       try {
-        (webApp as any).disableVerticalSwipes?.();
+        const version = (webApp as any).version || '6.0';
+        const majorVersion = parseFloat(version);
+        
+        // Only try to disable vertical swipes for versions that support it (7.0+)
+        if (majorVersion >= 7.0 && typeof (webApp as any).disableVerticalSwipes === 'function') {
+          (webApp as any).disableVerticalSwipes();
+        }
       } catch (e) {
-        // Ignore if not available
+        // Silently ignore if not available - this is expected for older versions
       }
       
       // Set viewport height for mobile

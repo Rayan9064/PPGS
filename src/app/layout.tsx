@@ -1,6 +1,7 @@
 import { GlobalTelegramHeader } from '@/components/global-telegram-header'
 import { TelegramProvider } from '@/components/providers/telegram-provider'
 import { ThemeProvider } from '@/components/providers/theme-provider'
+import '@/styles/globals.css'
 import { Inter } from 'next/font/google'
 import { Toaster } from 'react-hot-toast'
 
@@ -31,14 +32,14 @@ export default function RootLayout({
         <script src="https://telegram.org/js/telegram-web-app.js" async></script>
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
       </head>
-      <body className={inter.className}>
+      <body className={`${inter.className} m-0 p-0`}>
         <ThemeProvider>
           <TelegramProvider>
             {/* Global Telegram Profile Header */}
             <GlobalTelegramHeader />
-            <div className="min-h-screen w-full flex flex-col bg-white dark:bg-gray-900 transition-colors overflow-x-hidden">
+            <main className="min-h-screen w-full flex flex-col bg-white dark:bg-gray-900 transition-colors">
               {children}
-            </div>
+            </main>
             <Toaster 
               position="top-center"
               toastOptions={{

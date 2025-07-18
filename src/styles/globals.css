@@ -174,11 +174,24 @@ body::-webkit-scrollbar {
   z-index: 50;
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+/* Dark mode support for bottom nav */
+.dark .fixed-bottom-nav {
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.3);
 }
 
 /* Ensure content doesn't get hidden behind fixed nav */
 .content-with-fixed-nav {
   padding-bottom: 80px;
+}
+
+/* Better safe area support for bottom nav */
+.bottom-nav-safe-area {
+  padding-bottom: max(env(safe-area-inset-bottom), 0.5rem);
 }
 
 /* Scanner styles */
