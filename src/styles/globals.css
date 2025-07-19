@@ -40,6 +40,17 @@
     width: 100%;
     height: 100%;
     overflow-x: hidden; /* Prevent horizontal scroll */
+    /* Telegram-specific mobile optimizations */
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    /* Better font rendering on mobile */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 }
 
@@ -114,6 +125,16 @@
     overscroll-behavior: contain;
   }
   
+  /* Scrollbar hiding */
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  
   /* Full width utilities to prevent layout issues */
   .full-width-container {
     width: 100%;
@@ -125,6 +146,45 @@
   .no-horizontal-scroll {
     overflow-x: hidden;
     max-width: 100vw;
+  }
+
+  /* Touch-friendly tap targets for mobile */
+  .tap-target {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  /* Telegram safe area handling */
+  .bottom-nav-safe-area {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  /* Enable text selection for content */
+  .selectable-text {
+    -webkit-user-select: text;
+    -moz-user-select: text;
+    -ms-user-select: text;
+    user-select: text;
+  }
+
+  /* Mobile-optimized spacing and typography */
+  @media (max-width: 640px) {
+    .mobile-text-xs { font-size: 0.7rem; }
+    .mobile-text-sm { font-size: 0.8rem; }
+    .mobile-text-base { font-size: 0.9rem; }
+    .mobile-text-lg { font-size: 1rem; }
+    .mobile-text-xl { font-size: 1.1rem; }
+    .mobile-text-2xl { font-size: 1.3rem; }
+    
+    .mobile-p-1 { padding: 0.25rem; }
+    .mobile-p-2 { padding: 0.5rem; }
+    .mobile-p-3 { padding: 0.75rem; }
+    .mobile-p-4 { padding: 1rem; }
+    
+    .mobile-gap-1 { gap: 0.25rem; }
+    .mobile-gap-2 { gap: 0.5rem; }
+    .mobile-gap-3 { gap: 0.75rem; }
+    .mobile-gap-4 { gap: 1rem; }
   }
 }
 

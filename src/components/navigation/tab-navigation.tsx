@@ -133,13 +133,13 @@ export const TabNavigation = () => {
   return (
     <div className="min-h-screen w-full flex flex-col bg-gray-50 dark:bg-gray-900 no-horizontal-scroll">
       {/* Main Content */}
-      <div className="flex-1 w-full overflow-y-auto mobile-scroll pb-20">
+      <div className="flex-1 w-full overflow-y-auto mobile-scroll pb-16 sm:pb-20">
         {renderActiveTab()}
       </div>
 
       {/* Bottom Tab Navigation - Fixed at bottom */}
       <div className="fixed bottom-0 left-0 right-0 z-50 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 bottom-nav-safe-area shadow-lg">
-        <div className="flex justify-around items-center w-full px-4 py-2">
+        <div className="flex justify-around items-center w-full px-2 sm:px-4 py-1 sm:py-2">
           {tabs.map((tab) => {
             const isActive = activeTab === tab.id;
             const IconComponent = isActive ? tab.activeIcon : tab.icon;
@@ -148,14 +148,14 @@ export const TabNavigation = () => {
               <button
                 key={tab.id}
                 onClick={() => handleTabChange(tab.id)}
-                className={`flex flex-col items-center justify-center p-2 rounded-lg transition-all duration-200 min-w-0 flex-1 ${
+                className={`flex flex-col items-center justify-center p-1.5 sm:p-2 rounded-lg transition-all duration-200 min-w-0 flex-1 ${
                   isActive 
                     ? 'text-emerald-600 bg-emerald-50 dark:bg-emerald-900/30' 
                     : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
                 }`}
               >
-                <IconComponent className="w-6 h-6 mb-1" />
-                <span className="text-xs font-medium truncate">
+                <IconComponent className="w-5 h-5 sm:w-6 sm:h-6 mb-0.5 sm:mb-1" />
+                <span className="text-xs font-medium truncate max-w-full">
                   {tab.label}
                 </span>
               </button>
