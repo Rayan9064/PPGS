@@ -1,11 +1,11 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { ArrowLeftIcon, QrCodeIcon, ExclamationTriangleIcon, HeartIcon, PlusIcon, MinusIcon, SparklesIcon } from '@heroicons/react/24/outline';
-import { HeartIcon as HeartIconSolid } from '@heroicons/react/24/solid';
-import { ProductData, NutritionGrade } from '@/types';
-import { calculateGrade, getNutrientWarnings, getGradeColor, getGradeDescription } from '@/utils/grading-logic';
 import { useTelegram } from '@/components/providers/telegram-provider';
+import { NutritionGrade, ProductData } from '@/types';
+import { calculateGrade, getGradeColor, getGradeDescription, getNutrientWarnings } from '@/utils/grading-logic';
+import { ArrowLeftIcon, ExclamationTriangleIcon, HeartIcon, PlusIcon, QrCodeIcon, SparklesIcon } from '@heroicons/react/24/outline';
+import { HeartIcon as HeartIconSolid } from '@heroicons/react/24/solid';
+import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 
 interface ProductResultProps {
@@ -141,9 +141,9 @@ export const ProductResult = ({ product, onScanAnother, onBack, showBackButton =
   };
 
   return (
-    <div className="animate-fade-in">
+    <div className="animate-fade-in px-1 sm:px-0">
       {/* Header with Controls */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-center justify-between mb-4 sm:mb-6">
         {showBackButton && (
           <button
             onClick={handleBack}
@@ -152,49 +152,49 @@ export const ProductResult = ({ product, onScanAnother, onBack, showBackButton =
             <ArrowLeftIcon className="w-6 h-6 text-gray-600 dark:text-gray-400" />
           </button>
         )}
-        <h1 className="text-xl font-semibold text-gray-900 dark:text-white">Product Details</h1>
+        <h1 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white truncate flex-1 mx-2">Product Details</h1>
         
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1 sm:gap-2">
           <button
             onClick={handleToggleFavorite}
-            className={`p-2 rounded-lg transition-colors ${
+            className={`p-1.5 sm:p-2 rounded-lg transition-colors ${
               isFavorite 
                 ? 'bg-red-100 dark:bg-red-900/30 text-red-600' 
                 : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
             }`}
           >
             {isFavorite ? (
-              <HeartIconSolid className="w-5 h-5" />
+              <HeartIconSolid className="w-4 h-4 sm:w-5 sm:h-5" />
             ) : (
-              <HeartIcon className="w-5 h-5" />
+              <HeartIcon className="w-4 h-4 sm:w-5 sm:h-5" />
             )}
           </button>
           
           <button
             onClick={handleToggleConsumption}
-            className={`p-2 rounded-lg transition-colors ${
+            className={`p-1.5 sm:p-2 rounded-lg transition-colors ${
               isConsumed 
                 ? 'bg-green-100 dark:bg-green-900/30 text-green-600' 
                 : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
             }`}
           >
-            <PlusIcon className="w-5 h-5" />
+            <PlusIcon className="w-4 h-4 sm:w-5 sm:h-5" />
           </button>
           
           {product.image_url && (
             <button
               onClick={() => setShowImage(true)}
-              className="p-2 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+              className="p-1.5 sm:p-2 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
             >
-              <QrCodeIcon className="w-5 h-5" />
+              <QrCodeIcon className="w-4 h-4 sm:w-5 sm:h-5" />
             </button>
           )}
         </div>
       </div>
 
       {/* Product Header */}
-      <div className="card mb-6 text-center">
-        <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
+      <div className="card mb-4 sm:mb-6 text-center">
+        <h2 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white mb-3 sm:mb-4 break-words">
           {product.product_name}
         </h2>
         
