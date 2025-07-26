@@ -20,9 +20,41 @@ export const ScannerComponent = ({ onScanSuccess, onBack }: ScannerComponentProp
   const [cameras, setCameras] = useState<any[]>([]);
   const [selectedCamera, setSelectedCamera] = useState<string>('');
   const [isScanning, setIsScanning] = useState(false);
+  const [permissionChecked, setPermissionChecked] = useState(false);
   const html5QrCodeRef = useRef<Html5Qrcode | null>(null);
   const scanLockRef = useRef(false);
-  const { hapticFeedback } = useTelegram();
+  const { hapticFeedback, tgUser } = useTelegram();
+
+  // Camera permission caching functions
+  const getCachedPermission = useCallback((): boolean | null => {
+    try {
+      const cacheKey = tgUser?.id ? `camera_permission_${tgUser.id}` : 'camera_permission_guest';
+      const cached = localStorage.getItem(cacheKey);
+      return cached ? JSON.parse(cached) : null;
+    } catch {
+      return null;
+    }
+  }, [tgUser?.id]);
+
+  const setCachedPermission = useCallback((permission: boolean) => {
+    try {
+      const cacheKey = tgUser?.id ? `camera_permission_${tgUser.id}` : 'camera_permission_guest';
+      localStorage.setItem(cacheKey, JSON.stringify(permission));
+    } catch {
+      // Ignore cache errors
+    }
+  }, [tgUser?.id]);
+
+  const clearCachedPermission = useCallback(() => {
+    try {
+      const cacheKey = tgUser?.id ? `camera_permission_${tgUser.id}` : 'camera_permission_guest';
+      localStorage.removeItem(cacheKey);
+      setHasPermission(null);
+      setPermissionChecked(false);
+    } catch {
+      // Ignore cache errors
+    }
+  }, [tgUser?.id]);
 
   const handleScanSuccess = useCallback(async (barcode: string) => {
     if (isLoading || scanLockRef.current) return;
@@ -69,9 +101,33 @@ export const ScannerComponent = ({ onScanSuccess, onBack }: ScannerComponentProp
   }, []);
 
   // Get available cameras (called only once)
-  const getCameras = useCallback(async () => {
-    if (hasPermission !== null) return; // Already checked
+  const getCameras = useCallback(async (forceRequest = false) => {
+    if (permissionChecked && !forceRequest) return;
+    
+    // Check cached permission first
+    const cachedPermission = getCachedPermission();
+    if (cachedPermission === true && !forceRequest) {
+      try {
+        const devices = await Html5Qrcode.getCameras();
+        setCameras(devices);
+        if (devices.length > 0) {
+          const backCamera = devices.find(device => 
+            device.label.toLowerCase().includes('back') || 
+            device.label.toLowerCase().includes('rear') ||
+            device.label.toLowerCase().includes('environment')
+          );
+          setSelectedCamera(backCamera?.id || devices[0].id);
+          setHasPermission(true);
+          setPermissionChecked(true);
+          return;
+        }
+      } catch (err) {
+        // If cached permission exists but camera access fails, clear cache and continue
+        setCachedPermission(false);
+      }
+    }
 
+    // If no cached permission or it failed, request permission
     setHasPermission(null); // Set to checking state
     
     try {
@@ -86,16 +142,22 @@ export const ScannerComponent = ({ onScanSuccess, onBack }: ScannerComponentProp
         );
         setSelectedCamera(backCamera?.id || devices[0].id);
         setHasPermission(true);
+        setCachedPermission(true); // Cache the permission
+        setPermissionChecked(true);
       } else {
         setError('No cameras found on this device');
         setHasPermission(false);
+        setCachedPermission(false);
+        setPermissionChecked(true);
       }
     } catch (err) {
       console.error('Error getting cameras:', err);
       setError('Camera access denied. Please allow camera access to use scanner.');
       setHasPermission(false);
+      setCachedPermission(false);
+      setPermissionChecked(true);
     }
-  }, [hasPermission]);
+  }, [permissionChecked, getCachedPermission, setCachedPermission]);
 
   // Initialize camera scanner
   const initializeCameraScanner = useCallback(async () => {
@@ -175,12 +237,28 @@ export const ScannerComponent = ({ onScanSuccess, onBack }: ScannerComponentProp
     }
   }, [selectedCamera, isScanning, handleScanSuccess, cleanupScanner]);
 
+  // Check cached permission on mount
+  useEffect(() => {
+    const cachedPermission = getCachedPermission();
+    if (cachedPermission !== null) {
+      setHasPermission(cachedPermission);
+      setPermissionChecked(true);
+      if (cachedPermission === true) {
+        // If we have cached permission, try to get cameras
+        getCameras(false);
+      }
+    } else {
+      // No cached permission, will need to request
+      setPermissionChecked(false);
+    }
+  }, [getCachedPermission, getCameras]);
+
   // Initialize scanner based on camera permissions
   useEffect(() => {
-    if (hasPermission === null) {
+    if (!permissionChecked && hasPermission === null) {
       getCameras();
     }
-  }, [getCameras, hasPermission]);
+  }, [getCameras, hasPermission, permissionChecked]);
 
   useEffect(() => {
     if (hasPermission === true && selectedCamera && !isScanning) {
@@ -248,9 +326,14 @@ export const ScannerComponent = ({ onScanSuccess, onBack }: ScannerComponentProp
               <div className="w-20 h-20 bg-emerald-100 dark:bg-emerald-500/20 rounded-full flex items-center justify-center mb-6 shadow-lg">
                 <CameraIcon className="w-10 h-10 text-emerald-600 dark:text-emerald-400" />
               </div>
-              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3">Checking Camera Access</h3>
+              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3">
+                {permissionChecked ? 'Initializing Camera' : 'Checking Camera Access'}
+              </h3>
               <p className="text-gray-600 dark:text-white/80 mb-6 text-center max-w-sm">
-                Please wait while we check camera permissions...
+                {permissionChecked 
+                  ? 'Setting up your camera for scanning...'
+                  : 'Please wait while we check camera permissions...'
+                }
               </p>
               <div className="animate-spin rounded-full h-10 w-10 border-4 border-emerald-200 dark:border-emerald-400/30 border-t-emerald-600 dark:border-t-emerald-400"></div>
             </div>
@@ -261,12 +344,13 @@ export const ScannerComponent = ({ onScanSuccess, onBack }: ScannerComponentProp
               </div>
               <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3">Camera Access Required</h3>
               <p className="text-gray-600 dark:text-white/80 mb-6 text-center max-w-sm">
-                To scan barcodes with your camera, please allow camera access when prompted.
+                To scan barcodes, please allow camera access when prompted. This permission is saved for future visits.
               </p>
               <button
                 onClick={() => {
                   setHasPermission(null);
-                  getCameras();
+                  setPermissionChecked(false);
+                  getCameras(true); // Force request permission
                 }}
                 className="bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-600 hover:to-cyan-600 text-white px-8 py-3 rounded-xl font-semibold transition-all duration-300 shadow-lg hover:shadow-xl"
               >
