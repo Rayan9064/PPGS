@@ -2,12 +2,15 @@
 
 import { useTelegram } from '@/components/providers/telegram-provider';
 import { useTheme } from '@/components/providers/theme-provider';
+import { useUserData } from '@/components/providers/user-data-provider';
 import {
     BellIcon,
     ChevronRightIcon,
     CogIcon,
+    ExclamationTriangleIcon,
     HeartIcon,
     InformationCircleIcon,
+    LinkIcon,
     MoonIcon,
     ShareIcon,
     ShieldCheckIcon,
@@ -19,8 +22,15 @@ import { useState } from 'react';
 
 export const ProfileTab = () => {
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
-  const [dietaryRestrictions, setDietaryRestrictions] = useState<string[]>(['vegetarian']);
-  const { hapticFeedback, isAvailable } = useTelegram();
+  const { hapticFeedback, isAvailable, tgUser } = useTelegram();
+  const { 
+    userData, 
+    connectionStatus, 
+    onboardingState, 
+    getBMI, 
+    getBMICategory,
+    getDailyCalories 
+  } = useUserData();
   const { theme, toggleTheme, isDark } = useTheme();
 
   const handleToggle = (setter: (value: boolean) => void, currentValue: boolean) => {
@@ -32,6 +42,9 @@ export const ProfileTab = () => {
     hapticFeedback.impact('light');
     if (action === 'theme') {
       toggleTheme();
+    } else if (action === 'connect') {
+      // Show connection prompt - could trigger a state change in parent
+      console.log('Connect to Telegram');
     } else if (route) {
       // Navigate to the route
       window.location.href = route;
@@ -42,8 +55,24 @@ export const ProfileTab = () => {
 
   const menuSections = [
     {
-      title: 'Appearance & Preferences',
+      title: 'Account & Profile',
       items: [
+        ...(connectionStatus.isConnected ? [
+          { 
+            icon: UserIcon, 
+            label: 'User Profile', 
+            value: userData ? `${userData.firstName} ${userData.lastName || ''}`.trim() : 'View profile', 
+            action: 'profile',
+            route: '/profile/user'
+          },
+        ] : [
+          { 
+            icon: LinkIcon, 
+            label: 'Connect to Telegram', 
+            value: 'Get personalized recommendations', 
+            action: 'connect'
+          },
+        ]),
         { 
           icon: isDark ? SunIcon : MoonIcon, 
           label: 'Dark Mode', 
@@ -51,9 +80,34 @@ export const ProfileTab = () => {
           action: 'theme',
           isToggle: true
         },
-        { icon: HeartIcon, label: 'Dietary Preferences', value: dietaryRestrictions.join(', '), action: 'dietary', route: '/preferences' },
-        { icon: ShieldCheckIcon, label: 'Health Goals', value: 'Balanced nutrition', action: 'goals' },
-        { icon: BellIcon, label: 'Notifications', value: notificationsEnabled ? 'On' : 'Off', action: 'notifications' },
+      ]
+    },
+    {
+      title: 'Health & Preferences',
+      items: [
+        { 
+          icon: HeartIcon, 
+          label: 'Dietary Preferences', 
+          value: userData?.dietaryRestrictions?.length ? 
+            userData.dietaryRestrictions.slice(0, 2).join(', ') + (userData.dietaryRestrictions.length > 2 ? '...' : '') : 
+            'Not set', 
+          action: 'dietary', 
+          route: '/preferences' 
+        },
+        { 
+          icon: ShieldCheckIcon, 
+          label: 'Health Goals', 
+          value: userData?.healthGoals?.length ? 
+            userData.healthGoals.slice(0, 2).join(', ').replace(/_/g, ' ') + (userData.healthGoals.length > 2 ? '...' : '') : 
+            'Not set', 
+          action: 'goals' 
+        },
+        { 
+          icon: BellIcon, 
+          label: 'Notifications', 
+          value: userData?.preferences?.notifications !== false ? 'On' : 'Off', 
+          action: 'notifications' 
+        },
       ]
     },
     {
@@ -74,10 +128,30 @@ export const ProfileTab = () => {
     }
   ];
 
+  // Get user stats from local storage or user data
+  const getUserStats = () => {
+    const scansData = localStorage.getItem('nutripal-scan-history');
+    const scans = scansData ? JSON.parse(scansData) : [];
+    
+    return {
+      scanned: scans.length || 0,
+      healthy: scans.filter((scan: any) => {
+        const grade = scan.product?.nutrition_grades;
+        return grade === 'a' || grade === 'b';
+      }).length || 0,
+      days: userData ? Math.ceil((new Date().getTime() - new Date(userData.createdAt).getTime()) / (1000 * 60 * 60 * 24)) : 0
+    };
+  };
+
+  const userStats = getUserStats();
+  const bmi = getBMI();
+  const bmiCategory = getBMICategory();
+  const dailyCalories = getDailyCalories();
+
   const stats = [
-    { label: 'Products Scanned', value: '47', color: 'text-blue-600' },
-    { label: 'Healthy Choices', value: '32', color: 'text-green-600' },
-    { label: 'Days Active', value: '12', color: 'text-purple-600' },
+    { label: 'Products Scanned', value: userStats.scanned.toString(), color: 'text-blue-600' },
+    { label: 'Healthy Choices', value: userStats.healthy.toString(), color: 'text-green-600' },
+    { label: 'Days Active', value: userStats.days.toString(), color: 'text-purple-600' },
   ];
 
   return (
@@ -93,9 +167,15 @@ export const ProfileTab = () => {
               <UserIcon className="w-8 h-8 text-white" />
             </div>
             <div>
-              <h1 className="text-3xl font-bold text-white drop-shadow-lg">Welcome Back!</h1>
+              <h1 className="text-3xl font-bold text-white drop-shadow-lg">
+                {userData ? userData.firstName : 'Welcome!'}
+              </h1>
               <p className="text-emerald-100 font-medium">
-                {isAvailable ? 'Telegram User' : 'Nutrition Enthusiast'}
+                {connectionStatus.isConnected ? (
+                  userData ? 'Your personalized nutrition companion' : 'Connected to Telegram'
+                ) : (
+                  'Discover healthier food choices'
+                )}
               </p>
             </div>
           </div>
@@ -128,22 +208,110 @@ export const ProfileTab = () => {
               <div className="w-10 h-10 bg-gradient-to-r from-green-500 to-emerald-500 rounded-xl flex items-center justify-center float-animation">
                 <ShieldCheckIcon className="w-6 h-6 text-white" />
               </div>
-              <h2 className="text-xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">Health Score</h2>
+              <h2 className="text-xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
+                {userData ? 'Your Health Profile' : 'Health Overview'}
+              </h2>
             </div>
-            <div className="flex items-center gap-3">
-              <div className="w-12 h-12 bg-gradient-to-r from-green-500 to-emerald-500 rounded-2xl flex items-center justify-center text-white text-lg font-bold shadow-lg">
-                A
+            {userData ? (
+              <div className="text-right">
+                {bmi && (
+                  <div className="mb-1">
+                    <span className="text-sm text-gray-600 dark:text-gray-400">BMI: </span>
+                    <span className="font-bold text-green-600 dark:text-green-400">{bmi.toFixed(1)}</span>
+                  </div>
+                )}
+                {dailyCalories && (
+                  <div className="text-xs text-gray-500 dark:text-gray-400">
+                    {dailyCalories} cal/day
+                  </div>
+                )}
               </div>
-              <span className="text-2xl font-bold text-green-600 dark:text-green-400">85/100</span>
+            ) : (
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 bg-gradient-to-r from-green-500 to-emerald-500 rounded-2xl flex items-center justify-center text-white text-lg font-bold shadow-lg">
+                  A
+                </div>
+                <span className="text-2xl font-bold text-green-600 dark:text-green-400">85/100</span>
+              </div>
+            )}
+          </div>
+          
+          {userData ? (
+            <div className="space-y-3">
+              {userData.healthGoals && userData.healthGoals.length > 0 && (
+                <div>
+                  <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Health Goals:</p>
+                  <div className="flex flex-wrap gap-2">
+                    {userData.healthGoals.slice(0, 3).map((goal) => (
+                      <span key={goal} className="px-3 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 rounded-full text-sm">
+                        {goal.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+              {bmiCategory && (
+                <p className="text-sm text-gray-600 dark:text-gray-300">
+                  BMI Category: <span className="font-medium">{bmiCategory}</span>
+                </p>
+              )}
+            </div>
+          ) : (
+            <>
+              <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-4 shadow-inner">
+                <div className="bg-gradient-to-r from-green-500 to-emerald-500 h-4 rounded-full shadow-lg transition-all duration-1000" style={{ width: '85%' }}></div>
+              </div>
+              <p className="text-sm text-gray-600 dark:text-gray-300 mt-3 font-medium">
+                Connect to Telegram for personalized health insights.
+              </p>
+            </>
+          )}
+        </div>
+
+        {/* Connection Status */}
+        {!connectionStatus.isConnected && (
+          <div className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-gray-800/70 dark:to-gray-700/70 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-blue-100 dark:border-gray-600/50 animate-fade-in-up" style={{ animationDelay: '200ms' }}>
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-xl flex items-center justify-center float-animation">
+                <LinkIcon className="w-6 h-6 text-white" />
+              </div>
+              <h2 className="text-xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">Connect for More</h2>
+            </div>
+            <p className="text-gray-600 dark:text-gray-300 mb-4">
+              Connect to Telegram to unlock personalized nutrition recommendations, save your preferences, and track your progress.
+            </p>
+            <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+              <ExclamationTriangleIcon className="w-4 h-4" />
+              <span>Currently using demo mode</span>
             </div>
           </div>
-          <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-4 shadow-inner">
-            <div className="bg-gradient-to-r from-green-500 to-emerald-500 h-4 rounded-full shadow-lg transition-all duration-1000" style={{ width: '85%' }}></div>
+        )}
+
+        {/* Onboarding Status */}
+        {connectionStatus.isConnected && connectionStatus.needsOnboarding && (
+          <div className="bg-gradient-to-br from-purple-50 to-pink-50 dark:from-gray-800/70 dark:to-gray-700/70 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-purple-100 dark:border-gray-600/50 animate-fade-in-up" style={{ animationDelay: '250ms' }}>
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl flex items-center justify-center float-animation">
+                <UserIcon className="w-6 h-6 text-white" />
+              </div>
+              <h2 className="text-xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">Complete Your Profile</h2>
+            </div>
+            <p className="text-gray-600 dark:text-gray-300 mb-4">
+              Set up your health profile to get personalized nutrition recommendations.
+            </p>
+            <div className="flex items-center justify-between">
+              <div className="text-sm text-gray-500 dark:text-gray-400">
+                Progress: {onboardingState.progress}%
+              </div>
+              <button
+                onClick={() => handleMenuPress('profile', '/profile/user')}
+                className="px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl font-medium hover:from-purple-600 hover:to-pink-600 transition-all transform hover:scale-105"
+              >
+                Complete Setup
+              </button>
+            </div>
           </div>
-          <p className="text-sm text-gray-600 dark:text-gray-300 mt-3 font-medium">
-            Great job! You&apos;re making healthy choices consistently.
-          </p>
-        </div>
+        )}
 
         {/* Enhanced Menu Sections */}
         {menuSections.map((section, sectionIndex) => (
@@ -176,37 +344,55 @@ export const ProfileTab = () => {
           </div>
         ))}
 
-        {/* Enhanced Dietary Restrictions */}
-        <div className="bg-gradient-to-br from-orange-50 to-amber-50 dark:from-gray-800/70 dark:to-gray-700/70 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-orange-100 dark:border-gray-600/50 animate-fade-in-up" style={{ animationDelay: '500ms' }}>
-          <div className="flex items-center gap-3 mb-6">
-            <div className="w-10 h-10 bg-gradient-to-r from-orange-500 to-amber-500 rounded-xl flex items-center justify-center float-animation">
-              <HeartIcon className="w-6 h-6 text-white" />
+        {/* User Dietary Preferences */}
+        {userData && userData.dietaryRestrictions && userData.dietaryRestrictions.length > 0 && (
+          <div className="bg-gradient-to-br from-orange-50 to-amber-50 dark:from-gray-800/70 dark:to-gray-700/70 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-orange-100 dark:border-gray-600/50 animate-fade-in-up" style={{ animationDelay: '400ms' }}>
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 bg-gradient-to-r from-orange-500 to-amber-500 rounded-xl flex items-center justify-center float-animation">
+                <HeartIcon className="w-6 h-6 text-white" />
+              </div>
+              <h2 className="text-xl font-bold bg-gradient-to-r from-orange-600 to-amber-600 bg-clip-text text-transparent">Your Dietary Preferences</h2>
             </div>
-            <h2 className="text-xl font-bold bg-gradient-to-r from-orange-600 to-amber-600 bg-clip-text text-transparent">Quick Filters</h2>
+            <div className="flex flex-wrap gap-3">
+              {userData.dietaryRestrictions.map((restriction) => (
+                <span
+                  key={restriction}
+                  className="px-4 py-2 bg-gradient-to-r from-emerald-500 to-teal-500 text-white rounded-xl text-sm font-medium shadow-lg"
+                >
+                  {restriction.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                </span>
+              ))}
+            </div>
+            <p className="text-sm text-gray-600 dark:text-gray-400 mt-3">
+              Nutrition grading is personalized based on your preferences
+            </p>
           </div>
-          <div className="flex flex-wrap gap-3">
-            {['Vegetarian', 'Vegan', 'Gluten-Free', 'Low Sugar', 'Low Sodium', 'Organic'].map((filter) => (
-              <button
-                key={filter}
-                onClick={() => {
-                  hapticFeedback.impact('light');
-                  setDietaryRestrictions(prev => 
-                    prev.includes(filter.toLowerCase()) 
-                      ? prev.filter(f => f !== filter.toLowerCase())
-                      : [...prev, filter.toLowerCase()]
-                  );
-                }}
-                className={`px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg ${
-                  dietaryRestrictions.includes(filter.toLowerCase())
-                    ? 'bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-emerald-200 dark:shadow-emerald-900/50'
-                    : 'bg-white/80 dark:bg-gray-700/80 text-gray-700 dark:text-gray-300 hover:bg-white dark:hover:bg-gray-600 shadow-gray-200 dark:shadow-gray-900/50'
-                }`}
-              >
-                {filter}
-              </button>
-            ))}
+        )}
+
+        {/* Medical Conditions Alert */}
+        {userData && userData.medicalConditions && userData.medicalConditions.length > 0 && userData.medicalConditions[0] !== 'none' && (
+          <div className="bg-gradient-to-br from-red-50 to-pink-50 dark:from-gray-800/70 dark:to-gray-700/70 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-red-100 dark:border-gray-600/50 animate-fade-in-up" style={{ animationDelay: '450ms' }}>
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 bg-gradient-to-r from-red-500 to-pink-500 rounded-xl flex items-center justify-center float-animation">
+                <ExclamationTriangleIcon className="w-6 h-6 text-white" />
+              </div>
+              <h2 className="text-xl font-bold bg-gradient-to-r from-red-600 to-pink-600 bg-clip-text text-transparent">Health Considerations</h2>
+            </div>
+            <div className="flex flex-wrap gap-3">
+              {userData.medicalConditions.map((condition) => (
+                <span
+                  key={condition}
+                  className="px-4 py-2 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 rounded-xl text-sm font-medium"
+                >
+                  {condition.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                </span>
+              ))}
+            </div>
+            <p className="text-sm text-gray-600 dark:text-gray-400 mt-3">
+              Nutrition warnings are adjusted for your health profile
+            </p>
           </div>
-        </div>
+        )}
 
         {/* Enhanced App Version */}
         <div className="text-center py-6 animate-fade-in-up" style={{ animationDelay: '600ms' }}>

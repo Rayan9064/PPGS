@@ -1,9 +1,10 @@
 'use client';
 
 import { useTelegram } from '@/components/providers/telegram-provider';
+import { useUserData } from '@/components/providers/user-data-provider';
 import { NutritionGrade, ProductData } from '@/types';
-import { calculateGrade, getGradeColor, getGradeDescription, getNutrientWarnings } from '@/utils/grading-logic';
-import { ArrowLeftIcon, ExclamationTriangleIcon, HeartIcon, PlusIcon, QrCodeIcon, SparklesIcon } from '@heroicons/react/24/outline';
+import { getNutritionGrade } from '@/utils/grading-logic';
+import { ArrowLeftIcon, ExclamationTriangleIcon, HeartIcon, PlusIcon, QrCodeIcon, SparklesIcon, UserIcon } from '@heroicons/react/24/outline';
 import { HeartIcon as HeartIconSolid } from '@heroicons/react/24/solid';
 import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
@@ -17,14 +18,14 @@ interface ProductResultProps {
 
 export const ProductResult = ({ product, onScanAnother, onBack, showBackButton = true }: ProductResultProps) => {
   const { hapticFeedback } = useTelegram();
+  const { userData, connectionStatus } = useUserData();
   const [isFavorite, setIsFavorite] = useState(false);
   const [isConsumed, setIsConsumed] = useState(false);
   const [showImage, setShowImage] = useState(false);
   
-  const grade = calculateGrade(product);
-  const warnings = getNutrientWarnings(product);
-  const gradeColor = getGradeColor(grade);
-  const gradeDescription = getGradeDescription(grade);
+  // Get personalized nutrition grade
+  const gradeInfo = getNutritionGrade(product, userData);
+  const { grade, color: gradeColor, description: gradeDescription, warnings, isPersonalized } = gradeInfo;
 
   // Load saved favorites and consumption state
   useEffect(() => {
@@ -200,10 +201,20 @@ export const ProductResult = ({ product, onScanAnother, onBack, showBackButton =
         
         {/* Grade Badge */}
         <div className="flex flex-col items-center mb-4">
-          <div className={`grade-badge w-16 h-16 text-2xl ${getGradeColorClass(grade)} mb-2`}>
+          <div className={`grade-badge w-16 h-16 text-2xl ${getGradeColorClass(grade)} mb-2 relative`}>
             {grade}
+            {isPersonalized && (
+              <div className="absolute -top-1 -right-1 w-6 h-6 bg-purple-500 rounded-full flex items-center justify-center">
+                <UserIcon className="w-3 h-3 text-white" />
+              </div>
+            )}
           </div>
           <p className="text-sm text-gray-600 dark:text-gray-400">{gradeDescription}</p>
+          {isPersonalized && (
+            <p className="text-xs text-purple-600 dark:text-purple-400 mt-1 font-medium">
+              ✨ Personalized for you
+            </p>
+          )}
         </div>
 
         {product.brands && (
@@ -213,24 +224,53 @@ export const ProductResult = ({ product, onScanAnother, onBack, showBackButton =
 
       {/* Nutrition Facts */}
       <div className="card mb-6">
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-          Nutrition Facts (per 100g)
-        </h3>
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+            Nutrition Facts (per 100g)
+          </h3>
+          {isPersonalized && userData && (
+            <span className="text-xs text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-900/30 px-2 py-1 rounded-full flex items-center gap-1">
+              <UserIcon className="w-3 h-3" />
+              Custom limits
+            </span>
+          )}
+        </div>
         
         <div className="space-y-3">
           <div className="flex justify-between items-center py-2 border-b border-gray-100 dark:border-gray-700">
             <span className="text-gray-700 dark:text-gray-300">Sugar</span>
-            <span className="font-medium dark:text-white">{product.nutriments.sugars_100g}g</span>
+            <div className="flex items-center gap-2">
+              <span className="font-medium dark:text-white">{product.nutriments.sugars_100g}g</span>
+              {userData?.preferences?.maxSugar && (
+                <span className="text-xs text-gray-500 dark:text-gray-400">
+                  / {userData.preferences.maxSugar}g max
+                </span>
+              )}
+            </div>
           </div>
           
           <div className="flex justify-between items-center py-2 border-b border-gray-100 dark:border-gray-700">
             <span className="text-gray-700 dark:text-gray-300">Fat</span>
-            <span className="font-medium dark:text-white">{product.nutriments.fat_100g}g</span>
+            <div className="flex items-center gap-2">
+              <span className="font-medium dark:text-white">{product.nutriments.fat_100g}g</span>
+              {userData?.preferences?.maxFat && (
+                <span className="text-xs text-gray-500 dark:text-gray-400">
+                  / {userData.preferences.maxFat}g max
+                </span>
+              )}
+            </div>
           </div>
           
           <div className="flex justify-between items-center py-2">
             <span className="text-gray-700 dark:text-gray-300">Salt</span>
-            <span className="font-medium dark:text-white">{product.nutriments.salt_100g}g</span>
+            <div className="flex items-center gap-2">
+              <span className="font-medium dark:text-white">{product.nutriments.salt_100g}g</span>
+              {userData?.preferences?.maxSalt && (
+                <span className="text-xs text-gray-500 dark:text-gray-400">
+                  / {userData.preferences.maxSalt}g max
+                </span>
+              )}
+            </div>
           </div>
         </div>
       </div>
@@ -249,6 +289,77 @@ export const ProductResult = ({ product, onScanAnother, onBack, showBackButton =
                   </li>
                 ))}
               </ul>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* User Profile Compatibility */}
+      {userData && connectionStatus.isConnected && (
+        <div className="card mb-6 border-purple-200 dark:border-purple-800 bg-purple-50 dark:bg-purple-900/20">
+          <div className="flex items-start space-x-3 mb-4">
+            <UserIcon className="w-6 h-6 text-purple-600 dark:text-purple-400 flex-shrink-0 mt-0.5" />
+            <div className="flex-1">
+              <h3 className="font-semibold text-purple-900 dark:text-purple-100 mb-2">
+                Profile Compatibility
+              </h3>
+              
+              {/* Dietary Restrictions Check */}
+              {userData.dietaryRestrictions && userData.dietaryRestrictions.length > 0 && (
+                <div className="mb-3">
+                  <p className="text-sm text-purple-800 dark:text-purple-200 mb-2">
+                    Dietary Restrictions:
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    {userData.dietaryRestrictions.map((restriction) => (
+                      <span
+                        key={restriction}
+                        className="px-2 py-1 bg-purple-100 dark:bg-purple-800/50 text-purple-700 dark:text-purple-300 rounded-full text-xs"
+                      >
+                        {restriction.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Health Goals Alignment */}
+              {userData.healthGoals && userData.healthGoals.length > 0 && (
+                <div className="mb-3">
+                  <p className="text-sm text-purple-800 dark:text-purple-200 mb-2">
+                    Health Goals:
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    {userData.healthGoals.map((goal) => (
+                      <span
+                        key={goal}
+                        className="px-2 py-1 bg-green-100 dark:bg-green-800/50 text-green-700 dark:text-green-300 rounded-full text-xs"
+                      >
+                        {goal.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Medical Conditions Warnings */}
+              {userData.medicalConditions && userData.medicalConditions.length > 0 && userData.medicalConditions[0] !== 'none' && (
+                <div>
+                  <p className="text-sm text-purple-800 dark:text-purple-200 mb-2">
+                    Health Considerations:
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    {userData.medicalConditions.map((condition) => (
+                      <span
+                        key={condition}
+                        className="px-2 py-1 bg-red-100 dark:bg-red-800/50 text-red-700 dark:text-red-300 rounded-full text-xs"
+                      >
+                        {condition.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>
