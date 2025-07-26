@@ -2,9 +2,10 @@
 
 import { ProductResult } from '@/components/product/product-result';
 import { useTelegram } from '@/components/providers/telegram-provider';
+import { useUserData } from '@/components/providers/user-data-provider';
 import { ProductData } from '@/types';
 import { getNutritionGrade } from '@/utils/grading-logic';
-import { ClockIcon, QrCodeIcon } from '@heroicons/react/24/outline';
+import { ClockIcon, QrCodeIcon, UserIcon } from '@heroicons/react/24/outline';
 
 interface ResultsTabProps {
   currentProduct: ProductData | null;
@@ -15,6 +16,7 @@ interface ResultsTabProps {
 
 export const ResultsTab = ({ currentProduct, recentScans, onScanAnother, onProductSelect }: ResultsTabProps) => {
   const { hapticFeedback } = useTelegram();
+  const { userData, connectionStatus } = useUserData();
 
   const handleProductSelect = (product: ProductData) => {
     hapticFeedback.impact('light');
@@ -111,7 +113,7 @@ export const ResultsTab = ({ currentProduct, recentScans, onScanAnother, onProdu
 
             <div className="grid gap-3 sm:gap-4">
               {recentScans.map((product, index) => {
-                const gradeInfo = getNutritionGrade(product);
+                const gradeInfo = getNutritionGrade(product, userData);
                 return (
                   <button
                     key={`${product.code}-${index}`}
@@ -143,6 +145,13 @@ export const ResultsTab = ({ currentProduct, recentScans, onScanAnother, onProdu
                           }`}>
                             {gradeInfo.description}
                           </span>
+                          {/* Personalized indicator */}
+                          {gradeInfo.isPersonalized && userData && (
+                            <span className="px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400 flex items-center gap-1">
+                              <UserIcon className="w-3 h-3" />
+                              Personal
+                            </span>
+                          )}
                         </div>
                         {product.categories && (
                           <p className="text-xs text-gray-500 dark:text-gray-500 truncate">

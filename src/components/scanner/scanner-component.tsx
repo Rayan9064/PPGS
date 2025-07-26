@@ -3,8 +3,8 @@
 import { useTelegram } from '@/components/providers/telegram-provider';
 import { fetchProductData } from '@/lib/product-api';
 import { ProductData } from '@/types';
-import { ArrowLeftIcon, CameraIcon, PhotoIcon } from '@heroicons/react/24/outline';
-import { Html5Qrcode, Html5QrcodeCameraScanConfig, Html5QrcodeScanner, Html5QrcodeScanType } from 'html5-qrcode';
+import { ArrowLeftIcon, CameraIcon } from '@heroicons/react/24/outline';
+import { Html5Qrcode, Html5QrcodeCameraScanConfig } from 'html5-qrcode';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import toast from 'react-hot-toast';
 
@@ -17,11 +17,9 @@ export const ScannerComponent = ({ onScanSuccess, onBack }: ScannerComponentProp
   const [isLoading, setIsLoading] = useState(false);
   const [hasPermission, setHasPermission] = useState<boolean | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [scanMode, setScanMode] = useState<'camera' | 'gallery'>('camera');
   const [cameras, setCameras] = useState<any[]>([]);
   const [selectedCamera, setSelectedCamera] = useState<string>('');
   const [isScanning, setIsScanning] = useState(false);
-  const scannerRef = useRef<Html5QrcodeScanner | null>(null);
   const html5QrCodeRef = useRef<Html5Qrcode | null>(null);
   const scanLockRef = useRef(false);
   const { hapticFeedback } = useTelegram();
@@ -63,10 +61,6 @@ export const ScannerComponent = ({ onScanSuccess, onBack }: ScannerComponentProp
       if (html5QrCodeRef.current) {
         await html5QrCodeRef.current.stop();
         html5QrCodeRef.current = null;
-      }
-      if (scannerRef.current) {
-        scannerRef.current.clear();
-        scannerRef.current = null;
       }
       setIsScanning(false);
     } catch (err) {
@@ -181,123 +175,7 @@ export const ScannerComponent = ({ onScanSuccess, onBack }: ScannerComponentProp
     }
   }, [selectedCamera, isScanning, handleScanSuccess, cleanupScanner]);
 
-  // Initialize gallery scanner
-  const initializeGalleryScanner = useCallback(() => {
-    if (isScanning || scanLockRef.current) return;
-    
-    try {
-      cleanupScanner(); // Clean up any existing scanner
-      
-      const scanner = new Html5QrcodeScanner(
-        'qr-reader',
-        {
-          fps: 10,
-          qrbox: { width: 250, height: 250 },
-          aspectRatio: 1.0,
-          showTorchButtonIfSupported: false,
-          showZoomSliderIfSupported: false,
-          rememberLastUsedCamera: false,
-          supportedScanTypes: [Html5QrcodeScanType.SCAN_TYPE_FILE], // Only file upload, no camera
-        },
-        false
-      );
-
-      scanner.render(
-        async (decodedText) => {
-          if (!scanLockRef.current) {
-            await handleScanSuccess(decodedText);
-          }
-        },
-        (error) => {
-          console.log('Scan error:', error);
-        }
-      );
-
-      scannerRef.current = scanner;
-      setIsScanning(true);
-      setError(null);
-
-      // Remove unwanted text elements after scanner renders
-      setTimeout(() => {
-        const qrReader = document.getElementById('qr-reader');
-        if (qrReader) {
-          // Remove all text content except from buttons and inputs
-          const walker = document.createTreeWalker(
-            qrReader,
-            NodeFilter.SHOW_TEXT
-          );
-          
-          const textNodes = [];
-          let node;
-          while (node = walker.nextNode()) {
-            if (node.textContent && node.textContent.trim()) {
-              textNodes.push(node);
-            }
-          }
-          
-          textNodes.forEach(textNode => {
-            if (!textNode.parentElement?.tagName.match(/BUTTON|SELECT|INPUT/)) {
-              textNode.textContent = '';
-            }
-          });
-
-          // Hide unwanted divs
-          const divsWithText = qrReader.querySelectorAll('div');
-          divsWithText.forEach(div => {
-            if (div.textContent && 
-                (div.textContent.includes('Upload an image') || 
-                 div.textContent.includes('use camera to scan') ||
-                 div.textContent.includes('barcode') ||
-                 div.textContent.includes('drop an image'))) {
-              div.style.display = 'none';
-            }
-          });
-        }
-      }, 500);
-      
-    } catch (err) {
-      console.error('Error starting gallery scanner:', err);
-      setError('Failed to initialize scanner. Please try again.');
-    }
-  }, [isScanning, handleScanSuccess, cleanupScanner]);
-
-  // Handle scan mode change
-  const handleScanModeChange = useCallback(async (mode: 'camera' | 'gallery') => {
-    if (isLoading || scanLockRef.current) return;
-    
-    hapticFeedback.impact('light');
-    setScanMode(mode);
-    setError(null);
-    scanLockRef.current = false;
-
-    await cleanupScanner();
-  }, [hapticFeedback, isLoading, cleanupScanner]);
-
-  // Handle file upload for gallery mode
-  const handleFileUpload = useCallback(async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file || scanLockRef.current) return;
-
-    scanLockRef.current = true;
-    setIsLoading(true);
-    setError(null);
-
-    try {
-      // Create a temporary Html5Qrcode instance for file scanning
-      const html5QrCode = new Html5Qrcode('temp-qr-reader');
-      const result = await html5QrCode.scanFile(file, true);
-      await handleScanSuccess(result);
-    } catch (err) {
-      setError('No barcode found in the selected image. Please try a clearer image.');
-      setIsLoading(false);
-      scanLockRef.current = false;
-    }
-
-    // Reset file input
-    event.target.value = '';
-  }, [handleScanSuccess]);
-
-  // Initialize scanner based on mode
+  // Initialize scanner based on camera permissions
   useEffect(() => {
     if (hasPermission === null) {
       getCameras();
@@ -305,18 +183,13 @@ export const ScannerComponent = ({ onScanSuccess, onBack }: ScannerComponentProp
   }, [getCameras, hasPermission]);
 
   useEffect(() => {
-    if (hasPermission === true && scanMode === 'camera' && selectedCamera && !isScanning) {
+    if (hasPermission === true && selectedCamera && !isScanning) {
       const timer = setTimeout(() => {
         initializeCameraScanner();
       }, 100);
       return () => clearTimeout(timer);
-    } else if (scanMode === 'gallery' && !isScanning) {
-      const timer = setTimeout(() => {
-        initializeGalleryScanner();
-      }, 100);
-      return () => clearTimeout(timer);
     }
-  }, [scanMode, selectedCamera, hasPermission, isScanning, initializeCameraScanner, initializeGalleryScanner]);
+  }, [selectedCamera, hasPermission, isScanning, initializeCameraScanner]);
 
   // Cleanup on unmount
   useEffect(() => {
@@ -351,7 +224,7 @@ export const ScannerComponent = ({ onScanSuccess, onBack }: ScannerComponentProp
           </div>
           
           {/* Camera Selection */}
-          {cameras.length > 1 && scanMode === 'camera' && (
+          {cameras.length > 1 && (
             <select
               value={selectedCamera}
               onChange={(e) => setSelectedCamera(e.target.value)}
@@ -364,37 +237,6 @@ export const ScannerComponent = ({ onScanSuccess, onBack }: ScannerComponentProp
               ))}
             </select>
           )}
-        </div>
-      </div>
-
-      {/* Scan Mode Toggle */}
-      <div className="relative z-30 px-6 mb-6">
-        <div className="flex bg-white/60 dark:bg-white/10 backdrop-blur-md rounded-2xl p-1 border border-gray-200/50 dark:border-white/20 shadow-lg">
-          <button
-            onClick={() => handleScanModeChange('camera')}
-            disabled={hasPermission === false}
-            className={`flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-xl transition-all duration-300 ${
-              scanMode === 'camera'
-                ? 'bg-emerald-500 text-white shadow-lg'
-                : hasPermission === false
-                ? 'text-gray-400 dark:text-gray-500 cursor-not-allowed'
-                : 'text-gray-700 dark:text-white/80 hover:bg-white/50 dark:hover:bg-white/10'
-            }`}
-          >
-            <CameraIcon className="w-5 h-5" />
-            <span className="font-medium">Camera</span>
-          </button>
-          <button
-            onClick={() => handleScanModeChange('gallery')}
-            className={`flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-xl transition-all duration-300 ${
-              scanMode === 'gallery'
-                ? 'bg-emerald-500 text-white shadow-lg'
-                : 'text-gray-700 dark:text-white/80 hover:bg-white/50 dark:hover:bg-white/10'
-            }`}
-          >
-            <PhotoIcon className="w-5 h-5" />
-            <span className="font-medium">Gallery</span>
-          </button>
         </div>
       </div>
 
@@ -412,7 +254,7 @@ export const ScannerComponent = ({ onScanSuccess, onBack }: ScannerComponentProp
               </p>
               <div className="animate-spin rounded-full h-10 w-10 border-4 border-emerald-200 dark:border-emerald-400/30 border-t-emerald-600 dark:border-t-emerald-400"></div>
             </div>
-          ) : hasPermission === false && scanMode === 'camera' ? (
+          ) : hasPermission === false ? (
             <div className="text-center py-12 h-full flex flex-col items-center justify-center">
               <div className="w-20 h-20 bg-red-100 dark:bg-red-500/20 rounded-full flex items-center justify-center mb-6 shadow-lg">
                 <CameraIcon className="w-10 h-10 text-red-600 dark:text-red-400" />
@@ -437,38 +279,6 @@ export const ScannerComponent = ({ onScanSuccess, onBack }: ScannerComponentProp
               <div className="flex-1 flex items-center justify-center">
                 <div id="qr-reader" className="w-full max-w-md"></div>
               </div>
-              
-              {/* Hidden div for file scanning */}
-              <div id="temp-qr-reader" className="hidden"></div>
-
-              {/* File Upload for Gallery Mode */}
-              {scanMode === 'gallery' && (
-                <div className="mt-4">
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={handleFileUpload}
-                    className="hidden"
-                    id="file-upload"
-                    disabled={isLoading}
-                  />
-                  <label
-                    htmlFor="file-upload"
-                    className={`block w-full p-6 border-2 border-dashed rounded-2xl text-center transition-all duration-300 ${
-                      isLoading 
-                        ? 'border-gray-300 dark:border-white/20 cursor-not-allowed opacity-50' 
-                        : 'border-gray-400 dark:border-white/30 cursor-pointer hover:border-emerald-500 dark:hover:border-emerald-400 hover:bg-gray-50 dark:hover:bg-white/5'
-                    }`}
-                  >
-                    <div className="w-12 h-12 bg-emerald-100 dark:bg-emerald-500/20 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
-                      <PhotoIcon className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />
-                    </div>
-                    <span className="text-gray-700 dark:text-white/90 font-medium">
-                      {isLoading ? 'Processing...' : 'Click to select image from gallery'}
-                    </span>
-                  </label>
-                </div>
-              )}
             </div>
           )}
 
@@ -498,48 +308,25 @@ export const ScannerComponent = ({ onScanSuccess, onBack }: ScannerComponentProp
         <div className="bg-white/60 dark:bg-white/5 backdrop-blur-md border border-gray-200/50 dark:border-white/10 rounded-2xl p-4 shadow-lg">
           <h3 className="font-semibold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
             <div className="w-2 h-2 bg-emerald-500 dark:bg-emerald-400 rounded-full"></div>
-            {scanMode === 'camera' ? 'Camera Scanning Tips' : 'Gallery Scanning Tips'}
+            Camera Scanning Tips
           </h3>
           <ul className="text-sm text-gray-600 dark:text-white/80 space-y-2">
-            {scanMode === 'camera' ? (
-              <>
-                <li className="flex items-center gap-2">
-                  <div className="w-1 h-1 bg-emerald-500 dark:bg-emerald-400 rounded-full"></div>
-                  Hold your phone steady
-                </li>
-                <li className="flex items-center gap-2">
-                  <div className="w-1 h-1 bg-emerald-500 dark:bg-emerald-400 rounded-full"></div>
-                  Ensure good lighting
-                </li>
-                <li className="flex items-center gap-2">
-                  <div className="w-1 h-1 bg-emerald-500 dark:bg-emerald-400 rounded-full"></div>
-                  Position barcode within the frame
-                </li>
-                <li className="flex items-center gap-2">
-                  <div className="w-1 h-1 bg-emerald-500 dark:bg-emerald-400 rounded-full"></div>
-                  Wait for automatic detection
-                </li>
-              </>
-            ) : (
-              <>
-                <li className="flex items-center gap-2">
-                  <div className="w-1 h-1 bg-emerald-500 dark:bg-emerald-400 rounded-full"></div>
-                  Select clear, well-lit images
-                </li>
-                <li className="flex items-center gap-2">
-                  <div className="w-1 h-1 bg-emerald-500 dark:bg-emerald-400 rounded-full"></div>
-                  Ensure barcode is visible and unobstructed
-                </li>
-                <li className="flex items-center gap-2">
-                  <div className="w-1 h-1 bg-emerald-500 dark:bg-emerald-400 rounded-full"></div>
-                  Use camera for live scanning
-                </li>
-                <li className="flex items-center gap-2">
-                  <div className="w-1 h-1 bg-emerald-500 dark:bg-emerald-400 rounded-full"></div>
-                  Upload from gallery for existing photos
-                </li>
-              </>
-            )}
+            <li className="flex items-center gap-2">
+              <div className="w-1 h-1 bg-emerald-500 dark:bg-emerald-400 rounded-full"></div>
+              Hold your phone steady
+            </li>
+            <li className="flex items-center gap-2">
+              <div className="w-1 h-1 bg-emerald-500 dark:bg-emerald-400 rounded-full"></div>
+              Ensure good lighting
+            </li>
+            <li className="flex items-center gap-2">
+              <div className="w-1 h-1 bg-emerald-500 dark:bg-emerald-400 rounded-full"></div>
+              Position barcode within the frame
+            </li>
+            <li className="flex items-center gap-2">
+              <div className="w-1 h-1 bg-emerald-500 dark:bg-emerald-400 rounded-full"></div>
+              Wait for automatic detection
+            </li>
           </ul>
         </div>
       </div>
