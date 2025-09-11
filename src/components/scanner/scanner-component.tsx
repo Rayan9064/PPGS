@@ -1,6 +1,6 @@
 'use client';
 
-import { useTelegram } from '@/components/providers/telegram-provider';
+import { useWeb } from '@/components/providers/web-provider';
 import { fetchProductData } from '@/lib/product-api';
 import { ProductData } from '@/types';
 import { ArrowLeftIcon, CameraIcon } from '@heroicons/react/24/outline';
@@ -23,38 +23,38 @@ export const ScannerComponent = ({ onScanSuccess, onBack }: ScannerComponentProp
   const [permissionChecked, setPermissionChecked] = useState(false);
   const html5QrCodeRef = useRef<Html5Qrcode | null>(null);
   const scanLockRef = useRef(false);
-  const { hapticFeedback, tgUser } = useTelegram();
+  const { hapticFeedback, webUser } = useWeb();
 
   // Camera permission caching functions
   const getCachedPermission = useCallback((): boolean | null => {
     try {
-      const cacheKey = tgUser?.id ? `camera_permission_${tgUser.id}` : 'camera_permission_guest';
+      const cacheKey = webUser?.id ? `camera_permission_${webUser.id}` : 'camera_permission_guest';
       const cached = localStorage.getItem(cacheKey);
       return cached ? JSON.parse(cached) : null;
     } catch {
       return null;
     }
-  }, [tgUser?.id]);
+  }, [webUser?.id]);
 
   const setCachedPermission = useCallback((permission: boolean) => {
     try {
-      const cacheKey = tgUser?.id ? `camera_permission_${tgUser.id}` : 'camera_permission_guest';
+      const cacheKey = webUser?.id ? `camera_permission_${webUser.id}` : 'camera_permission_guest';
       localStorage.setItem(cacheKey, JSON.stringify(permission));
     } catch {
       // Ignore cache errors
     }
-  }, [tgUser?.id]);
+  }, [webUser?.id]);
 
   const clearCachedPermission = useCallback(() => {
     try {
-      const cacheKey = tgUser?.id ? `camera_permission_${tgUser.id}` : 'camera_permission_guest';
+      const cacheKey = webUser?.id ? `camera_permission_${webUser.id}` : 'camera_permission_guest';
       localStorage.removeItem(cacheKey);
       setHasPermission(null);
       setPermissionChecked(false);
     } catch {
       // Ignore cache errors
     }
-  }, [tgUser?.id]);
+  }, [webUser?.id]);
 
   const handleScanSuccess = useCallback(async (barcode: string) => {
     if (isLoading || scanLockRef.current) return;

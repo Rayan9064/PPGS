@@ -5,7 +5,7 @@ import { HomeTab } from '@/components/navigation/tabs/home-tab';
 import { ProfileTab } from '@/components/navigation/tabs/profile-tab';
 import { ResultsTab } from '@/components/navigation/tabs/results-tab';
 import { ScanTab } from '@/components/navigation/tabs/scan-tab';
-import { useTelegram } from '@/components/providers/telegram-provider';
+import { useWeb } from '@/components/providers/web-provider';
 import { ProductData } from '@/types';
 import { ChatBubbleLeftRightIcon, DocumentTextIcon, HomeIcon, QrCodeIcon, UserIcon } from '@heroicons/react/24/outline';
 import { ChatBubbleLeftRightIcon as ChatBubbleLeftRightIconSolid, DocumentTextIcon as DocumentTextIconSolid, HomeIcon as HomeIconSolid, QrCodeIcon as QrCodeIconSolid, UserIcon as UserIconSolid } from '@heroicons/react/24/solid';
@@ -17,7 +17,7 @@ export const TabNavigation = () => {
   const [activeTab, setActiveTab] = useState<TabType>('home');
   const [scannedProducts, setScannedProducts] = useState<ProductData[]>([]);
   const [currentProduct, setCurrentProduct] = useState<ProductData | null>(null);
-  const { hapticFeedback } = useTelegram();
+  const { hapticFeedback } = useWeb();
 
   // Load scan history from localStorage on mount
   useEffect(() => {

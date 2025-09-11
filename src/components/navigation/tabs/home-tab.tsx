@@ -1,6 +1,6 @@
 'use client';
 
-import { useTelegram } from '@/components/providers/telegram-provider';
+import { useWeb } from '@/components/providers/web-provider';
 import { ProductData } from '@/types';
 import { getNutritionGrade } from '@/utils/grading-logic';
 import { ClockIcon, QrCodeIcon, ShieldCheckIcon, TrophyIcon } from '@heroicons/react/24/outline';
@@ -12,7 +12,7 @@ interface HomeTabProps {
 }
 
 export const HomeTab = ({ onStartScanning, recentScans, onProductSelect }: HomeTabProps) => {
-  const { hapticFeedback } = useTelegram();
+  const { hapticFeedback } = useWeb();
 
   const handleScanButtonPress = () => {
     hapticFeedback.impact('medium');

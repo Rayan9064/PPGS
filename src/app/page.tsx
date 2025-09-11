@@ -1,6 +1,6 @@
 'use client';
 
-import { ConnectionPrompt } from '@/components/connection/connection-prompt';
+import { WebConnectionPrompt } from '@/components/connection/web-connection-prompt';
 import { TabNavigation } from '@/components/navigation/tab-navigation';
 import { OnboardingFlow } from '@/components/onboarding/onboarding-flow';
 import { useUserData } from '@/components/providers/user-data-provider';
@@ -42,7 +42,7 @@ export default function Home() {
       
       {/* Show connection prompt automatically on first load if needed */}
       {(shouldShowConnectionPrompt || showConnectionPrompt) && !showOnboarding && (
-        <ConnectionPrompt 
+        <WebConnectionPrompt 
           onClose={handleConnectionPromptClose}
           showDemoMode={true}
         />

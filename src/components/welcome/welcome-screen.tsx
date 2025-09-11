@@ -1,6 +1,6 @@
 'use client';
 
-import { useTelegram } from '@/components/providers/telegram-provider';
+import { useWeb } from '@/components/providers/web-provider';
 import { QrCodeIcon, ShieldCheckIcon, SparklesIcon } from '@heroicons/react/24/outline';
 
 interface WelcomeScreenProps {
@@ -8,7 +8,7 @@ interface WelcomeScreenProps {
 }
 
 export const WelcomeScreen = ({ onStartScanning }: WelcomeScreenProps) => {
-  const { hapticFeedback } = useTelegram();
+  const { hapticFeedback } = useWeb();
 
   const handleStartScanning = () => {
     hapticFeedback.impact('medium');

@@ -1,6 +1,6 @@
 'use client';
 
-import { useTelegram } from '@/components/providers/telegram-provider';
+import { useWeb } from '@/components/providers/web-provider';
 import { ProductData } from '@/types';
 import { getNutritionGrade } from '@/utils/grading-logic';
 import { ArrowLeftIcon, ClockIcon, FireIcon } from '@heroicons/react/24/outline';
@@ -27,7 +27,7 @@ const DataSourceBadge = ({ isUserData }: { isUserData: boolean }) => (
 );
 
 export default function ConsumedProducts() {
-  const { hapticFeedback } = useTelegram();
+  const { hapticFeedback } = useWeb();
   const [consumedProducts, setConsumedProducts] = useState<ConsumedProduct[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   

@@ -1,6 +1,6 @@
 'use client';
 
-import { useTelegram } from '@/components/providers/telegram-provider';
+import { useWeb } from '@/components/providers/web-provider';
 import { useTheme } from '@/components/providers/theme-provider';
 import { useUserData } from '@/components/providers/user-data-provider';
 import {
@@ -22,7 +22,7 @@ import { useState } from 'react';
 
 export const ProfileTab = () => {
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
-  const { hapticFeedback, isAvailable, tgUser } = useTelegram();
+  const { hapticFeedback, isAvailable, webUser } = useWeb();
   const { 
     userData, 
     connectionStatus, 

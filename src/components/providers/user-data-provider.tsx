@@ -3,7 +3,7 @@
 import { UserDataService } from '@/lib/user-data';
 import { OnboardingState, UserConnectionStatus, UserData } from '@/types';
 import { createContext, ReactNode, useContext, useEffect, useState } from 'react';
-import { useTelegram } from './telegram-provider';
+import { useWeb } from './web-provider';
 
 interface UserDataContextType {
   userData: UserData | null;
@@ -14,7 +14,7 @@ interface UserDataContextType {
   
   // User data methods
   updateUserData: (updates: Partial<UserData>) => Promise<boolean>;
-  createUserAccount: (telegramUser: any) => Promise<boolean>;
+  createUserAccount: (user: any) => Promise<boolean>;
   deleteUserData: () => void;
   
   // Onboarding methods
@@ -33,7 +33,7 @@ interface UserDataContextType {
 const UserDataContext = createContext<UserDataContextType | null>(null);
 
 export const UserDataProvider = ({ children }: { children: ReactNode }) => {
-  const { tgUser, isAvailable } = useTelegram();
+  const { webUser, isAvailable } = useWeb();
   const [userData, setUserData] = useState<UserData | null>(null);
   const [onboardingState, setOnboardingState] = useState<OnboardingState>({
     isCompleted: false,
@@ -49,7 +49,7 @@ export const UserDataProvider = ({ children }: { children: ReactNode }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Initialize user data on mount and when Telegram user changes
+  // Initialize user data on mount and when web user changes
   useEffect(() => {
     const initializeUserData = async () => {
       setIsLoading(true);
@@ -57,7 +57,7 @@ export const UserDataProvider = ({ children }: { children: ReactNode }) => {
 
       try {
         // Get connection status
-        const status = UserDataService.getUserConnectionStatus(tgUser);
+        const status = UserDataService.getUserConnectionStatus(webUser);
         setConnectionStatus(status);
 
         // Get onboarding state
@@ -65,13 +65,13 @@ export const UserDataProvider = ({ children }: { children: ReactNode }) => {
         setOnboardingState(onboarding);
 
         // Get user data if available
-        if (status.isConnected && tgUser) {
-          const data = UserDataService.getUserData(tgUser.id);
+        if (status.isConnected && webUser) {
+          const data = UserDataService.getUserData(webUser.id);
           setUserData(data);
 
           // Auto-create basic user data if connected but no data exists
-          if (!data && status.isTelegramUser) {
-            const newUserData = UserDataService.createUserData(tgUser);
+          if (!data) {
+            const newUserData = UserDataService.createUserData(webUser);
             const saved = UserDataService.saveUserData(newUserData);
             if (saved) {
               setUserData(newUserData);
@@ -91,10 +91,10 @@ export const UserDataProvider = ({ children }: { children: ReactNode }) => {
     };
 
     initializeUserData();
-  }, [tgUser, isAvailable]);
+  }, [webUser, isAvailable]);
 
   const updateUserData = async (updates: Partial<UserData>): Promise<boolean> => {
-    if (!tgUser || !userData) {
+    if (!webUser || !userData) {
       setError('User not connected');
       return false;
     }
@@ -107,9 +107,9 @@ export const UserDataProvider = ({ children }: { children: ReactNode }) => {
         return false;
       }
 
-      const success = UserDataService.updateUserData(tgUser.id, updates);
+      const success = UserDataService.updateUserData(webUser.id, updates);
       if (success) {
-        const updatedData = UserDataService.getUserData(tgUser.id);
+        const updatedData = UserDataService.getUserData(webUser.id);
         setUserData(updatedData);
         setError(null);
         return true;
@@ -124,9 +124,9 @@ export const UserDataProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  const createUserAccount = async (telegramUser: any): Promise<boolean> => {
+  const createUserAccount = async (user: any): Promise<boolean> => {
     try {
-      const newUserData = UserDataService.createUserData(telegramUser);
+      const newUserData = UserDataService.createUserData(user);
       const saved = UserDataService.saveUserData(newUserData);
       
       if (saved) {
@@ -134,7 +134,7 @@ export const UserDataProvider = ({ children }: { children: ReactNode }) => {
         setConnectionStatus(prev => ({ 
           ...prev, 
           isConnected: true, 
-          isTelegramUser: true, 
+          isTelegramUser: false, 
           hasUserData: true,
           needsOnboarding: true 
         }));

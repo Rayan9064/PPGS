@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { ArrowLeftIcon, ClockIcon, QrCodeIcon, CalendarIcon } from '@heroicons/react/24/outline';
-import { useTelegram } from '@/components/providers/telegram-provider';
+import { useWeb } from '@/components/providers/web-provider';
 import { ProductData } from '@/types';
 import { getNutritionGrade } from '@/utils/grading-logic';
 
@@ -26,7 +26,7 @@ const DataSourceBadge = ({ isUserData }: { isUserData: boolean }) => (
 );
 
 export default function ScanHistory() {
-  const { hapticFeedback } = useTelegram();
+  const { hapticFeedback } = useWeb();
   const [scanHistory, setScanHistory] = useState<ScanHistoryItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   

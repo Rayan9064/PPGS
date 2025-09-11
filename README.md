@@ -1,15 +1,15 @@
-# 🍎 NutriPal - Smart Nutrition Scanner
+# 🍎 NutriGrade - Smart Nutrition Scanner
 
-> A modern Telegram Mini App for instant product nutrition analysis and health grading
+> A modern web application for instant product nutrition analysis and health grading
 
 ![Version](https://img.shields.io/badge/version-1.0.0-blue)
 ![Next.js](https://img.shields.io/badge/Next.js-14.2.30-black)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue)
-![Telegram](https://img.shields.io/badge/Telegram-Mini%20App-26A5E4)
+![Web App](https://img.shields.io/badge/Web-App-26A5E4)
 
 ## 📱 Overview
 
-NutriPal is an intelligent nutrition scanner that helps users make informed dietary decisions by scanning product barcodes. Built as a Telegram Mini App, it provides instant access to comprehensive nutrition analysis with an intuitive mobile-first interface.
+NutriGrade is an intelligent nutrition scanner that helps users make informed dietary decisions by scanning product barcodes. Built as a modern web application, it provides instant access to comprehensive nutrition analysis with an intuitive mobile-first interface.
 
 ### ✨ Key Features
 
@@ -18,8 +18,8 @@ NutriPal is an intelligent nutrition scanner that helps users make informed diet
 - **🤖 AI Assistant**: Contextual nutrition advice and recommendations
 - **📈 Health Tracking**: Personal nutrition statistics and progress
 - **⚙️ Smart Preferences**: Dietary restrictions and health goals
-- **📱 Mobile-First**: Native app experience in web browser
-- **🎯 Telegram Integration**: Seamless Mini App experience with haptic feedback
+- **📱 Mobile-First**: Responsive design for all devices
+- **🌐 Web-Native**: Works in any modern browser
 
 ## 🏗️ Architecture
 
@@ -34,14 +34,14 @@ NutriPal is an intelligent nutrition scanner that helps users make informed diet
 | **Data Source** | Open Food Facts API |
 | **Notifications** | React Hot Toast |
 | **Icons** | Heroicons |
-| **Platform** | Telegram Mini Apps |
+| **Platform** | Web Application |
 
 ### Project Structure
 
 ```
 src/
 ├── app/                    # Next.js App Router
-│   ├── layout.tsx         # Root layout with Telegram integration
+│   ├── layout.tsx         # Root layout
 │   └── page.tsx           # Main app entry point
 ├── components/
 │   ├── navigation/        # Tab navigation system
@@ -53,14 +53,14 @@ src/
 │   │       ├── chat-tab.tsx      # AI assistant
 │   │       └── profile-tab.tsx   # User preferences
 │   ├── providers/         # React Context providers
-│   │   └── telegram-provider.tsx # Telegram WebApp integration
+│   │   └── web-provider.tsx      # Web app integration
 │   ├── scanner/           # Barcode scanning components
 │   ├── product/           # Product display components
 │   └── welcome/           # Onboarding components
 ├── lib/                   # Core utilities
 │   ├── nutrition-limits.ts    # Health thresholds
 │   ├── product-api.ts         # API integration
-│   └── telegram.ts            # Telegram WebApp hooks
+│   └── user-data.ts           # User data management
 ├── utils/                 # Helper functions
 │   └── grading-logic.ts       # Nutrition scoring algorithm
 ├── types/                 # TypeScript definitions
@@ -79,8 +79,8 @@ src/
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/Rayan9064/PPGS.git
-   cd PPGS
+   git clone <your-repo-url>
+   cd CodeX-NutriGrade
    ```
 
 2. **Install dependencies**
@@ -103,10 +103,6 @@ src/
 Create a `.env.local` file for configuration:
 
 ```env
-# Optional: Telegram Bot configuration
-TELEGRAM_BOT_TOKEN=your_bot_token_here
-TELEGRAM_BOT_USERNAME=your_bot_username
-
 # Optional: Custom API endpoints
 NEXT_PUBLIC_API_BASE_URL=https://world.openfoodfacts.org
 ```
@@ -126,23 +122,6 @@ NEXT_PUBLIC_API_BASE_URL=https://world.openfoodfacts.org
    http://YOUR_LOCAL_IP:3000
    ```
 
-### Telegram Mini App Testing
-
-1. **Install ngrok** for public HTTPS tunnel
-   ```bash
-   npm install -g ngrok
-   ngrok http 3000
-   ```
-
-2. **Create Telegram Bot** with @BotFather
-   - Send `/newbot` to create bot
-   - Send `/newapp` to create Mini App
-   - Set Web App URL to your ngrok URL
-
-3. **Test in Telegram**
-   - Open your bot in Telegram
-   - Tap the Mini App button to launch
-
 ## 🎯 Features Deep Dive
 
 ### 🏠 Home Dashboard
@@ -155,7 +134,7 @@ NEXT_PUBLIC_API_BASE_URL=https://world.openfoodfacts.org
 - **Camera Integration**: Real-time barcode detection
 - **Product Recognition**: Open Food Facts database integration
 - **Error Handling**: Graceful fallbacks and user feedback
-- **Haptic Feedback**: Telegram-native vibration responses
+- **Haptic Feedback**: Browser vibration API support
 
 ### 📊 Results Analysis
 - **Nutrition Grading**: A-E health score with color coding
@@ -177,7 +156,7 @@ NEXT_PUBLIC_API_BASE_URL=https://world.openfoodfacts.org
 
 ## 🔧 Nutrition Grading System
 
-NutriPal uses a scientific approach to grade products:
+NutriGrade uses a scientific approach to grade products:
 
 | Grade | Score | Criteria | Color |
 |-------|-------|----------|-------|
@@ -215,14 +194,7 @@ npm run type-check   # TypeScript validation
 - **TypeScript**: Full type safety with strict mode
 - **ESLint**: Code linting with Next.js recommended rules
 - **Prettier**: Consistent code formatting
-- **Husky**: Pre-commit hooks for quality assurance
-
-### Testing Strategy
-
-- **Component Testing**: Jest + React Testing Library
-- **E2E Testing**: Playwright for user flows
-- **Mobile Testing**: Real device testing via ngrok
-- **Telegram Testing**: Mini App validation in Telegram
+- **Responsive Design**: Mobile-first approach
 
 ## 🚀 Deployment
 
@@ -237,10 +209,6 @@ npm run type-check   # TypeScript validation
    - Add environment variables in Vercel dashboard
    - Set up custom domain if needed
 
-3. **Telegram Integration**
-   - Update Mini App URL in @BotFather
-   - Test production deployment
-
 ### Manual Deployment
 
 ```bash
@@ -252,8 +220,8 @@ npm start
 
 - **No Personal Data Storage**: All data processed client-side
 - **Secure API Calls**: HTTPS-only communication
-- **Telegram Integration**: Official WebApp APIs only
 - **Camera Permissions**: Explicit user consent required
+- **Local Storage**: User preferences stored locally
 
 ## 🤝 Contributing
 
@@ -277,15 +245,13 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## 🙏 Acknowledgments
 
 - **Open Food Facts**: Comprehensive product database
-- **Telegram**: Mini Apps platform and WebApp APIs
-- **Vercel**: Hosting and deployment platform
 - **Next.js Team**: Amazing React framework
+- **Tailwind CSS**: Utility-first CSS framework
 
 ## 🔗 Links
 
-- **Live Demo**: [nutripal.vercel.app](https://nutripal.vercel.app)
-- **Telegram Bot**: [@nutripal_bot](https://t.me/nutripal_bot)
-- **GitHub Repository**: [Rayan9064/PPGS](https://github.com/Rayan9064/PPGS)
+- **Live Demo**: [Your deployed URL]
+- **GitHub Repository**: [Your repo URL]
 - **Open Food Facts**: [openfoodfacts.org](https://world.openfoodfacts.org)
 
 ---

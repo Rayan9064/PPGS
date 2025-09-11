@@ -7,22 +7,21 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "type-check": "tsc --noEmit",
-    "setup-bot": "node scripts/setup-bot.js",
-    "test-webhook": "node scripts/test-webhook.js"
+    "type-check": "tsc --noEmit"
   },
   "dependencies": {
+    "@headlessui/react": "^1.7.17",
+    "@heroicons/react": "^2.0.18",
+    "axios": "^1.6.0",
+    "clsx": "^2.0.0",
+    "framer-motion": "^10.16.16",
+    "html5-qrcode": "^2.3.8",
     "next": "^14.0.4",
+    "node": "^24.8.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "axios": "^1.6.0",
-    "@heroicons/react": "^2.0.18",
-    "clsx": "^2.0.0",
-    "tailwind-merge": "^2.2.0",
-    "@headlessui/react": "^1.7.17",
     "react-hot-toast": "^2.4.1",
-    "html5-qrcode": "^2.3.8",
-    "framer-motion": "^10.16.16"
+    "tailwind-merge": "^2.2.0"
   },
   "devDependencies": {
     "@types/node": "^20.10.5",

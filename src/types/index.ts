@@ -41,7 +41,7 @@ export interface ScannerState {
 
 // User data interface
 export interface UserData {
-  telegramId: number;
+  telegramId: string | number; // Support both string and number for web compatibility
   firstName: string;
   lastName?: string;
   username?: string;
@@ -79,8 +79,8 @@ export interface UserConnectionStatus {
   needsOnboarding: boolean;
 }
 
-// Telegram WebApp interface
-export interface TelegramWebApp {
+// Web app interface (simplified for web compatibility)
+export interface WebApp {
   ready: () => void;
   expand: () => void;
   close: () => void;
@@ -108,15 +108,5 @@ export interface TelegramWebApp {
     link_color: string;
     button_color: string;
     button_text_color: string;
-  };
-  initDataUnsafe?: {
-    user?: {
-      id: number;
-      first_name: string;
-      last_name?: string;
-      username?: string;
-      photo_url?: string;
-    };
-    [key: string]: any;
   };
 }
