@@ -8,12 +8,12 @@ import { useState } from 'react';
 
 export default function Home() {
   const { connectionStatus, onboardingState } = useUserData();
-  const [showConnectionPrompt, setShowConnectionPrompt] = useState(false);
-  const [showOnboarding, setShowOnboarding] = useState(false);
+  const [showConnectionPrompt, setShowConnectionPrompt] = useState(false); // Start with false to skip connection prompt
+  const [showOnboarding, setShowOnboarding] = useState(false); // Start with false to show main app
 
   // Show connection prompt if not connected or missing data
-  const shouldShowConnectionPrompt = !connectionStatus.isConnected || 
-    (connectionStatus.isConnected && !connectionStatus.hasUserData);
+  const shouldShowConnectionPrompt = (!connectionStatus.isConnected || 
+    (connectionStatus.isConnected && !connectionStatus.hasUserData)) && showConnectionPrompt;
 
   // Show onboarding if connected, has data, but needs onboarding
   const shouldShowOnboarding = connectionStatus.isConnected && 
@@ -22,8 +22,18 @@ export default function Home() {
     !onboardingState.isCompleted;
 
   const handleConnectionPromptClose = () => {
+    console.log('Connection prompt close called');
     setShowConnectionPrompt(false);
+    // Check if user is in demo mode
+    const isDemoMode = localStorage.getItem('nutripal-demo-mode') === 'true';
+    console.log('Demo mode:', isDemoMode);
+    if (isDemoMode) {
+      // In demo mode, don't show onboarding
+      console.log('In demo mode, skipping onboarding');
+      return;
+    }
     if (shouldShowOnboarding) {
+      console.log('Showing onboarding');
       setShowOnboarding(true);
     }
   };
@@ -41,7 +51,7 @@ export default function Home() {
       <TabNavigation />
       
       {/* Show connection prompt automatically on first load if needed */}
-      {(shouldShowConnectionPrompt || showConnectionPrompt) && !showOnboarding && (
+      {shouldShowConnectionPrompt && !showOnboarding && (
         <WebConnectionPrompt 
           onClose={handleConnectionPromptClose}
           showDemoMode={true}

@@ -24,26 +24,34 @@ export const WelcomeScreen = ({ onStartScanning }: WelcomeScreenProps) => {
   ];
 
   return (
-    <div className="animate-fade-in">
+    <div className="min-h-screen bg-primary-50 flex flex-col">
       {/* Header */}
-      <div className="text-center mb-8">
-        <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-100 dark:bg-blue-900/30 rounded-full mb-4">
-          <QrCodeIcon className="w-8 h-8 text-blue-600 dark:text-blue-400" />
-        </div>
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">Nutripal</h1>
-        <p className="text-gray-600 dark:text-gray-400">
-          Scan product barcodes to get detailed nutrition information and health grading
-        </p>
+      <div className="flex items-center justify-between p-6 pt-12">
+        <h1 className="text-2xl font-bold text-secondary-900">NutriGrade</h1>
+        <button className="w-8 h-8 bg-secondary-100 rounded-full flex items-center justify-center">
+          <span className="text-secondary-600 font-semibold">?</span>
+        </button>
       </div>
 
-      {/* Start Scanning Button */}
-      <button
-        onClick={handleStartScanning}
-        className="w-full btn-primary mb-8 py-4 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
-      >
-        <QrCodeIcon className="w-6 h-6 inline mr-2" />
-        Start Scanning
-      </button>
+      {/* Main Content */}
+      <div className="flex-1 flex flex-col justify-center px-6">
+        <div className="text-center mb-12">
+          <h2 className="text-3xl font-bold text-secondary-900 mb-4">
+            Welcome to NutriGrade
+          </h2>
+          <p className="text-secondary-500 text-lg leading-relaxed">
+            Unlock the power of AI-driven nutrition analysis and blockchain-verified food data. Start your journey to healthier eating today.
+          </p>
+        </div>
+
+        {/* Get Started Button */}
+        <button
+          onClick={handleStartScanning}
+          className="w-full bg-primary-500 hover:bg-primary-600 text-white font-semibold py-4 text-lg rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
+        >
+          Get Started
+        </button>
+      </div>
 
       {/* Features */}
       <div className="grid gap-4 mb-8">

@@ -10,14 +10,35 @@ import { ProductData } from '@/types';
 import { ChatBubbleLeftRightIcon, DocumentTextIcon, HomeIcon, QrCodeIcon, UserIcon } from '@heroicons/react/24/outline';
 import { ChatBubbleLeftRightIcon as ChatBubbleLeftRightIconSolid, DocumentTextIcon as DocumentTextIconSolid, HomeIcon as HomeIconSolid, QrCodeIcon as QrCodeIconSolid, UserIcon as UserIconSolid } from '@heroicons/react/24/solid';
 import { useEffect, useState } from 'react';
+import { useRouter, usePathname } from 'next/navigation';
 
 export type TabType = 'home' | 'scan' | 'results' | 'chat' | 'profile';
 
 export const TabNavigation = () => {
-  const [activeTab, setActiveTab] = useState<TabType>('home');
+  const router = useRouter();
+  const pathname = usePathname();
   const [scannedProducts, setScannedProducts] = useState<ProductData[]>([]);
   const [currentProduct, setCurrentProduct] = useState<ProductData | null>(null);
   const { hapticFeedback } = useWeb();
+
+  // Map paths to tab types
+  const pathToTab: Record<string, TabType> = {
+    '/welcome': 'home',
+    '/home': 'home',
+    '/chat': 'chat',
+    '/scan': 'scan',
+    '/result': 'results',
+    '/profile': 'profile',
+    '/': 'home', // Default to home
+  };
+
+  const [activeTab, setActiveTab] = useState<TabType>(pathToTab[pathname] || 'home');
+
+  // Update active tab when pathname changes
+  useEffect(() => {
+    const newTab = pathToTab[pathname] || 'home';
+    setActiveTab(newTab);
+  }, [pathname]);
 
   // Load scan history from localStorage on mount
   useEffect(() => {
@@ -29,6 +50,17 @@ export const TabNavigation = () => {
   const handleTabChange = (tab: TabType) => {
     hapticFeedback.selection();
     setActiveTab(tab);
+    
+    // Navigate to the corresponding URL
+    const tabToPath: Record<TabType, string> = {
+      'home': '/home',
+      'chat': '/chat',
+      'scan': '/scan',
+      'results': '/result',
+      'profile': '/profile',
+    };
+    
+    router.push(tabToPath[tab]);
   };
 
   const handleScanSuccess = (product: ProductData) => {
@@ -46,11 +78,13 @@ export const TabNavigation = () => {
     localStorage.setItem('nutripal-scan-history', JSON.stringify(updatedHistory));
     
     setActiveTab('results');
+    router.push('/result');
     hapticFeedback.notification('success');
   };
 
   const handleStartScanning = () => {
     setActiveTab('scan');
+    router.push('/scan');
     hapticFeedback.impact('light');
   };
 
@@ -64,14 +98,18 @@ export const TabNavigation = () => {
             onProductSelect={(product: ProductData) => {
               setCurrentProduct(product);
               setActiveTab('results');
+              router.push('/result');
             }}
           />
         );
       case 'scan':
         return (
-          <ScanTab 
+          <ScanTab
             onScanSuccess={handleScanSuccess}
-            onBack={() => setActiveTab('home')}
+            onBack={() => {
+              setActiveTab('home');
+              router.push('/home');
+            }}
           />
         );
       case 'results':
@@ -80,7 +118,10 @@ export const TabNavigation = () => {
             currentProduct={currentProduct}
             recentScans={scannedProducts}
             onScanAnother={handleStartScanning}
-            onProductSelect={(product: ProductData) => setCurrentProduct(product)}
+            onProductSelect={(product: ProductData) => {
+              setCurrentProduct(product);
+              router.push('/result');
+            }}
           />
         );
       case 'chat':
@@ -105,22 +146,23 @@ export const TabNavigation = () => {
       activeIcon: HomeIconSolid,
     },
     {
+      id: 'chat' as TabType,
+      label: 'AI Chat',
+      icon: ChatBubbleLeftRightIcon,
+      activeIcon: ChatBubbleLeftRightIconSolid,
+    },
+    {
       id: 'scan' as TabType,
       label: 'Scan',
       icon: QrCodeIcon,
       activeIcon: QrCodeIconSolid,
+      isHighlighted: true, // Special styling for the middle scan button
     },
     {
       id: 'results' as TabType,
       label: 'Results',
       icon: DocumentTextIcon,
       activeIcon: DocumentTextIconSolid,
-    },
-    {
-      id: 'chat' as TabType,
-      label: 'AI Chat',
-      icon: ChatBubbleLeftRightIcon,
-      activeIcon: ChatBubbleLeftRightIconSolid,
     },
     {
       id: 'profile' as TabType,
@@ -131,33 +173,41 @@ export const TabNavigation = () => {
   ];
 
   return (
-    <div className="min-h-screen w-full flex flex-col bg-warm-white dark:bg-gray-900 no-horizontal-scroll">
+    <div className="min-h-screen w-full flex flex-col bg-primary-50 dark:bg-gray-900 no-horizontal-scroll">
       {/* Main Content */}
       <div className="flex-1 w-full overflow-y-auto mobile-scroll pb-16 sm:pb-20">
         {renderActiveTab()}
       </div>
 
       {/* Bottom Tab Navigation - Fixed at bottom */}
-      <div className="fixed bottom-0 left-0 right-0 z-50 bg-cream dark:bg-gray-800 border-t border-light-green dark:border-gray-700 bottom-nav-safe-area shadow-lg">
-        <div className="flex justify-around items-center w-full px-2 sm:px-4 py-1 sm:py-2">
+      <div className="fixed bottom-0 left-0 right-0 z-50 bg-primary-100 dark:bg-gray-800 border-t border-primary-200 dark:border-gray-700 bottom-nav-safe-area shadow-lg">
+        <div className="flex justify-around items-center w-full px-2 sm:px-4 py-2">
           {tabs.map((tab) => {
             const isActive = activeTab === tab.id;
             const IconComponent = isActive ? tab.activeIcon : tab.icon;
+            const isScanButton = tab.id === 'scan';
             
             return (
               <button
                 key={tab.id}
                 onClick={() => handleTabChange(tab.id)}
-                className={`flex flex-col items-center justify-center p-1.5 sm:p-2 rounded-lg transition-all duration-200 min-w-0 flex-1 ${
-                  isActive 
-                    ? 'text-sage-green bg-light-green/30 dark:bg-emerald-900/30' 
-                    : 'text-gray-500 dark:text-gray-400 hover:text-sage-green dark:hover:text-gray-300 hover:bg-light-green/20 dark:hover:bg-gray-700'
+                className={`flex flex-col items-center justify-center p-2 rounded-lg transition-all duration-200 min-w-0 flex-1 relative ${
+                  isScanButton
+                    ? isActive
+                      ? 'text-white bg-primary-500 shadow-lg transform scale-105'
+                      : 'text-white bg-primary-500 shadow-md hover:shadow-lg hover:scale-105'
+                    : isActive 
+                      ? 'text-primary-500 bg-primary-200/50' 
+                      : 'text-secondary-500 hover:text-primary-500 hover:bg-primary-200/30'
                 }`}
               >
-                <IconComponent className="w-5 h-5 sm:w-6 sm:h-6 mb-0.5 sm:mb-1" />
-                <span className="text-xs font-medium truncate max-w-full">
+                <IconComponent className={`${isScanButton ? 'w-7 h-7' : 'w-6 h-6'} mb-1`} />
+                <span className={`text-xs font-medium truncate max-w-full ${isScanButton ? 'font-semibold' : ''}`}>
                   {tab.label}
                 </span>
+                {isScanButton && (
+                  <div className="absolute -top-1 -right-1 w-3 h-3 bg-accent-500 rounded-full animate-pulse"></div>
+                )}
               </button>
             );
           })}

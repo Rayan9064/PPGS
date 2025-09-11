@@ -166,6 +166,16 @@ export const ScannerComponent = ({ onScanSuccess, onBack }: ScannerComponentProp
     try {
       await cleanupScanner(); // Clean up any existing scanner
       
+      // Ensure the qr-reader element exists and has proper dimensions
+      const qrReaderElement = document.getElementById('qr-reader');
+      if (!qrReaderElement) {
+        console.error('QR reader element not found');
+        return;
+      }
+
+      // Wait a bit for the element to be properly rendered
+      await new Promise(resolve => setTimeout(resolve, 100));
+      
       const html5QrCode = new Html5Qrcode('qr-reader');
       html5QrCodeRef.current = html5QrCode;
 
@@ -185,7 +195,10 @@ export const ScannerComponent = ({ onScanSuccess, onBack }: ScannerComponentProp
         },
         (error) => {
           // Handle scan errors silently - they're usually just failed attempts
-          console.log('Scan error:', error);
+          // Filter out common canvas errors that don't need to be logged
+          if (!error.includes('IndexSizeError') && !error.includes('source width is 0')) {
+            console.log('Scan error:', error);
+          }
         }
       );
       
@@ -232,7 +245,20 @@ export const ScannerComponent = ({ onScanSuccess, onBack }: ScannerComponentProp
       
     } catch (err) {
       console.error('Error starting camera:', err);
-      setError('Failed to start camera. Please try again.');
+      
+      // Provide more specific error messages based on the error type
+      let errorMessage = 'Failed to start camera. Please try again.';
+      if (err instanceof Error) {
+        if (err.message.includes('Permission denied') || err.message.includes('NotAllowedError')) {
+          errorMessage = 'Camera access denied. Please allow camera access in your browser settings.';
+        } else if (err.message.includes('NotFoundError') || err.message.includes('No camera found')) {
+          errorMessage = 'No camera found. Please connect a camera and try again.';
+        } else if (err.message.includes('NotReadableError')) {
+          errorMessage = 'Camera is already in use by another application.';
+        }
+      }
+      
+      setError(errorMessage);
       setIsScanning(false);
     }
   }, [selectedCamera, isScanning, handleScanSuccess, cleanupScanner]);

@@ -5,8 +5,8 @@ import { useUserData } from '@/components/providers/user-data-provider';
 import { ProductData } from '@/types';
 import { 
   ChartBarIcon,
-  TrendingUpIcon,
-  TrendingDownIcon,
+  ArrowTrendingUpIcon,
+  ArrowTrendingDownIcon,
   MinusIcon,
   TrophyIcon,
   FireIcon,
@@ -115,9 +115,9 @@ export const ConsumptionAnalysis = ({ onClose }: ConsumptionAnalysisProps) => {
   const getTrendIcon = (trend: string) => {
     switch (trend) {
       case 'increasing':
-        return <TrendingUpIcon className="w-5 h-5 text-red-500" />;
+        return <ArrowTrendingUpIcon className="w-5 h-5 text-red-500" />;
       case 'decreasing':
-        return <TrendingDownIcon className="w-5 h-5 text-green-500" />;
+        return <ArrowTrendingDownIcon className="w-5 h-5 text-green-500" />;
       default:
         return <MinusIcon className="w-5 h-5 text-gray-500" />;
     }

@@ -41,7 +41,7 @@ export const NutritionVerification = ({ productData, onVerified, onClose }: Nutr
       if (result.isValid) {
         toast.success('Product data verified successfully!');
       } else {
-        toast.warning('Issues found in product data');
+        toast.error('Issues found in product data');
       }
     } catch (error) {
       console.error('Verification failed:', error);
