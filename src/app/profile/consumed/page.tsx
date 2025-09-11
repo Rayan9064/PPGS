@@ -53,7 +53,7 @@ export default function ConsumedProducts() {
       product: {
         code: '987654321',
         product_name: 'Whole Grain Bread',
-        brands: 'Dave\'s Killer Bread',
+        brands: 'Dave&apos;s Killer Bread',
         ingredients_text: 'Whole wheat flour, water, yeast',
         nutrition_grades: 'b',
         nutriments: { sugars_100g: 5, fat_100g: 4, salt_100g: 1.2 }
@@ -165,7 +165,7 @@ export default function ConsumedProducts() {
         {/* Daily Summary */}
         <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Today's Summary</h2>
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Today&apos;s Summary</h2>
             <FireIcon className="w-6 h-6 text-orange-500" />
           </div>
           

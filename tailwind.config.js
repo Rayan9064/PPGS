@@ -9,18 +9,41 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        // Custom brand colors
-        'warm-white': '#FFFDF6',
-        'cream': '#FAF6E9',
-        'light-green': '#DDEB9D',
-        'sage-green': '#A0C878',
-        // Nutrition grade colors (updated with new palette)
-        'grade-a': '#A0C878',
-        'grade-b': '#DDEB9D',
-        'grade-c': '#FFD700',
-        'grade-d': '#FF8C42',
-        'grade-e': '#FF6B6B',
-        'grade-u': '#9e9e9e',
+        // Primary brand colors from Figma designs
+        'primary': {
+          50: '#FFFDF6',   // Warm white background
+          100: '#FAF6E9',  // Cream cards
+          200: '#F5F0E1',  // Light cream
+          500: '#E74C3C',  // Primary red for CTAs
+          600: '#C0392B',  // Darker red for hover
+        },
+        'secondary': {
+          50: '#F8F9FA',   // Light gray
+          100: '#E9ECEF',  // Border gray
+          200: '#DEE2E6',  // Input borders
+          500: '#6C757D',  // Secondary text
+          600: '#495057',  // Primary text
+          900: '#212529',  // Dark text
+        },
+        'accent': {
+          50: '#E8F5E8',   // Light green
+          100: '#D4EDDA',  // Success background
+          500: '#28A745',  // Success green
+          600: '#1E7E34',  // Dark green
+        },
+        'pink': {
+          100: '#FCE7F3',  // Light pink for chat bubbles
+          200: '#FBCFE8',  // Medium pink for avatars
+          300: '#F9A8D4',  // Darker pink for gradients
+          600: '#DB2777',  // Pink text
+        },
+        // Nutrition grade colors
+        'grade-a': '#28A745',  // Green
+        'grade-b': '#FFC107',  // Yellow
+        'grade-c': '#FD7E14',  // Orange
+        'grade-d': '#DC3545',  // Red
+        'grade-e': '#6F42C1',  // Purple
+        'grade-u': '#6C757D',  // Gray
         // Legacy colors for compatibility
         'tg-bg': 'var(--tg-color-bg)',
         'tg-text': 'var(--tg-color-text)',

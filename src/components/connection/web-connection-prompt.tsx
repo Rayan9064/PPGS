@@ -23,12 +23,19 @@ export const WebConnectionPrompt = ({ onClose, showDemoMode = true }: WebConnect
   const [demoMode, setDemoMode] = useState(false);
 
   const handleCreateAccount = async () => {
-    if (!webUser) return;
+    console.log('Create Account clicked, webUser:', webUser);
+    if (!webUser) {
+      console.log('No webUser available');
+      return;
+    }
     
     setIsCreatingAccount(true);
     try {
+      console.log('Creating user account...');
       const success = await createUserAccount(webUser);
+      console.log('Account creation result:', success);
       if (success && onClose) {
+        console.log('Calling onClose...');
         onClose();
       }
     } catch (error) {
@@ -39,8 +46,13 @@ export const WebConnectionPrompt = ({ onClose, showDemoMode = true }: WebConnect
   };
 
   const handleDemoMode = () => {
+    console.log('Demo Mode clicked');
     setDemoMode(true);
+    // Set demo mode in localStorage
+    localStorage.setItem('nutripal-demo-mode', 'true');
+    console.log('Demo mode set in localStorage');
     if (onClose) {
+      console.log('Calling onClose for demo mode...');
       onClose();
     }
   };
@@ -131,7 +143,7 @@ export const WebConnectionPrompt = ({ onClose, showDemoMode = true }: WebConnect
               </h3>
               
               <p className="text-gray-600 dark:text-gray-400 mb-6 text-sm leading-relaxed">
-                Great! Let's create your personalized nutrition profile.
+                Great! Let&apos;s create your personalized nutrition profile.
               </p>
 
               {webUser && (
@@ -194,7 +206,7 @@ export const WebConnectionPrompt = ({ onClose, showDemoMode = true }: WebConnect
               </h3>
               
               <p className="text-gray-600 dark:text-gray-400 mb-6 text-sm leading-relaxed">
-                Let's set up your health profile to provide better nutrition recommendations.
+                Let&apos;s set up your health profile to provide better nutrition recommendations.
               </p>
 
               <button

@@ -5,7 +5,7 @@ import { useWeb } from '@/components/providers/web-provider';
 import { useUserData } from '@/components/providers/user-data-provider';
 import { ProductData } from '@/types';
 import { getNutritionGrade } from '@/utils/grading-logic';
-import { ClockIcon, QrCodeIcon, UserIcon } from '@heroicons/react/24/outline';
+import { ArrowLeftIcon, ClockIcon, QrCodeIcon, UserIcon, HeartIcon, ShareIcon, StarIcon, ShieldCheckIcon } from '@heroicons/react/24/outline';
 
 interface ResultsTabProps {
   currentProduct: ProductData | null;
@@ -30,158 +30,156 @@ export const ResultsTab = ({ currentProduct, recentScans, onScanAnother, onProdu
 
   const getGradeColor = (grade: string) => {
     const colors = {
-      'A': 'bg-green-500',
-      'B': 'bg-lime-500', 
-      'C': 'bg-yellow-500',
-      'D': 'bg-orange-500',
-      'E': 'bg-red-500'
+      'A': 'bg-grade-a',
+      'B': 'bg-grade-b', 
+      'C': 'bg-grade-c',
+      'D': 'bg-grade-d',
+      'E': 'bg-grade-e'
     };
-    return colors[grade as keyof typeof colors] || 'bg-gray-500';
+    return colors[grade as keyof typeof colors] || 'bg-grade-u';
   };
 
   if (currentProduct) {
     return (
-      <div className="flex-1 w-full overflow-y-auto no-scrollbar">
-        <div className="w-full px-2 sm:px-4 py-2 sm:py-4 pt-4 sm:pt-8">
-          <ProductResult 
-            product={currentProduct}
-            onScanAnother={handleScanAnother}
-            onBack={() => onProductSelect(currentProduct)}
-            showBackButton={false}
-          />
+      <div className="flex-1 w-full bg-primary-50 pb-20">
+        {/* Header */}
+        <div className="px-6 py-4 pt-12">
+          <div className="flex items-center justify-between">
+            <button onClick={() => onProductSelect(currentProduct)} className="p-2">
+              <ArrowLeftIcon className="w-6 h-6 text-secondary-900" />
+            </button>
+            <h1 className="text-xl font-bold text-secondary-900">Results</h1>
+            <div className="w-10"></div> {/* Spacer for centering */}
+          </div>
+        </div>
+
+        {/* Product Banner */}
+        <div className="px-6 mb-6">
+          <div className="bg-gradient-to-r from-accent-50 to-accent-100 rounded-2xl p-6 relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-accent-200/30 rounded-full -mr-16 -mt-16"></div>
+            <div className="relative z-10">
+              <h2 className="text-2xl font-bold text-secondary-900 mb-2">Organic Almond Milk</h2>
+              <p className="text-primary-500 font-medium">NutriGrade</p>
+            </div>
+          </div>
+        </div>
+
+        {/* NutriGrade Score */}
+        <div className="px-6 mb-6">
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="text-lg font-bold text-secondary-900">NutriGrade</h3>
+            <span className="text-2xl font-bold text-secondary-900">85</span>
+          </div>
+          <div className="w-full bg-secondary-100 rounded-full h-3">
+            <div className="bg-primary-500 h-3 rounded-full" style={{ width: '85%' }}></div>
+          </div>
+        </div>
+
+        {/* Nutrition Facts */}
+        <div className="px-6 mb-6">
+          <h3 className="text-lg font-bold text-secondary-900 mb-4">Nutrition Facts</h3>
+          <div className="space-y-3">
+            {[
+              { label: 'Calories', value: '150 kcal', percentage: 75 },
+              { label: 'Total Fat', value: '10g', percentage: 50 },
+              { label: 'Saturated Fat', value: '5g', percentage: 25 },
+              { label: 'Cholesterol', value: '0mg', percentage: 0 },
+              { label: 'Sodium', value: '200mg', percentage: 10 },
+              { label: 'Total Carbohydrates', value: '15g', percentage: 5 },
+              { label: 'Sugars', value: '10g', percentage: 20 },
+              { label: 'Protein', value: '5g', percentage: 10 },
+            ].map((item, index) => (
+              <div key={index} className="flex items-center justify-between">
+                <span className="text-secondary-600">{item.label}</span>
+                <div className="flex items-center gap-3">
+                  <span className="text-primary-500 font-medium">{item.value}</span>
+                  <div className="w-16 bg-secondary-100 rounded-full h-2">
+                    <div 
+                      className="bg-primary-500 h-2 rounded-full" 
+                      style={{ width: `${item.percentage}%` }}
+                    ></div>
+                  </div>
+                  <span className="text-secondary-500 text-sm w-8">{item.percentage}%</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* AI Analysis */}
+        <div className="px-6 mb-6">
+          <h3 className="text-lg font-bold text-secondary-900 mb-4">AI Analysis</h3>
+          <div className="bg-primary-100 rounded-2xl p-4 mb-4">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-secondary-900 font-medium">Health Score</span>
+              <span className="text-2xl font-bold text-secondary-900">8.5/10</span>
+            </div>
+          </div>
+          <p className="text-secondary-600 leading-relaxed">
+            This almond milk is a good source of vitamin E and calcium. However, it contains added sugars. Consider unsweetened options for a healthier choice.
+          </p>
+        </div>
+
+        {/* Action Buttons */}
+        <div className="px-6 space-y-4">
+          <div className="grid grid-cols-2 gap-3">
+            <button className="bg-primary-100 hover:bg-primary-200 text-secondary-900 font-medium py-3 rounded-xl transition-all duration-200">
+              Find Alternatives
+            </button>
+            <button className="bg-primary-100 hover:bg-primary-200 text-secondary-900 font-medium py-3 rounded-xl transition-all duration-200">
+              Add to Favorites
+            </button>
+            <button className="bg-primary-100 hover:bg-primary-200 text-secondary-900 font-medium py-3 rounded-xl transition-all duration-200">
+              Share
+            </button>
+            <button className="bg-primary-100 hover:bg-primary-200 text-secondary-900 font-medium py-3 rounded-xl transition-all duration-200">
+              Verify with AI
+            </button>
+          </div>
+          <button className="w-full bg-primary-500 hover:bg-primary-600 text-white font-semibold py-4 text-lg rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200">
+            Get Recommendations
+          </button>
         </div>
       </div>
     );
   }
 
+  // No product selected - show recent scans
   return (
-    <div className="flex-1 w-full bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-gray-800 dark:to-gray-900 overflow-y-auto no-scrollbar">
-      {/* Header */}
-      <div className="w-full bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border-b border-indigo-100 dark:border-gray-700">
-        <div className="px-2 sm:px-4 py-3 sm:py-4 pt-4 sm:pt-8">
-          <div className="flex items-center gap-2 sm:gap-3">
-            <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-xl flex items-center justify-center float-animation">
-              <QrCodeIcon className="w-4 h-4 sm:w-6 sm:h-6 text-white" />
+    <div className="flex-1 w-full bg-primary-50 pb-20">
+      <div className="px-6 py-4 pt-12">
+        <h1 className="text-2xl font-bold text-secondary-900 mb-6">Recent Scans</h1>
+        
+        {recentScans.length > 0 ? (
+          <div className="space-y-4">
+            {recentScans.map((product, index) => (
+              <div
+                key={product.code || index}
+                onClick={() => handleProductSelect(product)}
+                className="bg-primary-100 rounded-2xl p-4 flex items-center gap-4 cursor-pointer hover:bg-primary-200 transition-colors"
+              >
+                <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-white font-bold ${getGradeColor(product.nutrition_grades)}`}>
+                  {product.nutrition_grades || '?'}
+                </div>
+                <div className="flex-1">
+                  <h3 className="font-semibold text-secondary-900">{product.product_name || `Product ${index + 1}`}</h3>
+                  <p className="text-secondary-500 text-sm">Scanned recently</p>
             </div>
-            <div className="min-w-0 flex-1">
-              <h1 className="text-lg sm:text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent truncate">Scan Results</h1>
-              <p className="text-xs sm:text-sm text-indigo-600 dark:text-indigo-400 font-medium hidden sm:block">View your scanned products and nutrition analysis</p>
+                <ArrowLeftIcon className="w-5 h-5 text-secondary-400 rotate-180" />
             </div>
+            ))}
           </div>
-        </div>
-      </div>
-
-      <div className="w-full px-2 sm:px-4 py-3 sm:py-6">
-        {recentScans.length === 0 ? (
-          // Enhanced Empty State
-          <div className="text-center py-12 sm:py-20 animate-fade-in-up">
-            <div className="w-24 h-24 sm:w-32 sm:h-32 bg-gradient-to-br from-indigo-100 to-purple-100 dark:from-gray-700 dark:to-gray-600 rounded-2xl sm:rounded-3xl flex items-center justify-center mx-auto mb-6 sm:mb-8 shadow-lg">
-              <QrCodeIcon className="w-12 h-12 sm:w-16 sm:h-16 text-indigo-500 dark:text-indigo-400 float-animation" />
-            </div>
-            <h3 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-2 sm:mb-3">No Scans Yet</h3>
-            <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400 mb-6 sm:mb-8 max-w-xs sm:max-w-sm mx-auto leading-relaxed px-4">
-              Start scanning products to see their nutrition analysis and health recommendations here.
-            </p>
+        ) : (
+          <div className="text-center py-12">
+            <QrCodeIcon className="w-16 h-16 text-secondary-300 mx-auto mb-4" />
+            <h3 className="text-lg font-semibold text-secondary-600 mb-2">No scans yet</h3>
+            <p className="text-secondary-500 mb-6">Start scanning products to see your results here</p>
             <button
               onClick={handleScanAnother}
-              className="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white rounded-xl sm:rounded-2xl px-6 sm:px-8 py-3 sm:py-4 font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 active:scale-95 text-sm sm:text-base"
+              className="bg-primary-500 hover:bg-primary-600 text-white font-semibold py-3 px-6 rounded-xl transition-colors"
             >
               Scan Your First Product
             </button>
-          </div>
-        ) : (
-          // Enhanced Results List
-          <div className="space-y-4 sm:space-y-6 animate-fade-in-up">
-            <div className="flex items-center justify-between bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm rounded-xl sm:rounded-2xl p-3 sm:p-4 border border-white/50 dark:border-gray-600/50">
-              <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
-                <div className="w-6 h-6 sm:w-8 sm:h-8 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-lg flex items-center justify-center flex-shrink-0">
-                  <ClockIcon className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
-                </div>
-                <h2 className="text-lg sm:text-xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent truncate">Recent Scans</h2>
-                <span className="bg-gradient-to-r from-blue-500 to-indigo-500 text-white text-xs sm:text-sm px-2 sm:px-3 py-1 rounded-full font-medium shadow-lg flex-shrink-0">
-                  {recentScans.length}
-                </span>
-              </div>
-              <button
-                onClick={handleScanAnother}
-                className="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white rounded-lg sm:rounded-xl px-3 sm:px-6 py-2 sm:py-3 text-xs sm:text-sm font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 flex-shrink-0"
-              >
-                <span className="hidden sm:inline">Scan Another</span>
-                <span className="sm:hidden">Scan</span>
-              </button>
-            </div>
-
-            <div className="grid gap-3 sm:gap-4">
-              {recentScans.map((product, index) => {
-                const gradeInfo = getNutritionGrade(product, userData);
-                return (
-                  <button
-                    key={`${product.code}-${index}`}
-                    onClick={() => handleProductSelect(product)}
-                    className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-lg hover:shadow-xl transition-all duration-300 text-left border border-white/50 dark:border-gray-600/50 hover:bg-white/90 dark:hover:bg-gray-700/90 transform hover:scale-[1.02] animate-fade-in-up"
-                    style={{ animationDelay: `${index * 100}ms` }}
-                  >
-                    <div className="flex items-start gap-3 sm:gap-4">
-                      {/* Enhanced Grade Badge */}
-                      <div className={`w-12 h-12 sm:w-16 sm:h-16 rounded-xl sm:rounded-2xl flex items-center justify-center text-white text-lg sm:text-xl font-bold shadow-lg flex-shrink-0 ${getGradeColor(gradeInfo.grade)}`}>
-                        {gradeInfo.grade}
-                      </div>
-                      
-                      {/* Enhanced Product Info */}
-                      <div className="flex-1 min-w-0">
-                        <h3 className="font-bold text-gray-900 dark:text-white text-base sm:text-lg mb-1 truncate">
-                          {product.product_name || 'Unknown Product'}
-                        </h3>
-                        <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mb-2 truncate">
-                          {product.brands || 'Unknown Brand'}
-                        </p>
-                        <div className="flex items-center gap-2 mb-2">
-                          <span className={`px-2 sm:px-3 py-1 rounded-full text-xs font-medium ${
-                            gradeInfo.grade === 'A' ? 'bg-green-100 text-green-700' :
-                            gradeInfo.grade === 'B' ? 'bg-lime-100 text-lime-700' :
-                            gradeInfo.grade === 'C' ? 'bg-yellow-100 text-yellow-700' :
-                            gradeInfo.grade === 'D' ? 'bg-orange-100 text-orange-700' :
-                            'bg-red-100 text-red-700'
-                          }`}>
-                            {gradeInfo.description}
-                          </span>
-                          {/* Personalized indicator */}
-                          {gradeInfo.isPersonalized && userData && (
-                            <span className="px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400 flex items-center gap-1">
-                              <UserIcon className="w-3 h-3" />
-                              Personal
-                            </span>
-                          )}
-                        </div>
-                        {product.categories && (
-                          <p className="text-xs text-gray-500 dark:text-gray-500 truncate">
-                            {product.categories}
-                          </p>
-                        )}
-                      </div>
-
-                      {/* Enhanced Nutrition Preview */}
-                      <div className="text-right flex-shrink-0">
-                        <div className="space-y-1 sm:space-y-2">
-                          <div className="bg-gradient-to-r from-red-100 to-pink-100 dark:from-red-900/30 dark:to-pink-900/30 px-2 sm:px-3 py-1 rounded-lg">
-                            <span className="text-xs font-medium text-red-700 dark:text-red-400">Sugar: {product.nutriments.sugars_100g || 0}g</span>
-                          </div>
-                          <div className="bg-gradient-to-r from-orange-100 to-yellow-100 dark:from-orange-900/30 dark:to-yellow-900/30 px-2 sm:px-3 py-1 rounded-lg">
-                            <span className="text-xs font-medium text-orange-700 dark:text-orange-400">Fat: {product.nutriments.fat_100g || 0}g</span>
-                          </div>
-                          <div className="bg-gradient-to-r from-blue-100 to-indigo-100 dark:from-blue-900/30 dark:to-indigo-900/30 px-2 sm:px-3 py-1 rounded-lg">
-                            <span className="text-xs font-medium text-blue-700 dark:text-blue-400">Salt: {product.nutriments.salt_100g || 0}g</span>
-                          </div>
-                        </div>
-                      </div>
-                      
-                      {/* Grade Indicator */}
-                      <div className="w-1 sm:w-2 h-8 sm:h-12 bg-gradient-to-b from-indigo-400 to-purple-400 rounded-full grade-indicator flex-shrink-0"></div>
-                    </div>
-                  </button>
-                );
-              })}
-            </div>
           </div>
         )}
       </div>
