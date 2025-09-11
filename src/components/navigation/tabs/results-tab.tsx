@@ -1,7 +1,7 @@
 'use client';
 
 import { ProductResult } from '@/components/product/product-result';
-import { useTelegram } from '@/components/providers/telegram-provider';
+import { useWeb } from '@/components/providers/web-provider';
 import { useUserData } from '@/components/providers/user-data-provider';
 import { ProductData } from '@/types';
 import { getNutritionGrade } from '@/utils/grading-logic';
@@ -15,7 +15,7 @@ interface ResultsTabProps {
 }
 
 export const ResultsTab = ({ currentProduct, recentScans, onScanAnother, onProductSelect }: ResultsTabProps) => {
-  const { hapticFeedback } = useTelegram();
+  const { hapticFeedback } = useWeb();
   const { userData, connectionStatus } = useUserData();
 
   const handleProductSelect = (product: ProductData) => {

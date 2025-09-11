@@ -7,15 +7,15 @@ export class UserDataService {
   /**
    * Get user data from localStorage
    */
-  static getUserData(telegramId?: number): UserData | null {
+  static getUserData(userId?: string | number): UserData | null {
     try {
       const stored = localStorage.getItem(USER_DATA_KEY);
       if (!stored) return null;
 
       const userData: UserData = JSON.parse(stored);
       
-      // If telegramId is provided, verify it matches
-      if (telegramId && userData.telegramId !== telegramId) {
+      // If userId is provided, verify it matches (support both string and number for backward compatibility)
+      if (userId && userData.telegramId !== userId && userData.telegramId !== Number(userId)) {
         return null;
       }
 
@@ -45,17 +45,17 @@ export class UserDataService {
   }
 
   /**
-   * Create initial user data from Telegram user info
+   * Create initial user data from user info (works for both Telegram and web users)
    */
-  static createUserData(telegramUser: any): UserData {
+  static createUserData(user: any): UserData {
     return {
-      telegramId: telegramUser.id,
-      firstName: telegramUser.first_name,
-      lastName: telegramUser.last_name,
-      username: telegramUser.username,
-      photoUrl: telegramUser.photo_url,
+      telegramId: user.id || user.telegramId || 'web-user-123',
+      firstName: user.first_name || user.firstName || 'Web',
+      lastName: user.last_name || user.lastName,
+      username: user.username,
+      photoUrl: user.photo_url || user.photoUrl,
       preferences: {
-        language: telegramUser.language_code || 'en',
+        language: user.language_code || user.language || 'en',
         notifications: true,
       },
       createdAt: new Date(),
@@ -66,14 +66,14 @@ export class UserDataService {
   /**
    * Update user data partially
    */
-  static updateUserData(telegramId: number, updates: Partial<UserData>): boolean {
-    const existingData = this.getUserData(telegramId);
+  static updateUserData(userId: string | number, updates: Partial<UserData>): boolean {
+    const existingData = this.getUserData(userId);
     if (!existingData) return false;
 
     const updatedData: UserData = {
       ...existingData,
       ...updates,
-      telegramId, // Ensure telegramId cannot be changed
+      telegramId: existingData.telegramId, // Keep original ID
       updatedAt: new Date(),
     };
 
@@ -139,10 +139,10 @@ export class UserDataService {
   /**
    * Get user connection status
    */
-  static getUserConnectionStatus(telegramUser?: any): UserConnectionStatus {
-    const isConnected = !!telegramUser;
-    const isTelegramUser = isConnected;
-    const userData = isConnected ? this.getUserData(telegramUser.id) : null;
+  static getUserConnectionStatus(user?: any): UserConnectionStatus {
+    const isConnected = !!user;
+    const isTelegramUser = false; // Always false for web app
+    const userData = isConnected ? this.getUserData(user.id || user.telegramId) : null;
     const hasUserData = !!userData;
     const onboardingState = this.getOnboardingState();
     const needsOnboarding = isConnected && (!hasUserData || !onboardingState.isCompleted);

@@ -1,6 +1,6 @@
 'use client';
 
-import { useTelegram } from '@/components/providers/telegram-provider';
+import { useWeb } from '@/components/providers/web-provider';
 import { useUserData } from '@/components/providers/user-data-provider';
 import { UserData } from '@/types';
 import {
@@ -28,7 +28,7 @@ export default function UserProfile() {
     getDailyCalories,
     connectionStatus
   } = useUserData();
-  const { hapticFeedback, tgUser } = useTelegram();
+  const { hapticFeedback, webUser } = useWeb();
   
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -175,16 +175,16 @@ export default function UserProfile() {
 
       <div className="p-4 space-y-6">
         {/* Telegram User Info */}
-        {tgUser && (
+        {webUser && (
           <div className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm">
             <h3 className="font-medium text-gray-900 dark:text-white mb-3 flex items-center gap-2">
               <UserIcon className="w-5 h-5" />
-              Telegram Account
+              Web Account
             </h3>
             <div className="flex items-center gap-3">
-              {tgUser.photo_url && (
+              {webUser.photoUrl && (
                 <img
-                  src={tgUser.photo_url}
+                  src={webUser.photoUrl}
                   alt="Profile"
                   className="w-12 h-12 rounded-full border border-gray-300 dark:border-gray-600"
                 />

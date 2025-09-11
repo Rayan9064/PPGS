@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { ArrowLeftIcon, CheckIcon } from '@heroicons/react/24/outline';
-import { useTelegram } from '@/components/providers/telegram-provider';
+import { useWeb } from '@/components/providers/web-provider';
 
 interface DietaryPreference {
   id: string;
@@ -12,7 +12,7 @@ interface DietaryPreference {
 }
 
 export default function DietaryPreferences() {
-  const { hapticFeedback } = useTelegram();
+  const { hapticFeedback } = useWeb();
   const [selectedPreferences, setSelectedPreferences] = useState<string[]>(['vegetarian']);
 
   const preferences: DietaryPreference[] = [

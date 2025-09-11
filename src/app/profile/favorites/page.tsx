@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { ArrowLeftIcon, StarIcon, HeartIcon, TrashIcon } from '@heroicons/react/24/outline';
 import { StarIcon as StarIconSolid } from '@heroicons/react/24/solid';
-import { useTelegram } from '@/components/providers/telegram-provider';
+import { useWeb } from '@/components/providers/web-provider';
 import { ProductData } from '@/types';
 import { getNutritionGrade } from '@/utils/grading-logic';
 import toast from 'react-hot-toast';
@@ -28,19 +28,21 @@ const DataSourceBadge = ({ isUserData }: { isUserData: boolean }) => (
 );
 
 export default function Favorites() {
-  const { hapticFeedback } = useTelegram();
+  const { hapticFeedback } = useWeb();
   const [favorites, setFavorites] = useState<FavoriteProduct[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  // Telegram user info
-  const [tgUser, setTgUser] = useState<any>(null);
+  // Web user info
+  const [webUser, setWebUser] = useState<any>(null);
 
-  // Get Telegram user info on mount
+  // Get Web user info on mount
   useEffect(() => {
-    // Type assertion to access initDataUnsafe
-    const tgWebApp = (window as any)?.Telegram?.WebApp;
-    if (tgWebApp && tgWebApp.initDataUnsafe && tgWebApp.initDataUnsafe.user) {
-      setTgUser(tgWebApp.initDataUnsafe.user);
-    }
+    // Mock web user for demo
+    setWebUser({
+      id: 'web-user-123',
+      firstName: 'Web',
+      lastName: 'User',
+      username: 'webuser'
+    });
   }, []);
 
   // Mock favorites data for demo purposes
@@ -253,20 +255,20 @@ export default function Favorites() {
         </div>
 
         {/* Telegram User Info */}
-        {tgUser && (
+        {webUser && (
           <div className="px-4 pb-2 flex items-center gap-3">
-            {tgUser.photo_url && (
+            {webUser.photo_url && (
               <img
-                src={tgUser.photo_url}
+                src={webUser.photo_url}
                 alt="Telegram Avatar"
                 className="w-10 h-10 rounded-full border border-gray-300 dark:border-gray-700"
                 onError={e => (e.currentTarget.style.display = 'none')}
               />
             )}
             <div>
-              <div className="font-semibold text-gray-900 dark:text-white">{tgUser.first_name} {tgUser.last_name}</div>
-              {tgUser.username && <div className="text-xs text-gray-500 dark:text-gray-400">@{tgUser.username}</div>}
-              <div className="text-xs text-gray-400 dark:text-gray-500">Telegram ID: {tgUser.id}</div>
+              <div className="font-semibold text-gray-900 dark:text-white">{webUser.firstName} {webUser.lastName}</div>
+              {webUser.username && <div className="text-xs text-gray-500 dark:text-gray-400">@{webUser.username}</div>}
+              <div className="text-xs text-gray-400 dark:text-gray-500">User ID: {webUser.id}</div>
             </div>
           </div>
         )}

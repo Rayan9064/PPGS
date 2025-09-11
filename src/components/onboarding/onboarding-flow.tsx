@@ -1,6 +1,6 @@
 'use client';
 
-import { useTelegram } from '@/components/providers/telegram-provider';
+import { useWeb } from '@/components/providers/web-provider';
 import { useUserData } from '@/components/providers/user-data-provider';
 import { UserData } from '@/types';
 import {
@@ -105,7 +105,7 @@ const OnboardingStep = ({
 
 export const OnboardingFlow = ({ onComplete, onSkip }: OnboardingFlowProps) => {
   const { userData, updateUserData, updateOnboardingStep, completeOnboarding } = useUserData();
-  const { hapticFeedback } = useTelegram();
+  const { hapticFeedback } = useWeb();
   const [currentStep, setCurrentStep] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   

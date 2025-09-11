@@ -1,147 +1,206 @@
-# 🍎 NutriPal - Smart Nutrition Scanner
+# 🍎 NutriGrade - AI-Powered Nutrition Scanner with Blockchain
 
-> A modern Telegram Mini App for instant product nutrition analysis and health grading
+> A modern web application with Algorand blockchain integration for transparent, verifiable nutrition tracking
 
 ![Version](https://img.shields.io/badge/version-1.0.0-blue)
 ![Next.js](https://img.shields.io/badge/Next.js-14.2.30-black)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue)
-![Telegram](https://img.shields.io/badge/Telegram-Mini%20App-26A5E4)
+![Algorand](https://img.shields.io/badge/Algorand-Smart%20Contracts-26A5E4)
+![Python](https://img.shields.io/badge/Python-3.8+-green)
 
 ## 📱 Overview
 
-NutriPal is an intelligent nutrition scanner that helps users make informed dietary decisions by scanning product barcodes. Built as a Telegram Mini App, it provides instant access to comprehensive nutrition analysis with an intuitive mobile-first interface.
+NutriGrade is an intelligent nutrition scanner that combines AI-powered analysis with blockchain transparency. Users can scan product barcodes to get instant nutrition information, personalized recommendations, and track their dietary choices with verifiable on-chain data.
 
 ### ✨ Key Features
 
+**Frontend Web App:**
 - **🔍 Barcode Scanner**: Instant product recognition using camera
 - **📊 Nutrition Grading**: A-E health scoring system
 - **🤖 AI Assistant**: Contextual nutrition advice and recommendations
 - **📈 Health Tracking**: Personal nutrition statistics and progress
 - **⚙️ Smart Preferences**: Dietary restrictions and health goals
-- **📱 Mobile-First**: Native app experience in web browser
-- **🎯 Telegram Integration**: Seamless Mini App experience with haptic feedback
+- **📱 Mobile-First**: Responsive design for all devices
+
+**AI-Powered Features:**
+- **🔍 AI Nutrition Verification**: Automatically verify product data accuracy
+- **💡 Personalized Recommendations**: Tailored advice based on user profile
+- **🌱 Smart Alternatives**: AI-driven healthier product suggestions
+- **💬 AI Chat Assistant**: Conversational nutrition guidance
+- **📊 Consumption Analysis**: Pattern recognition and health insights
+- **🎯 Engagement Features**: Challenges and motivational nudges
+
+**Blockchain Integration:**
+- **🔗 Algorand Smart Contracts**: Transparent product data storage
+- **👤 User Profiles**: On-chain dietary preferences and history
+- **⭐ Product Ratings**: Decentralized review system
+- **🔒 Data Integrity**: Tamper-proof nutrition information
+- **🌐 Global Access**: Location-specific product variants
 
 ## 🏗️ Architecture
+
+```
+┌─────────────────┐    ┌──────────────────┐    ┌─────────────────┐
+│                 │    │                  │    │                 │
+│  Web Frontend   │────│ Algorand Network │────│ AI Service      │
+│  (Next.js/TS)   │    │                  │    │ (Recommendations)│
+│                 │    │                  │    │                 │
+└─────────────────┘    └──────────────────┘    └─────────────────┘
+         │                        │
+         │              ┌──────────────────┐
+         │              │ Smart Contracts  │
+         └──────────────│                  │
+                        │ • ProductRegistry│
+                        │ • UserProfiles   │
+                        └──────────────────┘
+```
 
 ### Tech Stack
 
 | Component | Technology |
 |-----------|------------|
-| **Framework** | Next.js 14 with App Router |
-| **Language** | TypeScript |
-| **Styling** | Tailwind CSS |
+| **Frontend** | Next.js 14, TypeScript, Tailwind CSS |
+| **Blockchain** | Algorand, Python Smart Contracts |
 | **Scanner** | html5-qrcode |
-| **Data Source** | Open Food Facts API |
-| **Notifications** | React Hot Toast |
-| **Icons** | Heroicons |
-| **Platform** | Telegram Mini Apps |
+| **Data Sources** | Open Food Facts API, On-chain Storage |
+| **AI** | OpenAI GPT-4, Contextual recommendations |
+| **Deployment** | Vercel (Frontend), Algorand TestNet/MainNet |
 
-### Project Structure
+## 🤖 AI Features
+
+### 1. AI-Powered Nutrition Data Verification
+- **Automatic Analysis**: AI verifies ingredient lists and nutrition labels
+- **Anomaly Detection**: Identifies inconsistencies or mislabeling
+- **Regulatory Compliance**: Checks against food composition standards
+- **Blockchain Ready**: Verified data stored on-chain with cryptographic proof
+
+### 2. Personalized Nutrition Recommendations
+- **User Profile Integration**: Based on dietary preferences, allergies, and health goals
+- **Health Score Calculation**: AI-generated health scores (0-100)
+- **Contextual Advice**: Real-time recommendations for scanned products
+- **Blockchain Data**: Uses on-chain user profiles for personalization
+
+### 3. Smart Alternative Product Suggestions
+- **AI-Driven Matching**: Finds healthier alternatives using similarity analysis
+- **Health Impact Analysis**: Explains why alternatives are better
+- **User Preference Alignment**: Matches dietary restrictions and health goals
+- **Ranked Recommendations**: Prioritized by health improvement and user fit
+
+### 4. AI Chat Assistant Integration
+- **Conversational Interface**: Natural language nutrition queries
+- **Context Awareness**: Understands current product and user profile
+- **Real-time Insights**: Instant answers based on blockchain data
+- **Product Suggestions**: Recommends related products and alternatives
+
+### 5. Consumption Pattern Analysis & Engagement
+- **Pattern Recognition**: AI analyzes eating habits and trends
+- **Health Insights**: Identifies improvement opportunities
+- **Motivational Challenges**: Personalized goals and progress tracking
+- **Engagement Features**: Streaks, achievements, and social elements
+
+## 📁 Project Structure
 
 ```
-src/
-├── app/                    # Next.js App Router
-│   ├── layout.tsx         # Root layout with Telegram integration
-│   └── page.tsx           # Main app entry point
-├── components/
-│   ├── navigation/        # Tab navigation system
-│   │   ├── tab-navigation.tsx
-│   │   └── tabs/          # Individual tab components
-│   │       ├── home-tab.tsx      # Dashboard & quick stats
-│   │       ├── scan-tab.tsx      # Barcode scanner
-│   │       ├── results-tab.tsx   # Product analysis
-│   │       ├── chat-tab.tsx      # AI assistant
-│   │       └── profile-tab.tsx   # User preferences
-│   ├── providers/         # React Context providers
-│   │   └── telegram-provider.tsx # Telegram WebApp integration
-│   ├── scanner/           # Barcode scanning components
-│   ├── product/           # Product display components
-│   └── welcome/           # Onboarding components
-├── lib/                   # Core utilities
-│   ├── nutrition-limits.ts    # Health thresholds
-│   ├── product-api.ts         # API integration
-│   └── telegram.ts            # Telegram WebApp hooks
-├── utils/                 # Helper functions
-│   └── grading-logic.ts       # Nutrition scoring algorithm
-├── types/                 # TypeScript definitions
-└── styles/                # Global styles
+CodeX-NutriGrade/
+├── src/                          # Frontend Web Application
+│   ├── app/                      # Next.js App Router
+│   ├── components/               # React Components
+│   │   ├── navigation/           # Tab navigation system
+│   │   ├── providers/            # React Context providers
+│   │   ├── scanner/              # Barcode scanning
+│   │   └── product/              # Product display
+│   ├── lib/                      # Core utilities
+│   ├── utils/                    # Helper functions
+│   └── types/                    # TypeScript definitions
+├── contracts/                    # Algorand Smart Contracts
+│   ├── product_registry.py       # Product data storage
+│   ├── user_profile_contract.py  # User profiles & preferences
+│   ├── deploy.py                 # Deployment script
+│   └── README.md                 # Blockchain documentation
+└── README.md                     # This file
 ```
 
-## 🚀 Getting Started
+## 🚀 Quick Start
 
 ### Prerequisites
 
-- Node.js 18+ 
-- npm or yarn
+- **Node.js 18+** for frontend
+- **Python 3.8+** for smart contracts
+- **AlgoKit** for blockchain development
 - Modern web browser with camera support
 
-### Installation
+### Frontend Setup
 
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/Rayan9064/PPGS.git
-   cd PPGS
-   ```
-
-2. **Install dependencies**
+1. **Install dependencies**
    ```bash
    npm install
    ```
 
-3. **Start development server**
+2. **Start development server**
    ```bash
    npm run dev
    ```
 
-4. **Open in browser**
+3. **Open in browser**
    ```
    http://localhost:3000
    ```
 
-### Environment Setup
+### Blockchain Setup
 
-Create a `.env.local` file for configuration:
+1. **Install AlgoKit**
+   ```bash
+   pip install algokit
+   ```
 
-```env
-# Optional: Telegram Bot configuration
-TELEGRAM_BOT_TOKEN=your_bot_token_here
-TELEGRAM_BOT_USERNAME=your_bot_username
+2. **Start Algorand LocalNet**
+   ```bash
+   algokit localnet start
+   ```
 
-# Optional: Custom API endpoints
-NEXT_PUBLIC_API_BASE_URL=https://world.openfoodfacts.org
+3. **Deploy contracts**
+   ```bash
+   cd contracts
+   python deploy.py
+   ```
+
+## 🔧 Smart Contract Details
+
+### ProductRegistry Contract
+
+**Key Features:**
+- ✅ Store product data with unique product IDs
+- ✅ Version tracking for ingredient changes  
+- ✅ Location-specific variants (IN, US, EU, Global)
+- ✅ Owner-based access control
+- ✅ Product activation/deactivation
+
+**Main Methods:**
+```python
+add_product(product_id, name, ingredients, nutri_score, allergens, region)
+update_product(product_id, name, ingredients, nutri_score, allergens, region)
+get_product(product_id) -> ProductData
+get_product_version(product_id) -> version_number
+deactivate_product(product_id)
 ```
 
-## 📱 Mobile Testing
+### UserProfile Contract
 
-### Local Network Testing
+**Key Features:**
+- ✅ User dietary preferences and restrictions
+- ✅ Consumption history tracking
+- ✅ Product rating system (1-5 stars)
+- ✅ Privacy-focused (users own their data)
+- ✅ Engagement analytics
 
-1. **Find your local IP address**
-   ```bash
-   ipconfig  # Windows
-   ifconfig  # macOS/Linux
-   ```
-
-2. **Access from mobile device**
-   ```
-   http://YOUR_LOCAL_IP:3000
-   ```
-
-### Telegram Mini App Testing
-
-1. **Install ngrok** for public HTTPS tunnel
-   ```bash
-   npm install -g ngrok
-   ngrok http 3000
-   ```
-
-2. **Create Telegram Bot** with @BotFather
-   - Send `/newbot` to create bot
-   - Send `/newapp` to create Mini App
-   - Set Web App URL to your ngrok URL
-
-3. **Test in Telegram**
-   - Open your bot in Telegram
-   - Tap the Mini App button to launch
+**Main Methods:**
+```python
+create_profile(dietary_preferences, allergies, health_goals, age_range)
+update_profile(dietary_preferences, allergies, health_goals, age_range)
+record_consumption(product_id, rating, notes)
+get_my_profile() -> UserProfile
+get_consumption_record(user_address, product_id) -> ConsumptionRecord
+```
 
 ## 🎯 Features Deep Dive
 
@@ -153,31 +212,31 @@ NEXT_PUBLIC_API_BASE_URL=https://world.openfoodfacts.org
 
 ### 📱 Barcode Scanner
 - **Camera Integration**: Real-time barcode detection
-- **Product Recognition**: Open Food Facts database integration
+- **Blockchain Lookup**: Primary data source from smart contracts
+- **API Fallback**: Open Food Facts database integration
 - **Error Handling**: Graceful fallbacks and user feedback
-- **Haptic Feedback**: Telegram-native vibration responses
 
 ### 📊 Results Analysis
 - **Nutrition Grading**: A-E health score with color coding
 - **Detailed Breakdown**: Sugar, fat, salt content per 100g
 - **Health Warnings**: Alerts for high-risk ingredients
-- **Scan History**: Persistent local storage of results
+- **On-chain Verification**: Tamper-proof product data
 
 ### 🤖 AI Chat Assistant
 - **Contextual Help**: Product-specific nutrition advice
+- **Personalized Recommendations**: Based on user profile and history
 - **General Q&A**: Answers about nutrition and health
-- **Suggested Questions**: Quick-start conversation prompts
-- **Real-time Chat**: Simulated AI responses (extensible to real AI)
+- **Real-time Chat**: AI-powered responses
 
 ### 👤 User Profile
 - **Health Goals**: Personalized nutrition targets
 - **Dietary Preferences**: Vegetarian, vegan, gluten-free filters
 - **Progress Tracking**: Visual health score and statistics
-- **App Settings**: Notification and scanning preferences
+- **Blockchain Storage**: Decentralized profile management
 
 ## 🔧 Nutrition Grading System
 
-NutriPal uses a scientific approach to grade products:
+NutriGrade uses a scientific approach to grade products:
 
 | Grade | Score | Criteria | Color |
 |-------|-------|----------|-------|
@@ -187,20 +246,38 @@ NutriPal uses a scientific approach to grade products:
 | **D** | Poor | High in unhealthy components | 🟠 Orange |
 | **E** | Bad | Very high sugar/fat/salt content | 🔴 Red |
 
-### Calculation Logic
+## 🌐 Frontend-Blockchain Integration
 
-```typescript
-// Simplified grading algorithm
-const grade = calculateGrade({
-  sugars_100g: number,   // Grams of sugar per 100g
-  fat_100g: number,      // Grams of fat per 100g  
-  salt_100g: number,     // Grams of salt per 100g
-});
+### Example Usage:
+
+```javascript
+// Initialize app
+const nutrigrade = new NutrigradeApp();
+
+// Scan barcode
+const result = await nutrigrade.scanBarcode("1234567890123");
+
+// Get AI recommendations  
+const recommendations = await nutrigrade.getAIRecommendations(
+    result.data, 
+    userProfile
+);
+
+// Record consumption on blockchain
+await nutrigrade.recordConsumption(productId, 4, "Tasty but high sugar");
 ```
+
+## 🤖 AI Integration Points
+
+1. **Product Verification**: AI validates ingredient data before blockchain storage
+2. **Nutrition Scoring**: Automated NutriGrade calculation with ML models
+3. **Personalized Recommendations**: User-specific dietary advice
+4. **Anomaly Detection**: Identify suspicious product data changes
+5. **Alternative Suggestions**: Healthier product recommendations
 
 ## 🛠️ Development
 
-### Scripts
+### Frontend Scripts
 
 ```bash
 npm run dev          # Start development server
@@ -210,23 +287,23 @@ npm run lint         # Run ESLint
 npm run type-check   # TypeScript validation
 ```
 
-### Code Quality
+### Blockchain Scripts
 
-- **TypeScript**: Full type safety with strict mode
-- **ESLint**: Code linting with Next.js recommended rules
-- **Prettier**: Consistent code formatting
-- **Husky**: Pre-commit hooks for quality assurance
+```bash
+# Compile contracts
+algokit compile py contracts/product_registry.py
+algokit compile py contracts/user_profile_contract.py
 
-### Testing Strategy
+# Deploy to LocalNet
+python contracts/deploy.py
 
-- **Component Testing**: Jest + React Testing Library
-- **E2E Testing**: Playwright for user flows
-- **Mobile Testing**: Real device testing via ngrok
-- **Telegram Testing**: Mini App validation in Telegram
+# Deploy to TestNet
+python contracts/deploy.py --network testnet
+```
 
 ## 🚀 Deployment
 
-### Vercel (Recommended)
+### Frontend (Vercel)
 
 1. **Connect Repository**
    ```bash
@@ -237,22 +314,28 @@ npm run type-check   # TypeScript validation
    - Add environment variables in Vercel dashboard
    - Set up custom domain if needed
 
-3. **Telegram Integration**
-   - Update Mini App URL in @BotFather
-   - Test production deployment
+### Blockchain (Algorand)
 
-### Manual Deployment
+1. **Configure Network**:
+   ```python
+   # For TestNet
+   ALGOD_ADDRESS = "https://testnet-api.algonode.cloud"
+   
+   # For MainNet  
+   ALGOD_ADDRESS = "https://mainnet-api.algonode.cloud"
+   ```
 
-```bash
-npm run build
-npm start
-```
+2. **Deploy**:
+   ```bash
+   python contracts/deploy.py --network testnet
+   ```
 
 ## 🔐 Security & Privacy
 
 - **No Personal Data Storage**: All data processed client-side
 - **Secure API Calls**: HTTPS-only communication
-- **Telegram Integration**: Official WebApp APIs only
+- **Blockchain Integrity**: Tamper-proof product data
+- **User Privacy**: Users control their own profile data
 - **Camera Permissions**: Explicit user consent required
 
 ## 🤝 Contributing
@@ -277,20 +360,27 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## 🙏 Acknowledgments
 
 - **Open Food Facts**: Comprehensive product database
-- **Telegram**: Mini Apps platform and WebApp APIs
-- **Vercel**: Hosting and deployment platform
+- **Algorand Foundation**: Blockchain infrastructure
 - **Next.js Team**: Amazing React framework
+- **Tailwind CSS**: Utility-first CSS framework
 
-## 🔗 Links
+## 🔗 Resources
 
-- **Live Demo**: [nutripal.vercel.app](https://nutripal.vercel.app)
-- **Telegram Bot**: [@nutripal_bot](https://t.me/nutripal_bot)
-- **GitHub Repository**: [Rayan9064/PPGS](https://github.com/Rayan9064/PPGS)
+- **Live Demo**: [Your deployed URL]
+- **GitHub Repository**: [Your repo URL]
+- **Algorand Developer Portal**: [developer.algorand.org](https://developer.algorand.org/)
 - **Open Food Facts**: [openfoodfacts.org](https://world.openfoodfacts.org)
+
+## 📞 Support
+
+- Discord: [Algorand Discord](http://discord.gg/algorand)
+- GitHub Issues: [Create an issue](https://github.com/your-repo/issues)
+- Documentation: [Dev Portal](https://dev.algorand.co/)
 
 ---
 
 <div align="center">
   <strong>Made with ❤️ for better nutrition choices</strong><br>
-  <em>Empowering healthier decisions, one scan at a time</em>
+  <em>Empowering healthier decisions with blockchain transparency</em><br>
+  <strong>🚀 Hackathon Ready | Built on Algorand</strong>
 </div>
