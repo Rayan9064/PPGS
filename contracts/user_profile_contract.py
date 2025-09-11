@@ -47,7 +47,7 @@ class UserProfileContract(ARC4Contract):
     - Can delete/update their profile anytime
     """
 
-    def __init__(self) -> None:
+    def _init_(self) -> None:
         # Global state variables
         self.owner = GlobalState(Txn.sender)
         self.total_users = GlobalState(UInt64(0))
@@ -124,7 +124,7 @@ class UserProfileContract(ARC4Contract):
         assert pref_key in self.user_preferences, "Profile not found"
         
         # Get current preferences and update
-        current_prefs = self.user_preferences[pref_key]
+        current_prefs = self.user_preferences[pref_key].copy()
         current_prefs.is_vegetarian = is_vegetarian
         current_prefs.is_vegan = is_vegan
         current_prefs.is_gluten_free = is_gluten_free
@@ -152,7 +152,7 @@ class UserProfileContract(ARC4Contract):
         pref_key = String("pref_") + user_address_str
         assert pref_key in self.user_preferences, "User profile not found"
         
-        # Create scan key
+        # Create scan key - FIX: use product_id.native directly
         scan_key = String("scan_") + user_address_str + String("_") + product_id.native
         
         # Check rating is valid (0-5)
@@ -186,17 +186,18 @@ class UserProfileContract(ARC4Contract):
         
         assert pref_key in self.user_preferences, "Profile not found"
         
-        return self.user_preferences[pref_key]
+        return self.user_preferences[pref_key].copy()
 
     @arc4.abimethod(readonly=True)
     def get_scan_history(self, product_id: arc4.String) -> ScannedProduct:
         """Get user's scan record for a specific product"""
         user_address_str = String.from_bytes(Txn.sender.bytes)
-        scan_key = String("scan_") + user_address_str + String("_") + String(product_id.native)
+        # FIX: use product_id.native directly
+        scan_key = String("scan_") + user_address_str + String("_") + product_id.native
         
         assert scan_key in self.scanned_products, "Scan record not found"
         
-        return self.scanned_products[scan_key]
+        return self.scanned_products[scan_key].copy()
 
     @arc4.abimethod(readonly=True)
     def get_scan_count(self) -> arc4.UInt64:
@@ -228,7 +229,7 @@ class UserProfileContract(ARC4Contract):
             return arc4.Bool(False)
         
         # Mark profile as inactive (soft delete)
-        current_prefs = self.user_preferences[pref_key]
+        current_prefs = self.user_preferences[pref_key].copy()
         current_prefs.active = arc4.Bool(False)
         self.user_preferences[pref_key] = current_prefs
         
@@ -247,14 +248,15 @@ class UserProfileContract(ARC4Contract):
     def toggle_favorite(self, product_id: arc4.String) -> arc4.Bool:
         """Toggle favorite status for a scanned product"""
         user_address_str = String.from_bytes(Txn.sender.bytes)
-        scan_key = String("scan_") + user_address_str + String("_") + String(product_id.native)
+        # FIX: use product_id.native directly
+        scan_key = String("scan_") + user_address_str + String("_") + product_id.native
         
         # Check if scan record exists
         if scan_key not in self.scanned_products:
             return arc4.Bool(False)
         
         # Toggle favorite status
-        scan_record = self.scanned_products[scan_key]
+        scan_record = self.scanned_products[scan_key].copy()
         scan_record.is_favorite = arc4.Bool(not scan_record.is_favorite.native)
         self.scanned_products[scan_key] = scan_record
         

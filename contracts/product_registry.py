@@ -38,7 +38,7 @@ class ProductRegistry(ARC4Contract):
     - Health-related analysis handled off-chain or via user profile contracts
     """
 
-    def __init__(self) -> None:
+    def _init_(self) -> None:
         # Global state variables
         self.owner = GlobalState(Txn.sender)
         self.total_products = GlobalState(UInt64(0))
@@ -97,7 +97,7 @@ class ProductRegistry(ARC4Contract):
             category=category
         )
         
-        # Store product data and version
+        # Store product data and version - FIX: no need for copy on new object
         self.product_data[product_key] = new_product
         self.product_versions[version_key] = UInt64(1)
         
@@ -151,7 +151,7 @@ class ProductRegistry(ARC4Contract):
             category=category
         )
         
-        # Store updated data
+        # Store updated data - FIX: no need for copy on new object
         self.product_data[product_key] = updated_product
         self.product_versions[version_key] = new_version
         
@@ -165,7 +165,7 @@ class ProductRegistry(ARC4Contract):
         # Check if product exists
         assert product_key in self.product_data, "Product not found"
         
-        return self.product_data[product_key]
+        return self.product_data[product_key].copy()
 
     @arc4.abimethod(readonly=True)
     def get_product_version(self, product_id: arc4.String) -> arc4.UInt64:
@@ -200,8 +200,8 @@ class ProductRegistry(ARC4Contract):
         if product_key not in self.product_data:
             return arc4.Bool(False)
         
-        # Get current product data and update active status
-        current_product = self.product_data[product_key]
+        # Get current product data and update active status - FIX: add copy()
+        current_product = self.product_data[product_key].copy()
         current_product.active = arc4.Bool(False)
         self.product_data[product_key] = current_product
         
@@ -241,4 +241,4 @@ class ProductRegistry(ARC4Contract):
         if auth_key not in self.authorized_addresses:
             return arc4.Bool(False)
         
-        return self.authorized_addresses[auth_key]
+        return self.authorized_addresses[auth_key].copy()

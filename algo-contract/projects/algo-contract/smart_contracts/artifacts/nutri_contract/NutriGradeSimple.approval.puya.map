@@ -1,0 +1,2452 @@
+{
+  "version": 3,
+  "sources": [
+    "../../nutri_contract/contract.py"
+  ],
+  "mappings": ";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;AA0BQ;AAAyB;;AAAzB;AACA;AAAkC;AAAlC;AACA;AAA+B;AAA/B;AAhBR;;AAAA;;;AAAA;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;AAAA;;;AAAA;;;;;;;;;;;;;;;;;;;;;;AAAA;;AA8LK;;AAAA;AAAA;AAAA;;AAAA;AAAA;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;AAAA;AAAA;;AAVA;;AAAA;AAAA;AAAA;;AAAA;AAAA;;;AAAA;AAAA;AAAA;AAAA;AAAA;;AAxBA;;AAAA;AAAA;AAAA;;AAAA;AA5JL;;;AAAA;;;AAAA;;;AA4JK;;;AAAA;AAAA;AAAA;AAAA;AAAA;;AAXA;;AAAA;;AAAA;AAAA;AAAA;;AAAA;AAAA;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;AAAA;AAAA;;AAfA;;AAAA;AAAA;AAAA;;AAAA;AAAA;;;AAAA;AAAA;AAAA;AAAA;AAAA;;AAxBA;;AAAA;AAAA;AAAA;;AAAA;AAAA;;;AAAA;AAAA;AAAA;AAAA;AAAA;;AAfA;;AAAA;AAAA;AAAA;;AAAA;AAAA;;;AAAA;AAAA;AAAA;AAAA;AAAA;;AA7BA;;AAAA;AAAA;AAAA;;AAAA;AA9DL;;;AA8DK;;;AAAA;AAAA;AAAA;AAAA;AAAA;;AA5BA;;AAAA;AAAA;AAAA;;AAAA;AAlCL;;;AAAA;;;AAAA;;;AAkCK;;;AAAA;AAAA;AAAA;AAAA;AAAA;;AAZA;;AAAA;AAAA;AAAA;;AAAA;AAAA;;;AAAA;AAAA;AAAA;AAAA;AAAA;;AAtBL;;AAAA;;;;;;;;;AAyBe;;AAAc;AAAA;AAAA;AAAA;AAAd;AAAP;AACO;AAAA;AAAA;AAAA;AAAA;AAAP;AAGA;AAA4B;AAA5B;AACA;AAAyB;AAAzB;AAEO;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;AAAP;AAER;;;AAoBe;;AAAc;AAAA;AAAA;AAAA;AAAd;AAAP;AAI4B;AAAA;AAAA;AAAA;AAA4B;AAA5B;AAA5B;AAAA;AAAA;AAEO;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;AAAP;AAER;;;AAiBY;;AAAY;;AADT;AAAP;AAKyB;AAAA;AAAA;AAAA;AAAyB;AAAzB;AAAzB;AAAA;AAAA;AAGwD;;AAArB;AAAA;;AAAA;AAAA;AAAmC;AAAnC;AAAd;;AAArB;;AAAA;;AAAA;AACwC;;AAAA;;;AAAd;;AAA1B;;AAAA;;AAAA;AAEO;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;AAAP;AAYoB;AAAA;AAAA;AAAA;AAAZ;AACY;AAAA;AAAA;AAAA;AAAZ;AAHD;AAAP;AAgBuB;;AAAY;;AAA5B;AAAJ;;;AACQ;;;;;;;;;;;;;;;;;;;;;;;;;;AAAP;AASqC;;AAArB;AAAA;;AAAA;AAAA;AAAZ;AACsC;;AAA1B;AAAA;;AAAA;AAAA;AAAZ;AAAA;AAAA;AAAA;;;AAAA;AAAA;AAHD;AAAA;;;;AAAA;AAAA;AAAA;AAAP;AAiBqB;;AAArB;;AAAmC;AAAnC;AAC0B;;AAA1B;;AAAwC;;AAAxC;AAEO;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;AAAP;AAaR;;;AAoBe;;AAAc;AAAA;AAAA;AAAA;AAAd;AAAP;AAEO;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;AAAP;AAUoB;AAAA;AAAA;AAAA;AAApB",
+  "op_pc_offset": 0,
+  "pc_events": {
+    "1": {
+      "subroutine": "smart_contracts.nutri_contract.contract.NutriGradeSimple.__algopy_entrypoint_with_init",
+      "params": {},
+      "block": "main",
+      "stack_in": [],
+      "op": "intcblock 0 1"
+    },
+    "5": {
+      "op": "bytecblock 0x151f7c75 \"total_products\" \"owner\" \"total_scans\" \"user_scan_count\" \"last_scanned_product\""
+    },
+    "82": {
+      "op": "txn ApplicationID",
+      "defined_out": [
+        "tmp%0#0"
+      ],
+      "stack_out": [
+        "tmp%0#0"
+      ]
+    },
+    "84": {
+      "op": "bnz main_after_if_else@2",
+      "stack_out": []
+    },
+    "87": {
+      "op": "bytec_2 // \"owner\"",
+      "defined_out": [
+        "\"owner\""
+      ],
+      "stack_out": [
+        "\"owner\""
+      ]
+    },
+    "88": {
+      "op": "txn Sender",
+      "defined_out": [
+        "\"owner\"",
+        "materialized_values%0#0"
+      ],
+      "stack_out": [
+        "\"owner\"",
+        "materialized_values%0#0"
+      ]
+    },
+    "90": {
+      "op": "app_global_put",
+      "stack_out": []
+    },
+    "91": {
+      "op": "bytec_1 // \"total_products\"",
+      "defined_out": [
+        "\"total_products\""
+      ],
+      "stack_out": [
+        "\"total_products\""
+      ]
+    },
+    "92": {
+      "op": "intc_0 // 0",
+      "defined_out": [
+        "\"total_products\"",
+        "0"
+      ],
+      "stack_out": [
+        "\"total_products\"",
+        "0"
+      ]
+    },
+    "93": {
+      "op": "app_global_put",
+      "stack_out": []
+    },
+    "94": {
+      "op": "bytec_3 // \"total_scans\"",
+      "defined_out": [
+        "\"total_scans\""
+      ],
+      "stack_out": [
+        "\"total_scans\""
+      ]
+    },
+    "95": {
+      "op": "intc_0 // 0",
+      "stack_out": [
+        "\"total_scans\"",
+        "0"
+      ]
+    },
+    "96": {
+      "op": "app_global_put",
+      "stack_out": []
+    },
+    "97": {
+      "block": "main_after_if_else@2",
+      "stack_in": [],
+      "op": "txn NumAppArgs",
+      "defined_out": [
+        "tmp%0#2"
+      ],
+      "stack_out": [
+        "tmp%0#2"
+      ]
+    },
+    "99": {
+      "op": "bz main_bare_routing@15",
+      "stack_out": []
+    },
+    "102": {
+      "op": "pushbytess 0x54391946 0xf1e61691 0x3af35294 0xe67daf51 0x32e3a2ad 0x122238f2 0x6984ee98 0x1c7d5965 0xff2ba5c5 0x2fba5a1b // method \"bootstrap()string\", method \"add_product(string,string,string)string\", method \"scan_product(string)string\", method \"get_stats()(uint64,uint64)\", method \"get_user_stats()(uint64,string)\", method \"opt_in()string\", method \"opt_out()string\", method \"update_product(string,string,string)string\", method \"get_owner()address\", method \"get_version()string\"",
+      "defined_out": [
+        "Method(add_product(string,string,string)string)",
+        "Method(bootstrap()string)",
+        "Method(get_owner()address)",
+        "Method(get_stats()(uint64,uint64))",
+        "Method(get_user_stats()(uint64,string))",
+        "Method(get_version()string)",
+        "Method(opt_in()string)",
+        "Method(opt_out()string)",
+        "Method(scan_product(string)string)",
+        "Method(update_product(string,string,string)string)"
+      ],
+      "stack_out": [
+        "Method(bootstrap()string)",
+        "Method(add_product(string,string,string)string)",
+        "Method(scan_product(string)string)",
+        "Method(get_stats()(uint64,uint64))",
+        "Method(get_user_stats()(uint64,string))",
+        "Method(opt_in()string)",
+        "Method(opt_out()string)",
+        "Method(update_product(string,string,string)string)",
+        "Method(get_owner()address)",
+        "Method(get_version()string)"
+      ]
+    },
+    "154": {
+      "op": "txna ApplicationArgs 0",
+      "defined_out": [
+        "Method(add_product(string,string,string)string)",
+        "Method(bootstrap()string)",
+        "Method(get_owner()address)",
+        "Method(get_stats()(uint64,uint64))",
+        "Method(get_user_stats()(uint64,string))",
+        "Method(get_version()string)",
+        "Method(opt_in()string)",
+        "Method(opt_out()string)",
+        "Method(scan_product(string)string)",
+        "Method(update_product(string,string,string)string)",
+        "tmp%2#0"
+      ],
+      "stack_out": [
+        "Method(bootstrap()string)",
+        "Method(add_product(string,string,string)string)",
+        "Method(scan_product(string)string)",
+        "Method(get_stats()(uint64,uint64))",
+        "Method(get_user_stats()(uint64,string))",
+        "Method(opt_in()string)",
+        "Method(opt_out()string)",
+        "Method(update_product(string,string,string)string)",
+        "Method(get_owner()address)",
+        "Method(get_version()string)",
+        "tmp%2#0"
+      ]
+    },
+    "157": {
+      "op": "match main_bootstrap_route@5 main_add_product_route@6 main_scan_product_route@7 main_get_stats_route@8 main_get_user_stats_route@9 main_opt_in_route@10 main_opt_out_route@11 main_update_product_route@12 main_get_owner_route@13 main_get_version_route@14",
+      "stack_out": []
+    },
+    "179": {
+      "block": "main_after_if_else@17",
+      "stack_in": [],
+      "op": "intc_0 // 0",
+      "defined_out": [
+        "tmp%0#0"
+      ],
+      "stack_out": [
+        "tmp%0#0"
+      ]
+    },
+    "180": {
+      "op": "return",
+      "stack_out": []
+    },
+    "181": {
+      "block": "main_get_version_route@14",
+      "stack_in": [],
+      "op": "txn OnCompletion",
+      "defined_out": [
+        "tmp%64#0"
+      ],
+      "stack_out": [
+        "tmp%64#0"
+      ]
+    },
+    "183": {
+      "op": "!",
+      "defined_out": [
+        "tmp%65#0"
+      ],
+      "stack_out": [
+        "tmp%65#0"
+      ]
+    },
+    "184": {
+      "error": "OnCompletion is not NoOp",
+      "op": "assert // OnCompletion is not NoOp",
+      "stack_out": []
+    },
+    "185": {
+      "op": "txn ApplicationID",
+      "defined_out": [
+        "tmp%66#0"
+      ],
+      "stack_out": [
+        "tmp%66#0"
+      ]
+    },
+    "187": {
+      "error": "can only call when not creating",
+      "op": "assert // can only call when not creating",
+      "stack_out": []
+    },
+    "188": {
+      "op": "pushbytes 0x151f7c7500184e7574726947726164652053696d706c652076312e302e30",
+      "defined_out": [
+        "0x151f7c7500184e7574726947726164652053696d706c652076312e302e30"
+      ],
+      "stack_out": [
+        "0x151f7c7500184e7574726947726164652053696d706c652076312e302e30"
+      ]
+    },
+    "220": {
+      "op": "log",
+      "stack_out": []
+    },
+    "221": {
+      "op": "intc_1 // 1",
+      "defined_out": [
+        "tmp%0#0"
+      ],
+      "stack_out": [
+        "tmp%0#0"
+      ]
+    },
+    "222": {
+      "op": "return",
+      "stack_out": []
+    },
+    "223": {
+      "block": "main_get_owner_route@13",
+      "stack_in": [],
+      "op": "txn OnCompletion",
+      "defined_out": [
+        "tmp%58#0"
+      ],
+      "stack_out": [
+        "tmp%58#0"
+      ]
+    },
+    "225": {
+      "op": "!",
+      "defined_out": [
+        "tmp%59#0"
+      ],
+      "stack_out": [
+        "tmp%59#0"
+      ]
+    },
+    "226": {
+      "error": "OnCompletion is not NoOp",
+      "op": "assert // OnCompletion is not NoOp",
+      "stack_out": []
+    },
+    "227": {
+      "op": "txn ApplicationID",
+      "defined_out": [
+        "tmp%60#0"
+      ],
+      "stack_out": [
+        "tmp%60#0"
+      ]
+    },
+    "229": {
+      "error": "can only call when not creating",
+      "op": "assert // can only call when not creating",
+      "stack_out": []
+    },
+    "230": {
+      "callsub": "smart_contracts.nutri_contract.contract.NutriGradeSimple.get_owner",
+      "op": "callsub get_owner",
+      "defined_out": [
+        "tmp%62#0"
+      ],
+      "stack_out": [
+        "tmp%62#0"
+      ]
+    },
+    "233": {
+      "op": "bytec_0 // 0x151f7c75",
+      "defined_out": [
+        "0x151f7c75",
+        "tmp%62#0"
+      ],
+      "stack_out": [
+        "tmp%62#0",
+        "0x151f7c75"
+      ]
+    },
+    "234": {
+      "op": "swap",
+      "stack_out": [
+        "0x151f7c75",
+        "tmp%62#0"
+      ]
+    },
+    "235": {
+      "op": "concat",
+      "defined_out": [
+        "tmp%63#0"
+      ],
+      "stack_out": [
+        "tmp%63#0"
+      ]
+    },
+    "236": {
+      "op": "log",
+      "stack_out": []
+    },
+    "237": {
+      "op": "intc_1 // 1",
+      "defined_out": [
+        "tmp%0#0"
+      ],
+      "stack_out": [
+        "tmp%0#0"
+      ]
+    },
+    "238": {
+      "op": "return",
+      "stack_out": []
+    },
+    "239": {
+      "block": "main_update_product_route@12",
+      "stack_in": [],
+      "op": "txn OnCompletion",
+      "defined_out": [
+        "tmp%49#0"
+      ],
+      "stack_out": [
+        "tmp%49#0"
+      ]
+    },
+    "241": {
+      "op": "!",
+      "defined_out": [
+        "tmp%50#0"
+      ],
+      "stack_out": [
+        "tmp%50#0"
+      ]
+    },
+    "242": {
+      "error": "OnCompletion is not NoOp",
+      "op": "assert // OnCompletion is not NoOp",
+      "stack_out": []
+    },
+    "243": {
+      "op": "txn ApplicationID",
+      "defined_out": [
+        "tmp%51#0"
+      ],
+      "stack_out": [
+        "tmp%51#0"
+      ]
+    },
+    "245": {
+      "error": "can only call when not creating",
+      "op": "assert // can only call when not creating",
+      "stack_out": []
+    },
+    "246": {
+      "op": "txna ApplicationArgs 1",
+      "defined_out": [
+        "tmp%53#0"
+      ],
+      "stack_out": [
+        "tmp%53#0"
+      ]
+    },
+    "249": {
+      "op": "txna ApplicationArgs 2",
+      "defined_out": [
+        "tmp%53#0",
+        "tmp%54#0"
+      ],
+      "stack_out": [
+        "tmp%53#0",
+        "tmp%54#0"
+      ]
+    },
+    "252": {
+      "op": "txna ApplicationArgs 3",
+      "defined_out": [
+        "tmp%53#0",
+        "tmp%54#0",
+        "tmp%55#0"
+      ],
+      "stack_out": [
+        "tmp%53#0",
+        "tmp%54#0",
+        "tmp%55#0"
+      ]
+    },
+    "255": {
+      "callsub": "smart_contracts.nutri_contract.contract.NutriGradeSimple.update_product",
+      "op": "callsub update_product",
+      "defined_out": [
+        "tmp%56#0"
+      ],
+      "stack_out": [
+        "tmp%56#0"
+      ]
+    },
+    "258": {
+      "op": "bytec_0 // 0x151f7c75",
+      "defined_out": [
+        "0x151f7c75",
+        "tmp%56#0"
+      ],
+      "stack_out": [
+        "tmp%56#0",
+        "0x151f7c75"
+      ]
+    },
+    "259": {
+      "op": "swap",
+      "stack_out": [
+        "0x151f7c75",
+        "tmp%56#0"
+      ]
+    },
+    "260": {
+      "op": "concat",
+      "defined_out": [
+        "tmp%57#0"
+      ],
+      "stack_out": [
+        "tmp%57#0"
+      ]
+    },
+    "261": {
+      "op": "log",
+      "stack_out": []
+    },
+    "262": {
+      "op": "intc_1 // 1",
+      "defined_out": [
+        "tmp%0#0"
+      ],
+      "stack_out": [
+        "tmp%0#0"
+      ]
+    },
+    "263": {
+      "op": "return",
+      "stack_out": []
+    },
+    "264": {
+      "block": "main_opt_out_route@11",
+      "stack_in": [],
+      "op": "txn OnCompletion",
+      "defined_out": [
+        "tmp%43#0"
+      ],
+      "stack_out": [
+        "tmp%43#0"
+      ]
+    },
+    "266": {
+      "op": "pushint 2 // CloseOut",
+      "defined_out": [
+        "CloseOut",
+        "tmp%43#0"
+      ],
+      "stack_out": [
+        "tmp%43#0",
+        "CloseOut"
+      ]
+    },
+    "268": {
+      "op": "==",
+      "defined_out": [
+        "tmp%44#0"
+      ],
+      "stack_out": [
+        "tmp%44#0"
+      ]
+    },
+    "269": {
+      "error": "OnCompletion is not CloseOut",
+      "op": "assert // OnCompletion is not CloseOut",
+      "stack_out": []
+    },
+    "270": {
+      "op": "txn ApplicationID",
+      "defined_out": [
+        "tmp%45#0"
+      ],
+      "stack_out": [
+        "tmp%45#0"
+      ]
+    },
+    "272": {
+      "error": "can only call when not creating",
+      "op": "assert // can only call when not creating",
+      "stack_out": []
+    },
+    "273": {
+      "op": "pushbytes 0x151f7c75001f5468616e6b20796f7520666f72207573696e67204e75747269477261646521",
+      "defined_out": [
+        "0x151f7c75001f5468616e6b20796f7520666f72207573696e67204e75747269477261646521"
+      ],
+      "stack_out": [
+        "0x151f7c75001f5468616e6b20796f7520666f72207573696e67204e75747269477261646521"
+      ]
+    },
+    "312": {
+      "op": "log",
+      "stack_out": []
+    },
+    "313": {
+      "op": "intc_1 // 1",
+      "defined_out": [
+        "tmp%0#0"
+      ],
+      "stack_out": [
+        "tmp%0#0"
+      ]
+    },
+    "314": {
+      "op": "return",
+      "stack_out": []
+    },
+    "315": {
+      "block": "main_opt_in_route@10",
+      "stack_in": [],
+      "op": "txn OnCompletion",
+      "defined_out": [
+        "tmp%37#0"
+      ],
+      "stack_out": [
+        "tmp%37#0"
+      ]
+    },
+    "317": {
+      "op": "!",
+      "defined_out": [
+        "tmp%38#0"
+      ],
+      "stack_out": [
+        "tmp%38#0"
+      ]
+    },
+    "318": {
+      "error": "OnCompletion is not NoOp",
+      "op": "assert // OnCompletion is not NoOp",
+      "stack_out": []
+    },
+    "319": {
+      "op": "txn ApplicationID",
+      "defined_out": [
+        "tmp%39#0"
+      ],
+      "stack_out": [
+        "tmp%39#0"
+      ]
+    },
+    "321": {
+      "error": "can only call when not creating",
+      "op": "assert // can only call when not creating",
+      "stack_out": []
+    },
+    "322": {
+      "callsub": "smart_contracts.nutri_contract.contract.NutriGradeSimple.opt_in",
+      "op": "callsub opt_in",
+      "defined_out": [
+        "tmp%41#0"
+      ],
+      "stack_out": [
+        "tmp%41#0"
+      ]
+    },
+    "325": {
+      "op": "bytec_0 // 0x151f7c75",
+      "defined_out": [
+        "0x151f7c75",
+        "tmp%41#0"
+      ],
+      "stack_out": [
+        "tmp%41#0",
+        "0x151f7c75"
+      ]
+    },
+    "326": {
+      "op": "swap",
+      "stack_out": [
+        "0x151f7c75",
+        "tmp%41#0"
+      ]
+    },
+    "327": {
+      "op": "concat",
+      "defined_out": [
+        "tmp%42#0"
+      ],
+      "stack_out": [
+        "tmp%42#0"
+      ]
+    },
+    "328": {
+      "op": "log",
+      "stack_out": []
+    },
+    "329": {
+      "op": "intc_1 // 1",
+      "defined_out": [
+        "tmp%0#0"
+      ],
+      "stack_out": [
+        "tmp%0#0"
+      ]
+    },
+    "330": {
+      "op": "return",
+      "stack_out": []
+    },
+    "331": {
+      "block": "main_get_user_stats_route@9",
+      "stack_in": [],
+      "op": "txn OnCompletion",
+      "defined_out": [
+        "tmp%31#0"
+      ],
+      "stack_out": [
+        "tmp%31#0"
+      ]
+    },
+    "333": {
+      "op": "!",
+      "defined_out": [
+        "tmp%32#0"
+      ],
+      "stack_out": [
+        "tmp%32#0"
+      ]
+    },
+    "334": {
+      "error": "OnCompletion is not NoOp",
+      "op": "assert // OnCompletion is not NoOp",
+      "stack_out": []
+    },
+    "335": {
+      "op": "txn ApplicationID",
+      "defined_out": [
+        "tmp%33#0"
+      ],
+      "stack_out": [
+        "tmp%33#0"
+      ]
+    },
+    "337": {
+      "error": "can only call when not creating",
+      "op": "assert // can only call when not creating",
+      "stack_out": []
+    },
+    "338": {
+      "callsub": "smart_contracts.nutri_contract.contract.NutriGradeSimple.get_user_stats",
+      "op": "callsub get_user_stats",
+      "defined_out": [
+        "tmp%35#0"
+      ],
+      "stack_out": [
+        "tmp%35#0"
+      ]
+    },
+    "341": {
+      "op": "bytec_0 // 0x151f7c75",
+      "defined_out": [
+        "0x151f7c75",
+        "tmp%35#0"
+      ],
+      "stack_out": [
+        "tmp%35#0",
+        "0x151f7c75"
+      ]
+    },
+    "342": {
+      "op": "swap",
+      "stack_out": [
+        "0x151f7c75",
+        "tmp%35#0"
+      ]
+    },
+    "343": {
+      "op": "concat",
+      "defined_out": [
+        "tmp%36#0"
+      ],
+      "stack_out": [
+        "tmp%36#0"
+      ]
+    },
+    "344": {
+      "op": "log",
+      "stack_out": []
+    },
+    "345": {
+      "op": "intc_1 // 1",
+      "defined_out": [
+        "tmp%0#0"
+      ],
+      "stack_out": [
+        "tmp%0#0"
+      ]
+    },
+    "346": {
+      "op": "return",
+      "stack_out": []
+    },
+    "347": {
+      "block": "main_get_stats_route@8",
+      "stack_in": [],
+      "op": "txn OnCompletion",
+      "defined_out": [
+        "tmp%25#0"
+      ],
+      "stack_out": [
+        "tmp%25#0"
+      ]
+    },
+    "349": {
+      "op": "!",
+      "defined_out": [
+        "tmp%26#0"
+      ],
+      "stack_out": [
+        "tmp%26#0"
+      ]
+    },
+    "350": {
+      "error": "OnCompletion is not NoOp",
+      "op": "assert // OnCompletion is not NoOp",
+      "stack_out": []
+    },
+    "351": {
+      "op": "txn ApplicationID",
+      "defined_out": [
+        "tmp%27#0"
+      ],
+      "stack_out": [
+        "tmp%27#0"
+      ]
+    },
+    "353": {
+      "error": "can only call when not creating",
+      "op": "assert // can only call when not creating",
+      "stack_out": []
+    },
+    "354": {
+      "callsub": "smart_contracts.nutri_contract.contract.NutriGradeSimple.get_stats",
+      "op": "callsub get_stats",
+      "defined_out": [
+        "tmp%29#0"
+      ],
+      "stack_out": [
+        "tmp%29#0"
+      ]
+    },
+    "357": {
+      "op": "bytec_0 // 0x151f7c75",
+      "defined_out": [
+        "0x151f7c75",
+        "tmp%29#0"
+      ],
+      "stack_out": [
+        "tmp%29#0",
+        "0x151f7c75"
+      ]
+    },
+    "358": {
+      "op": "swap",
+      "stack_out": [
+        "0x151f7c75",
+        "tmp%29#0"
+      ]
+    },
+    "359": {
+      "op": "concat",
+      "defined_out": [
+        "tmp%30#0"
+      ],
+      "stack_out": [
+        "tmp%30#0"
+      ]
+    },
+    "360": {
+      "op": "log",
+      "stack_out": []
+    },
+    "361": {
+      "op": "intc_1 // 1",
+      "defined_out": [
+        "tmp%0#0"
+      ],
+      "stack_out": [
+        "tmp%0#0"
+      ]
+    },
+    "362": {
+      "op": "return",
+      "stack_out": []
+    },
+    "363": {
+      "block": "main_scan_product_route@7",
+      "stack_in": [],
+      "op": "txn OnCompletion",
+      "defined_out": [
+        "tmp%18#0"
+      ],
+      "stack_out": [
+        "tmp%18#0"
+      ]
+    },
+    "365": {
+      "op": "!",
+      "defined_out": [
+        "tmp%19#0"
+      ],
+      "stack_out": [
+        "tmp%19#0"
+      ]
+    },
+    "366": {
+      "error": "OnCompletion is not NoOp",
+      "op": "assert // OnCompletion is not NoOp",
+      "stack_out": []
+    },
+    "367": {
+      "op": "txn ApplicationID",
+      "defined_out": [
+        "tmp%20#0"
+      ],
+      "stack_out": [
+        "tmp%20#0"
+      ]
+    },
+    "369": {
+      "error": "can only call when not creating",
+      "op": "assert // can only call when not creating",
+      "stack_out": []
+    },
+    "370": {
+      "op": "txna ApplicationArgs 1",
+      "defined_out": [
+        "tmp%22#0"
+      ],
+      "stack_out": [
+        "tmp%22#0"
+      ]
+    },
+    "373": {
+      "callsub": "smart_contracts.nutri_contract.contract.NutriGradeSimple.scan_product",
+      "op": "callsub scan_product",
+      "defined_out": [
+        "tmp%23#0"
+      ],
+      "stack_out": [
+        "tmp%23#0"
+      ]
+    },
+    "376": {
+      "op": "bytec_0 // 0x151f7c75",
+      "defined_out": [
+        "0x151f7c75",
+        "tmp%23#0"
+      ],
+      "stack_out": [
+        "tmp%23#0",
+        "0x151f7c75"
+      ]
+    },
+    "377": {
+      "op": "swap",
+      "stack_out": [
+        "0x151f7c75",
+        "tmp%23#0"
+      ]
+    },
+    "378": {
+      "op": "concat",
+      "defined_out": [
+        "tmp%24#0"
+      ],
+      "stack_out": [
+        "tmp%24#0"
+      ]
+    },
+    "379": {
+      "op": "log",
+      "stack_out": []
+    },
+    "380": {
+      "op": "intc_1 // 1",
+      "defined_out": [
+        "tmp%0#0"
+      ],
+      "stack_out": [
+        "tmp%0#0"
+      ]
+    },
+    "381": {
+      "op": "return",
+      "stack_out": []
+    },
+    "382": {
+      "block": "main_add_product_route@6",
+      "stack_in": [],
+      "op": "txn OnCompletion",
+      "defined_out": [
+        "tmp%9#0"
+      ],
+      "stack_out": [
+        "tmp%9#0"
+      ]
+    },
+    "384": {
+      "op": "!",
+      "defined_out": [
+        "tmp%10#0"
+      ],
+      "stack_out": [
+        "tmp%10#0"
+      ]
+    },
+    "385": {
+      "error": "OnCompletion is not NoOp",
+      "op": "assert // OnCompletion is not NoOp",
+      "stack_out": []
+    },
+    "386": {
+      "op": "txn ApplicationID",
+      "defined_out": [
+        "tmp%11#0"
+      ],
+      "stack_out": [
+        "tmp%11#0"
+      ]
+    },
+    "388": {
+      "error": "can only call when not creating",
+      "op": "assert // can only call when not creating",
+      "stack_out": []
+    },
+    "389": {
+      "op": "txna ApplicationArgs 1",
+      "defined_out": [
+        "tmp%13#0"
+      ],
+      "stack_out": [
+        "tmp%13#0"
+      ]
+    },
+    "392": {
+      "op": "txna ApplicationArgs 2",
+      "defined_out": [
+        "tmp%13#0",
+        "tmp%14#0"
+      ],
+      "stack_out": [
+        "tmp%13#0",
+        "tmp%14#0"
+      ]
+    },
+    "395": {
+      "op": "txna ApplicationArgs 3",
+      "defined_out": [
+        "tmp%13#0",
+        "tmp%14#0",
+        "tmp%15#0"
+      ],
+      "stack_out": [
+        "tmp%13#0",
+        "tmp%14#0",
+        "tmp%15#0"
+      ]
+    },
+    "398": {
+      "callsub": "smart_contracts.nutri_contract.contract.NutriGradeSimple.add_product",
+      "op": "callsub add_product",
+      "defined_out": [
+        "tmp%16#0"
+      ],
+      "stack_out": [
+        "tmp%16#0"
+      ]
+    },
+    "401": {
+      "op": "bytec_0 // 0x151f7c75",
+      "defined_out": [
+        "0x151f7c75",
+        "tmp%16#0"
+      ],
+      "stack_out": [
+        "tmp%16#0",
+        "0x151f7c75"
+      ]
+    },
+    "402": {
+      "op": "swap",
+      "stack_out": [
+        "0x151f7c75",
+        "tmp%16#0"
+      ]
+    },
+    "403": {
+      "op": "concat",
+      "defined_out": [
+        "tmp%17#0"
+      ],
+      "stack_out": [
+        "tmp%17#0"
+      ]
+    },
+    "404": {
+      "op": "log",
+      "stack_out": []
+    },
+    "405": {
+      "op": "intc_1 // 1",
+      "defined_out": [
+        "tmp%0#0"
+      ],
+      "stack_out": [
+        "tmp%0#0"
+      ]
+    },
+    "406": {
+      "op": "return",
+      "stack_out": []
+    },
+    "407": {
+      "block": "main_bootstrap_route@5",
+      "stack_in": [],
+      "op": "txn OnCompletion",
+      "defined_out": [
+        "tmp%3#0"
+      ],
+      "stack_out": [
+        "tmp%3#0"
+      ]
+    },
+    "409": {
+      "op": "!",
+      "defined_out": [
+        "tmp%4#0"
+      ],
+      "stack_out": [
+        "tmp%4#0"
+      ]
+    },
+    "410": {
+      "error": "OnCompletion is not NoOp",
+      "op": "assert // OnCompletion is not NoOp",
+      "stack_out": []
+    },
+    "411": {
+      "op": "txn ApplicationID",
+      "defined_out": [
+        "tmp%5#0"
+      ],
+      "stack_out": [
+        "tmp%5#0"
+      ]
+    },
+    "413": {
+      "error": "can only call when not creating",
+      "op": "assert // can only call when not creating",
+      "stack_out": []
+    },
+    "414": {
+      "callsub": "smart_contracts.nutri_contract.contract.NutriGradeSimple.bootstrap",
+      "op": "callsub bootstrap",
+      "defined_out": [
+        "tmp%7#0"
+      ],
+      "stack_out": [
+        "tmp%7#0"
+      ]
+    },
+    "417": {
+      "op": "bytec_0 // 0x151f7c75",
+      "defined_out": [
+        "0x151f7c75",
+        "tmp%7#0"
+      ],
+      "stack_out": [
+        "tmp%7#0",
+        "0x151f7c75"
+      ]
+    },
+    "418": {
+      "op": "swap",
+      "stack_out": [
+        "0x151f7c75",
+        "tmp%7#0"
+      ]
+    },
+    "419": {
+      "op": "concat",
+      "defined_out": [
+        "tmp%8#0"
+      ],
+      "stack_out": [
+        "tmp%8#0"
+      ]
+    },
+    "420": {
+      "op": "log",
+      "stack_out": []
+    },
+    "421": {
+      "op": "intc_1 // 1",
+      "defined_out": [
+        "tmp%0#0"
+      ],
+      "stack_out": [
+        "tmp%0#0"
+      ]
+    },
+    "422": {
+      "op": "return",
+      "stack_out": []
+    },
+    "423": {
+      "block": "main_bare_routing@15",
+      "stack_in": [],
+      "op": "txn OnCompletion",
+      "defined_out": [
+        "tmp%70#0"
+      ],
+      "stack_out": [
+        "tmp%70#0"
+      ]
+    },
+    "425": {
+      "op": "bnz main_after_if_else@17",
+      "stack_out": []
+    },
+    "428": {
+      "op": "txn ApplicationID",
+      "defined_out": [
+        "tmp%71#0"
+      ],
+      "stack_out": [
+        "tmp%71#0"
+      ]
+    },
+    "430": {
+      "op": "!",
+      "defined_out": [
+        "tmp%72#0"
+      ],
+      "stack_out": [
+        "tmp%72#0"
+      ]
+    },
+    "431": {
+      "error": "can only call when creating",
+      "op": "assert // can only call when creating",
+      "stack_out": []
+    },
+    "432": {
+      "op": "intc_1 // 1",
+      "defined_out": [
+        "tmp%0#0"
+      ],
+      "stack_out": [
+        "tmp%0#0"
+      ]
+    },
+    "433": {
+      "op": "return",
+      "stack_out": []
+    },
+    "434": {
+      "subroutine": "smart_contracts.nutri_contract.contract.NutriGradeSimple.bootstrap",
+      "params": {},
+      "block": "bootstrap",
+      "stack_in": [],
+      "op": "txn Sender",
+      "defined_out": [
+        "tmp%0#0"
+      ],
+      "stack_out": [
+        "tmp%0#0"
+      ]
+    },
+    "436": {
+      "op": "intc_0 // 0",
+      "defined_out": [
+        "0",
+        "tmp%0#0"
+      ],
+      "stack_out": [
+        "tmp%0#0",
+        "0"
+      ]
+    },
+    "437": {
+      "op": "bytec_2 // \"owner\"",
+      "defined_out": [
+        "\"owner\"",
+        "0",
+        "tmp%0#0"
+      ],
+      "stack_out": [
+        "tmp%0#0",
+        "0",
+        "\"owner\""
+      ]
+    },
+    "438": {
+      "op": "app_global_get_ex",
+      "defined_out": [
+        "maybe_exists%0#0",
+        "maybe_value%0#0",
+        "tmp%0#0"
+      ],
+      "stack_out": [
+        "tmp%0#0",
+        "maybe_value%0#0",
+        "maybe_exists%0#0"
+      ]
+    },
+    "439": {
+      "error": "check self.owner exists",
+      "op": "assert // check self.owner exists",
+      "stack_out": [
+        "tmp%0#0",
+        "maybe_value%0#0"
+      ]
+    },
+    "440": {
+      "op": "==",
+      "defined_out": [
+        "tmp%1#0"
+      ],
+      "stack_out": [
+        "tmp%1#0"
+      ]
+    },
+    "441": {
+      "error": "Only owner can bootstrap",
+      "op": "assert // Only owner can bootstrap",
+      "stack_out": []
+    },
+    "442": {
+      "op": "intc_0 // 0",
+      "stack_out": [
+        "0"
+      ]
+    },
+    "443": {
+      "op": "bytec_1 // \"total_products\"",
+      "defined_out": [
+        "\"total_products\"",
+        "0"
+      ],
+      "stack_out": [
+        "0",
+        "\"total_products\""
+      ]
+    },
+    "444": {
+      "op": "app_global_get_ex",
+      "defined_out": [
+        "maybe_exists%1#0",
+        "maybe_value%1#0"
+      ],
+      "stack_out": [
+        "maybe_value%1#0",
+        "maybe_exists%1#0"
+      ]
+    },
+    "445": {
+      "error": "check self.total_products exists",
+      "op": "assert // check self.total_products exists",
+      "stack_out": [
+        "maybe_value%1#0"
+      ]
+    },
+    "446": {
+      "op": "!",
+      "defined_out": [
+        "tmp%2#0"
+      ],
+      "stack_out": [
+        "tmp%2#0"
+      ]
+    },
+    "447": {
+      "error": "Already bootstrapped",
+      "op": "assert // Already bootstrapped",
+      "stack_out": []
+    },
+    "448": {
+      "op": "bytec_1 // \"total_products\"",
+      "stack_out": [
+        "\"total_products\""
+      ]
+    },
+    "449": {
+      "op": "intc_0 // 0",
+      "stack_out": [
+        "\"total_products\"",
+        "0"
+      ]
+    },
+    "450": {
+      "op": "app_global_put",
+      "stack_out": []
+    },
+    "451": {
+      "op": "bytec_3 // \"total_scans\"",
+      "defined_out": [
+        "\"total_scans\""
+      ],
+      "stack_out": [
+        "\"total_scans\""
+      ]
+    },
+    "452": {
+      "op": "intc_0 // 0",
+      "stack_out": [
+        "\"total_scans\"",
+        "0"
+      ]
+    },
+    "453": {
+      "op": "app_global_put",
+      "stack_out": []
+    },
+    "454": {
+      "op": "pushbytes 0x002d4e75747269477261646520436f6e747261637420496e697469616c697a6564205375636365737366756c6c7921",
+      "defined_out": [
+        "0x002d4e75747269477261646520436f6e747261637420496e697469616c697a6564205375636365737366756c6c7921"
+      ],
+      "stack_out": [
+        "0x002d4e75747269477261646520436f6e747261637420496e697469616c697a6564205375636365737366756c6c7921"
+      ]
+    },
+    "503": {
+      "retsub": true,
+      "op": "retsub"
+    },
+    "504": {
+      "subroutine": "smart_contracts.nutri_contract.contract.NutriGradeSimple.add_product",
+      "params": {
+        "product_id#0": "bytes",
+        "name#0": "bytes",
+        "ingredients#0": "bytes"
+      },
+      "block": "add_product",
+      "stack_in": [],
+      "op": "proto 3 1"
+    },
+    "507": {
+      "op": "txn Sender",
+      "defined_out": [
+        "tmp%0#0"
+      ],
+      "stack_out": [
+        "tmp%0#0"
+      ]
+    },
+    "509": {
+      "op": "intc_0 // 0",
+      "defined_out": [
+        "0",
+        "tmp%0#0"
+      ],
+      "stack_out": [
+        "tmp%0#0",
+        "0"
+      ]
+    },
+    "510": {
+      "op": "bytec_2 // \"owner\"",
+      "defined_out": [
+        "\"owner\"",
+        "0",
+        "tmp%0#0"
+      ],
+      "stack_out": [
+        "tmp%0#0",
+        "0",
+        "\"owner\""
+      ]
+    },
+    "511": {
+      "op": "app_global_get_ex",
+      "defined_out": [
+        "maybe_exists%0#0",
+        "maybe_value%0#0",
+        "tmp%0#0"
+      ],
+      "stack_out": [
+        "tmp%0#0",
+        "maybe_value%0#0",
+        "maybe_exists%0#0"
+      ]
+    },
+    "512": {
+      "error": "check self.owner exists",
+      "op": "assert // check self.owner exists",
+      "stack_out": [
+        "tmp%0#0",
+        "maybe_value%0#0"
+      ]
+    },
+    "513": {
+      "op": "==",
+      "defined_out": [
+        "tmp%1#0"
+      ],
+      "stack_out": [
+        "tmp%1#0"
+      ]
+    },
+    "514": {
+      "error": "Only owner can add products",
+      "op": "assert // Only owner can add products",
+      "stack_out": []
+    },
+    "515": {
+      "op": "intc_0 // 0",
+      "stack_out": [
+        "0"
+      ]
+    },
+    "516": {
+      "op": "bytec_1 // \"total_products\"",
+      "defined_out": [
+        "\"total_products\"",
+        "0"
+      ],
+      "stack_out": [
+        "0",
+        "\"total_products\""
+      ]
+    },
+    "517": {
+      "op": "app_global_get_ex",
+      "defined_out": [
+        "maybe_exists%1#0",
+        "maybe_value%1#0"
+      ],
+      "stack_out": [
+        "maybe_value%1#0",
+        "maybe_exists%1#0"
+      ]
+    },
+    "518": {
+      "error": "check self.total_products exists",
+      "op": "assert // check self.total_products exists",
+      "stack_out": [
+        "maybe_value%1#0"
+      ]
+    },
+    "519": {
+      "op": "intc_1 // 1",
+      "defined_out": [
+        "1",
+        "maybe_value%1#0"
+      ],
+      "stack_out": [
+        "maybe_value%1#0",
+        "1"
+      ]
+    },
+    "520": {
+      "op": "+",
+      "defined_out": [
+        "materialized_values%0#0"
+      ],
+      "stack_out": [
+        "materialized_values%0#0"
+      ]
+    },
+    "521": {
+      "op": "bytec_1 // \"total_products\"",
+      "stack_out": [
+        "materialized_values%0#0",
+        "\"total_products\""
+      ]
+    },
+    "522": {
+      "op": "swap",
+      "stack_out": [
+        "\"total_products\"",
+        "materialized_values%0#0"
+      ]
+    },
+    "523": {
+      "op": "app_global_put",
+      "stack_out": []
+    },
+    "524": {
+      "op": "pushbytes 0x001b50726f64756374206164646564207375636365737366756c6c7921",
+      "defined_out": [
+        "0x001b50726f64756374206164646564207375636365737366756c6c7921"
+      ],
+      "stack_out": [
+        "0x001b50726f64756374206164646564207375636365737366756c6c7921"
+      ]
+    },
+    "555": {
+      "retsub": true,
+      "op": "retsub"
+    },
+    "556": {
+      "subroutine": "smart_contracts.nutri_contract.contract.NutriGradeSimple.scan_product",
+      "params": {
+        "product_id#0": "bytes"
+      },
+      "block": "scan_product",
+      "stack_in": [],
+      "op": "proto 1 1"
+    },
+    "559": {
+      "op": "txn Sender",
+      "defined_out": [
+        "tmp%0#0"
+      ],
+      "stack_out": [
+        "tmp%0#0"
+      ]
+    },
+    "561": {
+      "op": "global CurrentApplicationID",
+      "defined_out": [
+        "tmp%0#0",
+        "tmp%1#0"
+      ],
+      "stack_out": [
+        "tmp%0#0",
+        "tmp%1#0"
+      ]
+    },
+    "563": {
+      "op": "app_opted_in",
+      "defined_out": [
+        "tmp%2#0"
+      ],
+      "stack_out": [
+        "tmp%2#0"
+      ]
+    },
+    "564": {
+      "error": "Please opt-in first",
+      "op": "assert // Please opt-in first",
+      "stack_out": []
+    },
+    "565": {
+      "op": "intc_0 // 0",
+      "defined_out": [
+        "0"
+      ],
+      "stack_out": [
+        "0"
+      ]
+    },
+    "566": {
+      "op": "bytec_3 // \"total_scans\"",
+      "defined_out": [
+        "\"total_scans\"",
+        "0"
+      ],
+      "stack_out": [
+        "0",
+        "\"total_scans\""
+      ]
+    },
+    "567": {
+      "op": "app_global_get_ex",
+      "defined_out": [
+        "maybe_exists%0#0",
+        "maybe_value%0#0"
+      ],
+      "stack_out": [
+        "maybe_value%0#0",
+        "maybe_exists%0#0"
+      ]
+    },
+    "568": {
+      "error": "check self.total_scans exists",
+      "op": "assert // check self.total_scans exists",
+      "stack_out": [
+        "maybe_value%0#0"
+      ]
+    },
+    "569": {
+      "op": "intc_1 // 1",
+      "defined_out": [
+        "1",
+        "maybe_value%0#0"
+      ],
+      "stack_out": [
+        "maybe_value%0#0",
+        "1"
+      ]
+    },
+    "570": {
+      "op": "+",
+      "defined_out": [
+        "materialized_values%0#0"
+      ],
+      "stack_out": [
+        "materialized_values%0#0"
+      ]
+    },
+    "571": {
+      "op": "bytec_3 // \"total_scans\"",
+      "stack_out": [
+        "materialized_values%0#0",
+        "\"total_scans\""
+      ]
+    },
+    "572": {
+      "op": "swap",
+      "stack_out": [
+        "\"total_scans\"",
+        "materialized_values%0#0"
+      ]
+    },
+    "573": {
+      "op": "app_global_put",
+      "stack_out": []
+    },
+    "574": {
+      "op": "txn Sender",
+      "defined_out": [
+        "tmp%3#0"
+      ],
+      "stack_out": [
+        "tmp%3#0"
+      ]
+    },
+    "576": {
+      "op": "intc_0 // 0",
+      "stack_out": [
+        "tmp%3#0",
+        "0"
+      ]
+    },
+    "577": {
+      "op": "bytec 4 // \"user_scan_count\"",
+      "defined_out": [
+        "\"user_scan_count\"",
+        "0",
+        "tmp%3#0"
+      ],
+      "stack_out": [
+        "tmp%3#0",
+        "0",
+        "\"user_scan_count\""
+      ]
+    },
+    "579": {
+      "op": "app_local_get_ex",
+      "defined_out": [
+        "maybe_exists%1#0",
+        "maybe_value%1#0"
+      ],
+      "stack_out": [
+        "maybe_value%1#0",
+        "maybe_exists%1#0"
+      ]
+    },
+    "580": {
+      "error": "check self.user_scan_count exists for account",
+      "op": "assert // check self.user_scan_count exists for account",
+      "stack_out": [
+        "maybe_value%1#0"
+      ]
+    },
+    "581": {
+      "op": "intc_1 // 1",
+      "stack_out": [
+        "maybe_value%1#0",
+        "1"
+      ]
+    },
+    "582": {
+      "op": "+",
+      "defined_out": [
+        "materialized_values%1#0"
+      ],
+      "stack_out": [
+        "materialized_values%1#0"
+      ]
+    },
+    "583": {
+      "op": "txn Sender",
+      "defined_out": [
+        "materialized_values%1#0",
+        "tmp%4#0"
+      ],
+      "stack_out": [
+        "materialized_values%1#0",
+        "tmp%4#0"
+      ]
+    },
+    "585": {
+      "op": "bytec 4 // \"user_scan_count\"",
+      "stack_out": [
+        "materialized_values%1#0",
+        "tmp%4#0",
+        "\"user_scan_count\""
+      ]
+    },
+    "587": {
+      "op": "uncover 2",
+      "stack_out": [
+        "tmp%4#0",
+        "\"user_scan_count\"",
+        "materialized_values%1#0"
+      ]
+    },
+    "589": {
+      "op": "app_local_put",
+      "stack_out": []
+    },
+    "590": {
+      "op": "frame_dig -1",
+      "defined_out": [
+        "product_id#0 (copy)"
+      ],
+      "stack_out": [
+        "product_id#0 (copy)"
+      ]
+    },
+    "592": {
+      "op": "extract 2 0",
+      "defined_out": [
+        "materialized_values%2#0"
+      ],
+      "stack_out": [
+        "materialized_values%2#0"
+      ]
+    },
+    "595": {
+      "op": "txn Sender",
+      "defined_out": [
+        "materialized_values%2#0",
+        "tmp%5#0"
+      ],
+      "stack_out": [
+        "materialized_values%2#0",
+        "tmp%5#0"
+      ]
+    },
+    "597": {
+      "op": "bytec 5 // \"last_scanned_product\"",
+      "defined_out": [
+        "\"last_scanned_product\"",
+        "materialized_values%2#0",
+        "tmp%5#0"
+      ],
+      "stack_out": [
+        "materialized_values%2#0",
+        "tmp%5#0",
+        "\"last_scanned_product\""
+      ]
+    },
+    "599": {
+      "op": "uncover 2",
+      "stack_out": [
+        "tmp%5#0",
+        "\"last_scanned_product\"",
+        "materialized_values%2#0"
+      ]
+    },
+    "601": {
+      "op": "app_local_put",
+      "stack_out": []
+    },
+    "602": {
+      "op": "pushbytes 0x001d50726f64756374207363616e6e6564207375636365737366756c6c7921",
+      "defined_out": [
+        "0x001d50726f64756374207363616e6e6564207375636365737366756c6c7921"
+      ],
+      "stack_out": [
+        "0x001d50726f64756374207363616e6e6564207375636365737366756c6c7921"
+      ]
+    },
+    "635": {
+      "retsub": true,
+      "op": "retsub"
+    },
+    "636": {
+      "subroutine": "smart_contracts.nutri_contract.contract.NutriGradeSimple.get_stats",
+      "params": {},
+      "block": "get_stats",
+      "stack_in": [],
+      "op": "intc_0 // 0",
+      "defined_out": [
+        "0"
+      ],
+      "stack_out": [
+        "0"
+      ]
+    },
+    "637": {
+      "op": "bytec_1 // \"total_products\"",
+      "defined_out": [
+        "\"total_products\"",
+        "0"
+      ],
+      "stack_out": [
+        "0",
+        "\"total_products\""
+      ]
+    },
+    "638": {
+      "op": "app_global_get_ex",
+      "defined_out": [
+        "maybe_exists%0#0",
+        "maybe_value%0#0"
+      ],
+      "stack_out": [
+        "maybe_value%0#0",
+        "maybe_exists%0#0"
+      ]
+    },
+    "639": {
+      "error": "check self.total_products exists",
+      "op": "assert // check self.total_products exists",
+      "stack_out": [
+        "maybe_value%0#0"
+      ]
+    },
+    "640": {
+      "op": "itob",
+      "defined_out": [
+        "val_as_bytes%0#0"
+      ],
+      "stack_out": [
+        "val_as_bytes%0#0"
+      ]
+    },
+    "641": {
+      "op": "intc_0 // 0",
+      "stack_out": [
+        "val_as_bytes%0#0",
+        "0"
+      ]
+    },
+    "642": {
+      "op": "bytec_3 // \"total_scans\"",
+      "defined_out": [
+        "\"total_scans\"",
+        "0",
+        "val_as_bytes%0#0"
+      ],
+      "stack_out": [
+        "val_as_bytes%0#0",
+        "0",
+        "\"total_scans\""
+      ]
+    },
+    "643": {
+      "op": "app_global_get_ex",
+      "defined_out": [
+        "maybe_exists%1#0",
+        "maybe_value%1#0",
+        "val_as_bytes%0#0"
+      ],
+      "stack_out": [
+        "val_as_bytes%0#0",
+        "maybe_value%1#0",
+        "maybe_exists%1#0"
+      ]
+    },
+    "644": {
+      "error": "check self.total_scans exists",
+      "op": "assert // check self.total_scans exists",
+      "stack_out": [
+        "val_as_bytes%0#0",
+        "maybe_value%1#0"
+      ]
+    },
+    "645": {
+      "op": "itob",
+      "defined_out": [
+        "val_as_bytes%0#0",
+        "val_as_bytes%1#0"
+      ],
+      "stack_out": [
+        "val_as_bytes%0#0",
+        "val_as_bytes%1#0"
+      ]
+    },
+    "646": {
+      "op": "concat",
+      "defined_out": [
+        "encoded_tuple_buffer%2#0"
+      ],
+      "stack_out": [
+        "encoded_tuple_buffer%2#0"
+      ]
+    },
+    "647": {
+      "retsub": true,
+      "op": "retsub"
+    },
+    "648": {
+      "subroutine": "smart_contracts.nutri_contract.contract.NutriGradeSimple.get_user_stats",
+      "params": {},
+      "block": "get_user_stats",
+      "stack_in": [],
+      "op": "txn Sender",
+      "defined_out": [
+        "tmp%0#0"
+      ],
+      "stack_out": [
+        "tmp%0#0"
+      ]
+    },
+    "650": {
+      "op": "global CurrentApplicationID",
+      "defined_out": [
+        "tmp%0#0",
+        "tmp%1#0"
+      ],
+      "stack_out": [
+        "tmp%0#0",
+        "tmp%1#0"
+      ]
+    },
+    "652": {
+      "op": "app_opted_in",
+      "defined_out": [
+        "tmp%2#0"
+      ],
+      "stack_out": [
+        "tmp%2#0"
+      ]
+    },
+    "653": {
+      "op": "bnz get_user_stats_after_if_else@2",
+      "stack_out": []
+    },
+    "656": {
+      "op": "pushbytes 0x0000000000000000000a000c4e6f207363616e7320796574",
+      "defined_out": [
+        "0x0000000000000000000a000c4e6f207363616e7320796574"
+      ],
+      "stack_out": [
+        "0x0000000000000000000a000c4e6f207363616e7320796574"
+      ]
+    },
+    "682": {
+      "retsub": true,
+      "op": "retsub"
+    },
+    "683": {
+      "block": "get_user_stats_after_if_else@2",
+      "stack_in": [],
+      "op": "txn Sender",
+      "defined_out": [
+        "tmp%3#0"
+      ],
+      "stack_out": [
+        "tmp%3#0"
+      ]
+    },
+    "685": {
+      "op": "intc_0 // 0",
+      "defined_out": [
+        "0",
+        "tmp%3#0"
+      ],
+      "stack_out": [
+        "tmp%3#0",
+        "0"
+      ]
+    },
+    "686": {
+      "op": "bytec 4 // \"user_scan_count\"",
+      "defined_out": [
+        "\"user_scan_count\"",
+        "0",
+        "tmp%3#0"
+      ],
+      "stack_out": [
+        "tmp%3#0",
+        "0",
+        "\"user_scan_count\""
+      ]
+    },
+    "688": {
+      "op": "app_local_get_ex",
+      "defined_out": [
+        "maybe_exists%0#0",
+        "maybe_value%0#0"
+      ],
+      "stack_out": [
+        "maybe_value%0#0",
+        "maybe_exists%0#0"
+      ]
+    },
+    "689": {
+      "error": "check self.user_scan_count exists for account",
+      "op": "assert // check self.user_scan_count exists for account",
+      "stack_out": [
+        "maybe_value%0#0"
+      ]
+    },
+    "690": {
+      "op": "itob",
+      "defined_out": [
+        "val_as_bytes%0#0"
+      ],
+      "stack_out": [
+        "val_as_bytes%0#0"
+      ]
+    },
+    "691": {
+      "op": "txn Sender",
+      "defined_out": [
+        "tmp%4#0",
+        "val_as_bytes%0#0"
+      ],
+      "stack_out": [
+        "val_as_bytes%0#0",
+        "tmp%4#0"
+      ]
+    },
+    "693": {
+      "op": "intc_0 // 0",
+      "stack_out": [
+        "val_as_bytes%0#0",
+        "tmp%4#0",
+        "0"
+      ]
+    },
+    "694": {
+      "op": "bytec 5 // \"last_scanned_product\"",
+      "defined_out": [
+        "\"last_scanned_product\"",
+        "0",
+        "tmp%4#0",
+        "val_as_bytes%0#0"
+      ],
+      "stack_out": [
+        "val_as_bytes%0#0",
+        "tmp%4#0",
+        "0",
+        "\"last_scanned_product\""
+      ]
+    },
+    "696": {
+      "op": "app_local_get_ex",
+      "defined_out": [
+        "maybe_exists%1#0",
+        "maybe_value%1#0",
+        "val_as_bytes%0#0"
+      ],
+      "stack_out": [
+        "val_as_bytes%0#0",
+        "maybe_value%1#0",
+        "maybe_exists%1#0"
+      ]
+    },
+    "697": {
+      "error": "check self.last_scanned_product exists for account",
+      "op": "assert // check self.last_scanned_product exists for account",
+      "stack_out": [
+        "val_as_bytes%0#0",
+        "maybe_value%1#0"
+      ]
+    },
+    "698": {
+      "op": "dup",
+      "defined_out": [
+        "maybe_value%1#0",
+        "maybe_value%1#0 (copy)",
+        "val_as_bytes%0#0"
+      ],
+      "stack_out": [
+        "val_as_bytes%0#0",
+        "maybe_value%1#0",
+        "maybe_value%1#0 (copy)"
+      ]
+    },
+    "699": {
+      "op": "len",
+      "defined_out": [
+        "length%0#0",
+        "maybe_value%1#0",
+        "val_as_bytes%0#0"
+      ],
+      "stack_out": [
+        "val_as_bytes%0#0",
+        "maybe_value%1#0",
+        "length%0#0"
+      ]
+    },
+    "700": {
+      "op": "itob",
+      "defined_out": [
+        "as_bytes%1#0",
+        "maybe_value%1#0",
+        "val_as_bytes%0#0"
+      ],
+      "stack_out": [
+        "val_as_bytes%0#0",
+        "maybe_value%1#0",
+        "as_bytes%1#0"
+      ]
+    },
+    "701": {
+      "op": "extract 6 2",
+      "defined_out": [
+        "length_uint16%0#0",
+        "maybe_value%1#0",
+        "val_as_bytes%0#0"
+      ],
+      "stack_out": [
+        "val_as_bytes%0#0",
+        "maybe_value%1#0",
+        "length_uint16%0#0"
+      ]
+    },
+    "704": {
+      "op": "swap",
+      "stack_out": [
+        "val_as_bytes%0#0",
+        "length_uint16%0#0",
+        "maybe_value%1#0"
+      ]
+    },
+    "705": {
+      "op": "concat",
+      "defined_out": [
+        "encoded_value%0#0",
+        "val_as_bytes%0#0"
+      ],
+      "stack_out": [
+        "val_as_bytes%0#0",
+        "encoded_value%0#0"
+      ]
+    },
+    "706": {
+      "op": "swap",
+      "stack_out": [
+        "encoded_value%0#0",
+        "val_as_bytes%0#0"
+      ]
+    },
+    "707": {
+      "op": "pushbytes 0x000a",
+      "defined_out": [
+        "0x000a",
+        "encoded_value%0#0",
+        "val_as_bytes%0#0"
+      ],
+      "stack_out": [
+        "encoded_value%0#0",
+        "val_as_bytes%0#0",
+        "0x000a"
+      ]
+    },
+    "711": {
+      "op": "concat",
+      "defined_out": [
+        "encoded_tuple_buffer%6#0",
+        "encoded_value%0#0"
+      ],
+      "stack_out": [
+        "encoded_value%0#0",
+        "encoded_tuple_buffer%6#0"
+      ]
+    },
+    "712": {
+      "op": "swap",
+      "stack_out": [
+        "encoded_tuple_buffer%6#0",
+        "encoded_value%0#0"
+      ]
+    },
+    "713": {
+      "op": "concat",
+      "defined_out": [
+        "encoded_tuple_buffer%7#0"
+      ],
+      "stack_out": [
+        "encoded_tuple_buffer%7#0"
+      ]
+    },
+    "714": {
+      "retsub": true,
+      "op": "retsub"
+    },
+    "715": {
+      "subroutine": "smart_contracts.nutri_contract.contract.NutriGradeSimple.opt_in",
+      "params": {},
+      "block": "opt_in",
+      "stack_in": [],
+      "op": "txn Sender",
+      "defined_out": [
+        "tmp%0#0"
+      ],
+      "stack_out": [
+        "tmp%0#0"
+      ]
+    },
+    "717": {
+      "op": "bytec 4 // \"user_scan_count\"",
+      "defined_out": [
+        "\"user_scan_count\"",
+        "tmp%0#0"
+      ],
+      "stack_out": [
+        "tmp%0#0",
+        "\"user_scan_count\""
+      ]
+    },
+    "719": {
+      "op": "intc_0 // 0",
+      "defined_out": [
+        "\"user_scan_count\"",
+        "0",
+        "tmp%0#0"
+      ],
+      "stack_out": [
+        "tmp%0#0",
+        "\"user_scan_count\"",
+        "0"
+      ]
+    },
+    "720": {
+      "op": "app_local_put",
+      "stack_out": []
+    },
+    "721": {
+      "op": "txn Sender",
+      "defined_out": [
+        "tmp%1#0"
+      ],
+      "stack_out": [
+        "tmp%1#0"
+      ]
+    },
+    "723": {
+      "op": "bytec 5 // \"last_scanned_product\"",
+      "defined_out": [
+        "\"last_scanned_product\"",
+        "tmp%1#0"
+      ],
+      "stack_out": [
+        "tmp%1#0",
+        "\"last_scanned_product\""
+      ]
+    },
+    "725": {
+      "op": "pushbytes \"\"",
+      "defined_out": [
+        "\"\"",
+        "\"last_scanned_product\"",
+        "tmp%1#0"
+      ],
+      "stack_out": [
+        "tmp%1#0",
+        "\"last_scanned_product\"",
+        "\"\""
+      ]
+    },
+    "727": {
+      "op": "app_local_put",
+      "stack_out": []
+    },
+    "728": {
+      "op": "pushbytes 0x003157656c636f6d6520746f204e7574726947726164652120596f752063616e206e6f77207363616e2070726f64756374732e",
+      "defined_out": [
+        "0x003157656c636f6d6520746f204e7574726947726164652120596f752063616e206e6f77207363616e2070726f64756374732e"
+      ],
+      "stack_out": [
+        "0x003157656c636f6d6520746f204e7574726947726164652120596f752063616e206e6f77207363616e2070726f64756374732e"
+      ]
+    },
+    "781": {
+      "retsub": true,
+      "op": "retsub"
+    },
+    "782": {
+      "subroutine": "smart_contracts.nutri_contract.contract.NutriGradeSimple.update_product",
+      "params": {
+        "product_id#0": "bytes",
+        "name#0": "bytes",
+        "ingredients#0": "bytes"
+      },
+      "block": "update_product",
+      "stack_in": [],
+      "op": "proto 3 1"
+    },
+    "785": {
+      "op": "txn Sender",
+      "defined_out": [
+        "tmp%0#0"
+      ],
+      "stack_out": [
+        "tmp%0#0"
+      ]
+    },
+    "787": {
+      "op": "intc_0 // 0",
+      "defined_out": [
+        "0",
+        "tmp%0#0"
+      ],
+      "stack_out": [
+        "tmp%0#0",
+        "0"
+      ]
+    },
+    "788": {
+      "op": "bytec_2 // \"owner\"",
+      "defined_out": [
+        "\"owner\"",
+        "0",
+        "tmp%0#0"
+      ],
+      "stack_out": [
+        "tmp%0#0",
+        "0",
+        "\"owner\""
+      ]
+    },
+    "789": {
+      "op": "app_global_get_ex",
+      "defined_out": [
+        "maybe_exists%0#0",
+        "maybe_value%0#0",
+        "tmp%0#0"
+      ],
+      "stack_out": [
+        "tmp%0#0",
+        "maybe_value%0#0",
+        "maybe_exists%0#0"
+      ]
+    },
+    "790": {
+      "error": "check self.owner exists",
+      "op": "assert // check self.owner exists",
+      "stack_out": [
+        "tmp%0#0",
+        "maybe_value%0#0"
+      ]
+    },
+    "791": {
+      "op": "==",
+      "defined_out": [
+        "tmp%1#0"
+      ],
+      "stack_out": [
+        "tmp%1#0"
+      ]
+    },
+    "792": {
+      "error": "Only owner can update products",
+      "op": "assert // Only owner can update products",
+      "stack_out": []
+    },
+    "793": {
+      "op": "pushbytes 0x001d50726f647563742075706461746564207375636365737366756c6c7921",
+      "defined_out": [
+        "0x001d50726f647563742075706461746564207375636365737366756c6c7921"
+      ],
+      "stack_out": [
+        "0x001d50726f647563742075706461746564207375636365737366756c6c7921"
+      ]
+    },
+    "826": {
+      "retsub": true,
+      "op": "retsub"
+    },
+    "827": {
+      "subroutine": "smart_contracts.nutri_contract.contract.NutriGradeSimple.get_owner",
+      "params": {},
+      "block": "get_owner",
+      "stack_in": [],
+      "op": "intc_0 // 0",
+      "defined_out": [
+        "0"
+      ],
+      "stack_out": [
+        "0"
+      ]
+    },
+    "828": {
+      "op": "bytec_2 // \"owner\"",
+      "defined_out": [
+        "\"owner\"",
+        "0"
+      ],
+      "stack_out": [
+        "0",
+        "\"owner\""
+      ]
+    },
+    "829": {
+      "op": "app_global_get_ex",
+      "defined_out": [
+        "maybe_exists%0#0",
+        "maybe_value%0#0"
+      ],
+      "stack_out": [
+        "maybe_value%0#0",
+        "maybe_exists%0#0"
+      ]
+    },
+    "830": {
+      "error": "check self.owner exists",
+      "op": "assert // check self.owner exists",
+      "stack_out": [
+        "maybe_value%0#0"
+      ]
+    },
+    "831": {
+      "retsub": true,
+      "op": "retsub"
+    }
+  }
+}
