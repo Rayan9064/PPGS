@@ -8,8 +8,9 @@ import { SmartAlternatives } from '@/components/ai/smart-alternatives';
 import { NutritionVerification } from '@/components/ai/nutrition-verification';
 import { ArrowLeftIcon, ExclamationTriangleIcon, HeartIcon, PlusIcon, QrCodeIcon, SparklesIcon, UserIcon, LightBulbIcon, ShieldCheckIcon } from '@heroicons/react/24/outline';
 import { HeartIcon as HeartIconSolid } from '@heroicons/react/24/solid';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, memo, useCallback } from 'react';
 import toast from 'react-hot-toast';
+import { optimizedStorage } from '@/utils/optimized-storage';
 
 interface ProductResultProps {
   product: ProductData;
@@ -18,7 +19,7 @@ interface ProductResultProps {
   showBackButton?: boolean;
 }
 
-export const ProductResult = ({ product, onScanAnother, onBack, showBackButton = true }: ProductResultProps) => {
+export const ProductResult = memo(function ProductResult({ product, onScanAnother, onBack, showBackButton = true }: ProductResultProps) {
   const { hapticFeedback } = useWeb();
   const { userData, connectionStatus } = useUserData();
   const [isFavorite, setIsFavorite] = useState(false);
@@ -31,20 +32,20 @@ export const ProductResult = ({ product, onScanAnother, onBack, showBackButton =
   const gradeInfo = getNutritionGrade(product, userData);
   const { grade, color: gradeColor, description: gradeDescription, warnings, isPersonalized } = gradeInfo;
 
-  // Load saved favorites and consumption state
+  // Load saved favorites and consumption state using optimized storage
   useEffect(() => {
     // Check if product is in favorites
-    const favorites = JSON.parse(localStorage.getItem('nutripal-favorites') || '[]');
+    const favorites = optimizedStorage.get('nutripal-favorites', []);
     const isFav = favorites.some((fav: any) => fav.product.code === product.code);
     setIsFavorite(isFav);
 
     // Check if product is in consumption history
-    const consumed = JSON.parse(localStorage.getItem('nutripal-consumed') || '[]');
+    const consumed = optimizedStorage.get('nutripal-consumed', []);
     const isConsume = consumed.some((item: any) => item.product.code !== product.code);
     setIsConsumed(isConsume);
 
-    // Add to scan history
-    const scanHistory = JSON.parse(localStorage.getItem('nutripal-scan-history') || '[]');
+    // Add to scan history using optimized storage
+    const scanHistory = optimizedStorage.get('nutripal-scan-history', []);
     const existingScan = scanHistory.find((scan: any) => scan.product.code === product.code);
     
     if (!existingScan) {
@@ -60,7 +61,7 @@ export const ProductResult = ({ product, onScanAnother, onBack, showBackButton =
         scanHistory.splice(100);
       }
       
-      localStorage.setItem('nutripal-scan-history', JSON.stringify(scanHistory));
+      optimizedStorage.set('nutripal-scan-history', scanHistory);
       
       // Dispatch event to update scan history page
       window.dispatchEvent(new CustomEvent('scanHistoryUpdated'));
@@ -77,36 +78,36 @@ export const ProductResult = ({ product, onScanAnother, onBack, showBackButton =
     onBack?.();
   };
 
-  const handleToggleFavorite = () => {
+  const handleToggleFavorite = useCallback(() => {
     hapticFeedback.impact('light');
     setIsFavorite(!isFavorite);
     
-    // Store in localStorage
-    const favorites = JSON.parse(localStorage.getItem('nutripal-favorites') || '[]');
+    // Store using optimized storage
+    const favorites = optimizedStorage.get('nutripal-favorites', []);
     if (!isFavorite) {
       favorites.push({
         id: product.code || Date.now().toString(),
         product,
         dateAdded: new Date().toISOString()
       });
-      localStorage.setItem('nutripal-favorites', JSON.stringify(favorites));
+      optimizedStorage.set('nutripal-favorites', favorites);
       toast.success('Added to favorites');
     } else {
       const updatedFavorites = favorites.filter((fav: any) => fav.product.code !== product.code);
-      localStorage.setItem('nutripal-favorites', JSON.stringify(updatedFavorites));
+      optimizedStorage.set('nutripal-favorites', updatedFavorites);
       toast.success('Removed from favorites');
     }
 
     // Dispatch event to update other components
     window.dispatchEvent(new CustomEvent('favoritesUpdated'));
-  };
+  }, [isFavorite, product, hapticFeedback]);
 
-  const handleToggleConsumption = () => {
+  const handleToggleConsumption = useCallback(() => {
     hapticFeedback.impact('light');
     setIsConsumed(!isConsumed);
     
-    // Store in localStorage
-    const consumed = JSON.parse(localStorage.getItem('nutripal-consumed') || '[]');
+    // Store using optimized storage
+    const consumed = optimizedStorage.get('nutripal-consumed', []);
     if (!isConsumed) {
       consumed.push({
         id: Date.now().toString(),
@@ -115,17 +116,17 @@ export const ProductResult = ({ product, onScanAnother, onBack, showBackButton =
         quantity: 1,
         calories: product.nutriments?.energy_100g || 0
       });
-      localStorage.setItem('nutripal-consumed', JSON.stringify(consumed));
+      optimizedStorage.set('nutripal-consumed', consumed);
       toast.success('Added to consumption');
     } else {
       const updatedConsumed = consumed.filter((item: any) => item.product.code !== product.code);
-      localStorage.setItem('nutripal-consumed', JSON.stringify(updatedConsumed));
+      optimizedStorage.set('nutripal-consumed', updatedConsumed);
       toast.success('Removed from consumption');
     }
 
     // Dispatch event to update other components
     window.dispatchEvent(new CustomEvent('consumedUpdated'));
-  };
+  }, [isConsumed, product, hapticFeedback]);
 
   const handleFindAlternatives = () => {
     hapticFeedback.impact('medium');
@@ -467,4 +468,4 @@ export const ProductResult = ({ product, onScanAnother, onBack, showBackButton =
       )}
     </div>
   );
-};
+});

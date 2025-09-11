@@ -1,10 +1,11 @@
 'use client';
 
 import { ArrowLeftIcon, CheckIcon, ShieldCheckIcon } from '@heroicons/react/24/outline';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, memo, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
+import { optimizedStorage } from '@/utils/optimized-storage';
 
-export default function DietaryPreferencesPage() {
+const DietaryPreferencesPage = memo(function DietaryPreferencesPage() {
   const router = useRouter();
   
   // Get current dietary restrictions from user data
@@ -13,12 +14,9 @@ export default function DietaryPreferencesPage() {
   // Load user data directly from localStorage (much faster)
   useEffect(() => {
     try {
-      const stored = localStorage.getItem('nutripal-user-data');
-      if (stored) {
-        const userData = JSON.parse(stored);
-        if (userData.dietaryRestrictions) {
-          setSelectedRestrictions(userData.dietaryRestrictions);
-        }
+      const userData = optimizedStorage.get('nutripal-user-data');
+      if (userData && userData.dietaryRestrictions) {
+        setSelectedRestrictions(userData.dietaryRestrictions);
       }
     } catch (error) {
       console.error('Error loading user data:', error);
@@ -30,33 +28,30 @@ export default function DietaryPreferencesPage() {
     'nut_free', 'low_sodium', 'diabetic'
   ];
 
-  const handleBack = () => {
+  const handleBack = useCallback(() => {
     router.push('/profile');
-  };
+  }, [router]);
 
-  const toggleRestriction = (restriction: string) => {
+  const toggleRestriction = useCallback((restriction: string) => {
     setSelectedRestrictions(prev => 
       prev.includes(restriction) 
         ? prev.filter(r => r !== restriction)
         : [...prev, restriction]
     );
-  };
+  }, []);
 
-  const handleSave = async () => {
+  const handleSave = useCallback(async () => {
     try {
-      // Update localStorage directly (much faster)
-      const stored = localStorage.getItem('nutripal-user-data');
-      if (stored) {
-        const userData = JSON.parse(stored);
-        userData.dietaryRestrictions = selectedRestrictions;
-        userData.updatedAt = new Date();
-        localStorage.setItem('nutripal-user-data', JSON.stringify(userData));
-        console.log('Dietary preferences updated successfully');
-      }
+      // Update using optimized storage (debounced and cached)
+      const userData = optimizedStorage.get('nutripal-user-data', {});
+      userData.dietaryRestrictions = selectedRestrictions;
+      userData.updatedAt = new Date();
+      optimizedStorage.set('nutripal-user-data', userData);
+      console.log('Dietary preferences updated successfully');
     } catch (error) {
       console.error('Failed to update dietary preferences:', error);
     }
-  };
+  }, [selectedRestrictions]);
 
   return (
     <div className="min-h-screen bg-primary-50">
@@ -117,4 +112,6 @@ export default function DietaryPreferencesPage() {
       </div>
     </div>
   );
-}
+});
+
+export default DietaryPreferencesPage;

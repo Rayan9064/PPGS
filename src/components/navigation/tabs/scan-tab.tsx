@@ -3,14 +3,14 @@
 import { ScannerComponent } from '@/components/scanner/scanner-component';
 import { ProductData } from '@/types';
 import { XMarkIcon, PhotoIcon, CameraIcon, ViewfinderCircleIcon } from '@heroicons/react/24/outline';
-import { useState } from 'react';
+import { useState, memo } from 'react';
 
 interface ScanTabProps {
   onScanSuccess: (product: ProductData) => void;
   onBack: () => void;
 }
 
-export const ScanTab = ({ onScanSuccess, onBack }: ScanTabProps) => {
+export const ScanTab = memo(function ScanTab({ onScanSuccess, onBack }: ScanTabProps) {
   const [isScanning, setIsScanning] = useState(false);
   const [manualBarcode, setManualBarcode] = useState('');
 
@@ -119,4 +119,4 @@ export const ScanTab = ({ onScanSuccess, onBack }: ScanTabProps) => {
       </div>
     </div>
   );
-};
+});

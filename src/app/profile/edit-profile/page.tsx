@@ -2,8 +2,9 @@
 
 import { ArrowLeftIcon, UserIcon, SparklesIcon } from '@heroicons/react/24/outline';
 import { useRouter } from 'next/navigation';
+import { memo } from 'react';
 
-export default function EditProfilePage() {
+const EditProfilePage = memo(function EditProfilePage() {
   const router = useRouter();
 
   const handleBack = () => {
@@ -77,4 +78,6 @@ export default function EditProfilePage() {
       </div>
     </div>
   );
-}
+});
+
+export default EditProfilePage;

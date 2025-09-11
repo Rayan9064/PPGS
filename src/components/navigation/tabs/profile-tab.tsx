@@ -20,9 +20,9 @@ import {
     UserIcon,
     ChartBarIcon
 } from '@heroicons/react/24/outline';
-import { useState } from 'react';
+import { useState, memo } from 'react';
 
-export const ProfileTab = () => {
+export const ProfileTab = memo(function ProfileTab() {
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
   const [showConsumptionAnalysis, setShowConsumptionAnalysis] = useState(false);
   const { hapticFeedback, isAvailable, webUser } = useWeb();
@@ -199,4 +199,4 @@ export const ProfileTab = () => {
       )}
     </div>
   );
-};
+});

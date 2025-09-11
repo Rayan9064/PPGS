@@ -1,10 +1,11 @@
 'use client';
 
 import { ArrowLeftIcon, UserIcon, CheckIcon } from '@heroicons/react/24/outline';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, memo, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
+import { optimizedStorage } from '@/utils/optimized-storage';
 
-export default function SettingsPage() {
+const SettingsPage = memo(function SettingsPage() {
   const router = useRouter();
   const [isSaving, setIsSaving] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
@@ -20,9 +21,8 @@ export default function SettingsPage() {
   // Load user data from localStorage
   useEffect(() => {
     try {
-      const stored = localStorage.getItem('nutripal-user-data');
-      if (stored) {
-        const userData = JSON.parse(stored);
+      const userData = optimizedStorage.get('nutripal-user-data');
+      if (userData) {
         setFormData({
           firstName: userData.firstName || '',
           lastName: userData.lastName || '',
@@ -36,40 +36,37 @@ export default function SettingsPage() {
     }
   }, []);
 
-  const handleBack = () => {
+  const handleBack = useCallback(() => {
     router.push('/profile');
-  };
+  }, [router]);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
-  };
+  }, []);
 
-  const handleSave = async () => {
+  const handleSave = useCallback(async () => {
     setIsSaving(true);
     
     try {
-      // Update localStorage
-      const stored = localStorage.getItem('nutripal-user-data');
-      if (stored) {
-        const userData = JSON.parse(stored);
-        userData.firstName = formData.firstName;
-        userData.lastName = formData.lastName;
-        userData.age = parseInt(formData.age) || 0;
-        userData.weight = parseFloat(formData.weight) || 0;
-        userData.height = parseFloat(formData.height) || 0;
-        userData.updatedAt = new Date();
-        localStorage.setItem('nutripal-user-data', JSON.stringify(userData));
-        
-        setShowSuccess(true);
-        setTimeout(() => setShowSuccess(false), 3000);
-      }
+      // Update using optimized storage (debounced and cached)
+      const userData = optimizedStorage.get('nutripal-user-data', {});
+      userData.firstName = formData.firstName;
+      userData.lastName = formData.lastName;
+      userData.age = parseInt(formData.age) || 0;
+      userData.weight = parseFloat(formData.weight) || 0;
+      userData.height = parseFloat(formData.height) || 0;
+      userData.updatedAt = new Date();
+      optimizedStorage.set('nutripal-user-data', userData);
+      
+      setShowSuccess(true);
+      setTimeout(() => setShowSuccess(false), 3000);
     } catch (error) {
       console.error('Failed to save settings:', error);
     } finally {
       setIsSaving(false);
     }
-  };
+  }, [formData]);
 
   return (
     <div className="min-h-screen bg-primary-50">
@@ -235,4 +232,6 @@ export default function SettingsPage() {
       </div>
     </div>
   );
-}
+});
+
+export default SettingsPage;

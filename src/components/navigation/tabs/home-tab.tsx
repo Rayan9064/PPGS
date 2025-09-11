@@ -4,6 +4,7 @@ import { useWeb } from '@/components/providers/web-provider';
 import { ProductData } from '@/types';
 import { getNutritionGrade } from '@/utils/grading-logic';
 import { ClockIcon, QrCodeIcon, ShieldCheckIcon, TrophyIcon, CogIcon, HeartIcon } from '@heroicons/react/24/outline';
+import { memo } from 'react';
 
 interface HomeTabProps {
   onStartScanning: () => void;
@@ -11,7 +12,7 @@ interface HomeTabProps {
   onProductSelect: (product: ProductData) => void;
 }
 
-export const HomeTab = ({ onStartScanning, recentScans, onProductSelect }: HomeTabProps) => {
+export const HomeTab = memo(function HomeTab({ onStartScanning, recentScans, onProductSelect }: HomeTabProps) {
   const { hapticFeedback } = useWeb();
 
   const handleScanButtonPress = () => {
@@ -160,4 +161,4 @@ export const HomeTab = ({ onStartScanning, recentScans, onProductSelect }: HomeT
       </div>
     </div>
   );
-};
+});

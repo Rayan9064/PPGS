@@ -1,10 +1,11 @@
 'use client';
 
 import { ArrowLeftIcon, CheckIcon, HeartIcon } from '@heroicons/react/24/outline';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, memo, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
+import { optimizedStorage } from '@/utils/optimized-storage';
 
-export default function HealthGoalsPage() {
+const HealthGoalsPage = memo(function HealthGoalsPage() {
   const router = useRouter();
   
   // Get current health goals from user data
@@ -13,12 +14,9 @@ export default function HealthGoalsPage() {
   // Load user data directly from localStorage (much faster)
   useEffect(() => {
     try {
-      const stored = localStorage.getItem('nutripal-user-data');
-      if (stored) {
-        const userData = JSON.parse(stored);
-        if (userData.healthGoals) {
-          setSelectedGoals(userData.healthGoals);
-        }
+      const userData = optimizedStorage.get('nutripal-user-data');
+      if (userData && userData.healthGoals) {
+        setSelectedGoals(userData.healthGoals);
       }
     } catch (error) {
       console.error('Error loading user data:', error);
@@ -29,33 +27,30 @@ export default function HealthGoalsPage() {
     'weight_loss', 'weight_gain', 'muscle_gain', 'maintain_weight', 'improve_health'
   ];
 
-  const handleBack = () => {
+  const handleBack = useCallback(() => {
     router.push('/profile');
-  };
+  }, [router]);
 
-  const toggleGoal = (goal: string) => {
+  const toggleGoal = useCallback((goal: string) => {
     setSelectedGoals(prev => 
       prev.includes(goal) 
         ? prev.filter(g => g !== goal)
         : [...prev, goal]
     );
-  };
+  }, []);
 
-  const handleSave = async () => {
+  const handleSave = useCallback(async () => {
     try {
-      // Update localStorage directly (much faster)
-      const stored = localStorage.getItem('nutripal-user-data');
-      if (stored) {
-        const userData = JSON.parse(stored);
-        userData.healthGoals = selectedGoals;
-        userData.updatedAt = new Date();
-        localStorage.setItem('nutripal-user-data', JSON.stringify(userData));
-        console.log('Health goals updated successfully');
-      }
+      // Update using optimized storage (debounced and cached)
+      const userData = optimizedStorage.get('nutripal-user-data', {});
+      userData.healthGoals = selectedGoals;
+      userData.updatedAt = new Date();
+      optimizedStorage.set('nutripal-user-data', userData);
+      console.log('Health goals updated successfully');
     } catch (error) {
       console.error('Failed to update health goals:', error);
     }
-  };
+  }, [selectedGoals]);
 
   return (
     <div className="min-h-screen bg-primary-50">
@@ -129,4 +124,6 @@ export default function HealthGoalsPage() {
       </div>
     </div>
   );
-}
+});
+
+export default HealthGoalsPage;

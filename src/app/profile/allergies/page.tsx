@@ -1,10 +1,11 @@
 'use client';
 
 import { ArrowLeftIcon, CheckIcon, ExclamationTriangleIcon } from '@heroicons/react/24/outline';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, memo, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
+import { optimizedStorage } from '@/utils/optimized-storage';
 
-export default function AllergiesPage() {
+const AllergiesPage = memo(function AllergiesPage() {
   const router = useRouter();
   
   // Get current medical conditions from user data
@@ -13,12 +14,9 @@ export default function AllergiesPage() {
   // Load user data directly from localStorage (much faster)
   useEffect(() => {
     try {
-      const stored = localStorage.getItem('nutripal-user-data');
-      if (stored) {
-        const userData = JSON.parse(stored);
-        if (userData.medicalConditions) {
-          setSelectedConditions(userData.medicalConditions);
-        }
+      const userData = optimizedStorage.get('nutripal-user-data');
+      if (userData && userData.medicalConditions) {
+        setSelectedConditions(userData.medicalConditions);
       }
     } catch (error) {
       console.error('Error loading user data:', error);
@@ -29,11 +27,11 @@ export default function AllergiesPage() {
     'diabetes', 'hypertension', 'heart_disease', 'kidney_disease', 'none'
   ];
 
-  const handleBack = () => {
+  const handleBack = useCallback(() => {
     router.push('/profile');
-  };
+  }, [router]);
 
-  const toggleCondition = (condition: string) => {
+  const toggleCondition = useCallback((condition: string) => {
     if (condition === 'none') {
       setSelectedConditions(['none']);
     } else {
@@ -44,23 +42,20 @@ export default function AllergiesPage() {
           : [...filtered, condition];
       });
     }
-  };
+  }, []);
 
-  const handleSave = async () => {
+  const handleSave = useCallback(async () => {
     try {
-      // Update localStorage directly (much faster)
-      const stored = localStorage.getItem('nutripal-user-data');
-      if (stored) {
-        const userData = JSON.parse(stored);
-        userData.medicalConditions = selectedConditions;
-        userData.updatedAt = new Date();
-        localStorage.setItem('nutripal-user-data', JSON.stringify(userData));
-        console.log('Medical conditions updated successfully');
-      }
+      // Update using optimized storage (debounced and cached)
+      const userData = optimizedStorage.get('nutripal-user-data', {});
+      userData.medicalConditions = selectedConditions;
+      userData.updatedAt = new Date();
+      optimizedStorage.set('nutripal-user-data', userData);
+      console.log('Medical conditions updated successfully');
     } catch (error) {
       console.error('Failed to update medical conditions:', error);
     }
-  };
+  }, [selectedConditions]);
 
   return (
     <div className="min-h-screen bg-primary-50">
@@ -134,4 +129,6 @@ export default function AllergiesPage() {
       </div>
     </div>
   );
-}
+});
+
+export default AllergiesPage;
