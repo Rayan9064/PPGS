@@ -22,6 +22,14 @@ NutriGrade is an intelligent nutrition scanner that combines AI-powered analysis
 - **⚙️ Smart Preferences**: Dietary restrictions and health goals
 - **📱 Mobile-First**: Responsive design for all devices
 
+**AI-Powered Features:**
+- **🔍 AI Nutrition Verification**: Automatically verify product data accuracy
+- **💡 Personalized Recommendations**: Tailored advice based on user profile
+- **🌱 Smart Alternatives**: AI-driven healthier product suggestions
+- **💬 AI Chat Assistant**: Conversational nutrition guidance
+- **📊 Consumption Analysis**: Pattern recognition and health insights
+- **🎯 Engagement Features**: Challenges and motivational nudges
+
 **Blockchain Integration:**
 - **🔗 Algorand Smart Contracts**: Transparent product data storage
 - **👤 User Profiles**: On-chain dietary preferences and history
@@ -55,8 +63,40 @@ NutriGrade is an intelligent nutrition scanner that combines AI-powered analysis
 | **Blockchain** | Algorand, Python Smart Contracts |
 | **Scanner** | html5-qrcode |
 | **Data Sources** | Open Food Facts API, On-chain Storage |
-| **AI** | Contextual recommendations |
+| **AI** | OpenAI GPT-4, Contextual recommendations |
 | **Deployment** | Vercel (Frontend), Algorand TestNet/MainNet |
+
+## 🤖 AI Features
+
+### 1. AI-Powered Nutrition Data Verification
+- **Automatic Analysis**: AI verifies ingredient lists and nutrition labels
+- **Anomaly Detection**: Identifies inconsistencies or mislabeling
+- **Regulatory Compliance**: Checks against food composition standards
+- **Blockchain Ready**: Verified data stored on-chain with cryptographic proof
+
+### 2. Personalized Nutrition Recommendations
+- **User Profile Integration**: Based on dietary preferences, allergies, and health goals
+- **Health Score Calculation**: AI-generated health scores (0-100)
+- **Contextual Advice**: Real-time recommendations for scanned products
+- **Blockchain Data**: Uses on-chain user profiles for personalization
+
+### 3. Smart Alternative Product Suggestions
+- **AI-Driven Matching**: Finds healthier alternatives using similarity analysis
+- **Health Impact Analysis**: Explains why alternatives are better
+- **User Preference Alignment**: Matches dietary restrictions and health goals
+- **Ranked Recommendations**: Prioritized by health improvement and user fit
+
+### 4. AI Chat Assistant Integration
+- **Conversational Interface**: Natural language nutrition queries
+- **Context Awareness**: Understands current product and user profile
+- **Real-time Insights**: Instant answers based on blockchain data
+- **Product Suggestions**: Recommends related products and alternatives
+
+### 5. Consumption Pattern Analysis & Engagement
+- **Pattern Recognition**: AI analyzes eating habits and trends
+- **Health Insights**: Identifies improvement opportunities
+- **Motivational Challenges**: Personalized goals and progress tracking
+- **Engagement Features**: Streaks, achievements, and social elements
 
 ## 📁 Project Structure
 

@@ -3,6 +3,7 @@
 import { useWeb } from '@/components/providers/web-provider';
 import { useTheme } from '@/components/providers/theme-provider';
 import { useUserData } from '@/components/providers/user-data-provider';
+import { ConsumptionAnalysis } from '@/components/ai/consumption-analysis';
 import {
     BellIcon,
     ChevronRightIcon,
@@ -16,12 +17,14 @@ import {
     ShieldCheckIcon,
     StarIcon,
     SunIcon,
-    UserIcon
+    UserIcon,
+    ChartBarIcon
 } from '@heroicons/react/24/outline';
 import { useState } from 'react';
 
 export const ProfileTab = () => {
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
+  const [showConsumptionAnalysis, setShowConsumptionAnalysis] = useState(false);
   const { hapticFeedback, isAvailable, webUser } = useWeb();
   const { 
     userData, 
@@ -45,6 +48,8 @@ export const ProfileTab = () => {
     } else if (action === 'connect') {
       // Show connection prompt - could trigger a state change in parent
       console.log('Connect to Telegram');
+    } else if (action === 'consumption-analysis') {
+      setShowConsumptionAnalysis(true);
     } else if (route) {
       // Navigate to the route
       window.location.href = route;
@@ -113,6 +118,7 @@ export const ProfileTab = () => {
     {
       title: 'Your Data',
       items: [
+        { icon: ChartBarIcon, label: 'AI Consumption Analysis', value: 'Smart insights', action: 'consumption-analysis' },
         { icon: CogIcon, label: 'Consumed Products', value: 'Track daily intake', action: 'consumed', route: '/profile/consumed' },
         { icon: StarIcon, label: 'Scan History', value: 'View all scans', action: 'history', route: '/profile/history' },
         { icon: InformationCircleIcon, label: 'Favorites', value: 'Saved products', action: 'favorites', route: '/profile/favorites' },
@@ -408,6 +414,17 @@ export const ProfileTab = () => {
           </div>
         </div>
       </div>
+
+      {/* AI Consumption Analysis Modal */}
+      {showConsumptionAnalysis && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-warm-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <ConsumptionAnalysis
+              onClose={() => setShowConsumptionAnalysis(false)}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 };

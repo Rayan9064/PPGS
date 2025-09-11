@@ -9,14 +9,19 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        // Nutrition grade colors
-        'grade-a': '#1fa363',
-        'grade-b': '#8bc34a',
-        'grade-c': '#ffeb3b',
-        'grade-d': '#ff9800',
-        'grade-e': '#f44336',
+        // Custom brand colors
+        'warm-white': '#FFFDF6',
+        'cream': '#FAF6E9',
+        'light-green': '#DDEB9D',
+        'sage-green': '#A0C878',
+        // Nutrition grade colors (updated with new palette)
+        'grade-a': '#A0C878',
+        'grade-b': '#DDEB9D',
+        'grade-c': '#FFD700',
+        'grade-d': '#FF8C42',
+        'grade-e': '#FF6B6B',
         'grade-u': '#9e9e9e',
-        // Telegram theme colors
+        // Legacy colors for compatibility
         'tg-bg': 'var(--tg-color-bg)',
         'tg-text': 'var(--tg-color-text)',
         'tg-hint': 'var(--tg-color-hint)',

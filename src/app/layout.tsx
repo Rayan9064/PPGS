@@ -35,7 +35,7 @@ export default function RootLayout({
         <ThemeProvider>
           <WebProvider>
             <UserDataProvider>
-              <main className="min-h-screen w-full flex flex-col bg-white dark:bg-gray-900 transition-colors">
+              <main className="min-h-screen w-full flex flex-col bg-warm-white dark:bg-gray-900 transition-colors">
                 {children}
               </main>
               <Toaster 

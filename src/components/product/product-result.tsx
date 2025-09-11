@@ -4,7 +4,9 @@ import { useWeb } from '@/components/providers/web-provider';
 import { useUserData } from '@/components/providers/user-data-provider';
 import { NutritionGrade, ProductData } from '@/types';
 import { getNutritionGrade } from '@/utils/grading-logic';
-import { ArrowLeftIcon, ExclamationTriangleIcon, HeartIcon, PlusIcon, QrCodeIcon, SparklesIcon, UserIcon } from '@heroicons/react/24/outline';
+import { SmartAlternatives } from '@/components/ai/smart-alternatives';
+import { NutritionVerification } from '@/components/ai/nutrition-verification';
+import { ArrowLeftIcon, ExclamationTriangleIcon, HeartIcon, PlusIcon, QrCodeIcon, SparklesIcon, UserIcon, LightBulbIcon, ShieldCheckIcon } from '@heroicons/react/24/outline';
 import { HeartIcon as HeartIconSolid } from '@heroicons/react/24/solid';
 import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
@@ -22,6 +24,8 @@ export const ProductResult = ({ product, onScanAnother, onBack, showBackButton =
   const [isFavorite, setIsFavorite] = useState(false);
   const [isConsumed, setIsConsumed] = useState(false);
   const [showImage, setShowImage] = useState(false);
+  const [showAlternatives, setShowAlternatives] = useState(false);
+  const [showVerification, setShowVerification] = useState(false);
   
   // Get personalized nutrition grade
   const gradeInfo = getNutritionGrade(product, userData);
@@ -373,14 +377,22 @@ export const ProductResult = ({ product, onScanAnother, onBack, showBackButton =
         </p>
       </div>
 
-      {/* Actions */}
+      {/* AI-Powered Actions */}
       <div className="space-y-3">
         <button
-          onClick={handleFindAlternatives}
-          className="w-full bg-blue-500 hover:bg-blue-600 text-white py-3 text-lg font-semibold rounded-xl transition-colors"
+          onClick={() => setShowAlternatives(true)}
+          className="w-full bg-gradient-to-r from-sage-green to-light-green hover:from-sage-green/90 hover:to-light-green/90 text-white py-3 text-lg font-semibold rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl"
         >
-          <SparklesIcon className="w-5 h-5 inline mr-2" />
-          Find Healthier Alternatives
+          <LightBulbIcon className="w-5 h-5 inline mr-2" />
+          AI Smart Alternatives
+        </button>
+        
+        <button
+          onClick={() => setShowVerification(true)}
+          className="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white py-3 text-lg font-semibold rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl"
+        >
+          <ShieldCheckIcon className="w-5 h-5 inline mr-2" />
+          Verify with AI
         </button>
         
         <button
@@ -415,6 +427,40 @@ export const ProductResult = ({ product, onScanAnother, onBack, showBackButton =
               src={product.image_url}
               alt={product.product_name}
               className="w-full h-auto rounded-lg"
+            />
+          </div>
+        </div>
+      )}
+
+      {/* AI Smart Alternatives Modal */}
+      {showAlternatives && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-warm-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <SmartAlternatives
+              currentProduct={product}
+              onProductSelect={(selectedProduct) => {
+                console.log('Selected alternative:', selectedProduct);
+                setShowAlternatives(false);
+                toast.success(`Selected ${selectedProduct.product_name}`);
+              }}
+              onClose={() => setShowAlternatives(false)}
+            />
+          </div>
+        </div>
+      )}
+
+      {/* AI Nutrition Verification Modal */}
+      {showVerification && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-warm-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <NutritionVerification
+              productData={product}
+              onVerified={(verifiedData) => {
+                console.log('Verified product data:', verifiedData);
+                setShowVerification(false);
+                toast.success('Product data verified and ready for blockchain storage!');
+              }}
+              onClose={() => setShowVerification(false)}
             />
           </div>
         </div>
