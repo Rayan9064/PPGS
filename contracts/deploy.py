@@ -81,24 +81,18 @@ class NutrigradeDeployer:
                 "product_id": "1234567890123",
                 "name": "Chocolate Milk",
                 "ingredients": "Milk, Sugar, Cocoa, Vanilla",
-                "nutri_score": "B+",
-                "allergens": "Milk",
                 "region": "IN"
             },
             {
                 "product_id": "9876543210987", 
                 "name": "Whole Wheat Bread",
                 "ingredients": "Wheat Flour, Water, Salt, Yeast",
-                "nutri_score": "A-",
-                "allergens": "Gluten",
                 "region": "Global"
             },
             {
                 "product_id": "5555666677778",
                 "name": "Organic Apple Juice",
                 "ingredients": "Organic Apple Juice, Vitamin C",
-                "nutri_score": "A+",
-                "allergens": "None",
                 "region": "US"
             }
         ]
@@ -145,8 +139,6 @@ class NutrigradeDeployer:
             "product_id": "1234567890123",
             "name": "Chocolate Milk",
             "ingredients": "Milk, Sugar, Cocoa, Vanilla",
-            "nutri_score": "B+",
-            "allergens": "Milk",
             "region": "IN",
             "version": 1,
             "timestamp": 1694434800,  # Example timestamp

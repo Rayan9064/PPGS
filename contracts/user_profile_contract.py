@@ -1,6 +1,6 @@
-
 from algopy import (
     ARC4Contract,
+    Box,
     BoxMap,
     GlobalState,
     String,
@@ -12,184 +12,250 @@ from algopy import (
     op,
 )
 
+
+# Define user dietary preferences structure
+class UserPreferences(arc4.Struct):
+    """Structure to hold user dietary preferences and restrictions"""
+    user_address: arc4.String
+    is_vegetarian: arc4.Bool
+    is_vegan: arc4.Bool
+    is_gluten_free: arc4.Bool
+    is_lactose_intolerant: arc4.Bool
+    is_nut_allergy: arc4.Bool
+    is_diabetic: arc4.Bool
+    timestamp: arc4.UInt64
+    active: arc4.Bool
+
+
+# Define scanned product history
+class ScannedProduct(arc4.Struct):
+    """Structure to track products scanned by user"""
+    product_id: arc4.String
+    scan_timestamp: arc4.UInt64
+    rating: arc4.UInt8  # 0-5 rating
+    is_favorite: arc4.Bool
+
+
 class UserProfileContract(ARC4Contract):
     """
-    Smart contract to manage user profiles and dietary preferences.
-    Links user addresses to their nutrition preferences and consumption history.
+    Smart contract to manage user profiles and preferences for the food scanner app.
+    Each user can store their dietary preferences and track scanned products.
+    
+    Privacy-focused design:
+    - User controls their own data
+    - Minimal health information stored
+    - Can delete/update their profile anytime
     """
 
     def __init__(self) -> None:
+        # Global state variables
         self.owner = GlobalState(Txn.sender)
         self.total_users = GlobalState(UInt64(0))
-
-        # Box storage for user profiles - Key: user address
-        self.user_profiles: BoxMap[String, UserProfile] = BoxMap()
-
-        # Track user consumption - Key: "consumption_{user_address}_{product_id}"
-        self.consumption_history: BoxMap[String, ConsumptionRecord] = BoxMap()
+        self.contract_version = GlobalState(UInt64(1))
+        
+        # Box storage for user preferences
+        # Key format: "pref_{user_address}"
+        self.user_preferences = BoxMap(String, UserPreferences)
+        
+        # Box storage for user's scanned products history
+        # Key format: "scan_{user_address}_{product_id}"
+        self.scanned_products = BoxMap(String, ScannedProduct)
+        
+        # Track number of products scanned per user
+        # Key format: "count_{user_address}"
+        self.user_scan_counts = BoxMap(String, UInt64)
 
     @arc4.abimethod
     def create_profile(
         self,
-        dietary_preferences: arc4.String,  # "vegetarian,gluten-free,low-sodium"
-        allergies: arc4.String,            # "milk,nuts,soy"
-        health_goals: arc4.String,         # "weight-loss,muscle-gain,general-health"
-        age_range: arc4.String,            # "18-25,26-35,36-50,50+"
+        is_vegetarian: arc4.Bool,
+        is_vegan: arc4.Bool,
+        is_gluten_free: arc4.Bool,
+        is_lactose_intolerant: arc4.Bool,
+        is_nut_allergy: arc4.Bool,
+        is_diabetic: arc4.Bool,
     ) -> arc4.Bool:
-        """Create user profile with dietary preferences"""
-
-        user_address = Txn.sender.bytes.hex()
-
-        # Check if profile already exists
-        if user_address in self.user_profiles:
-            return arc4.Bool(False)  # Profile already exists
-
-        # Create new profile
-        new_profile = UserProfile(
-            user_address=arc4.String(user_address),
-            dietary_preferences=dietary_preferences,
-            allergies=allergies,
-            health_goals=health_goals,
-            age_range=age_range,
-            created_timestamp=arc4.UInt64(op.Global.latest_timestamp),
-            total_scans=arc4.UInt64(0),
+        """Create or update user profile with dietary preferences"""
+        user_address_str = String.from_bytes(Txn.sender.bytes)
+        pref_key = String("pref_") + user_address_str
+        
+        # Check if this is a new user
+        is_new_user = pref_key not in self.user_preferences
+        
+        # Create/update user preferences
+        new_preferences = UserPreferences(
+            user_address=arc4.String(user_address_str),
+            is_vegetarian=is_vegetarian,
+            is_vegan=is_vegan,
+            is_gluten_free=is_gluten_free,
+            is_lactose_intolerant=is_lactose_intolerant,
+            is_nut_allergy=is_nut_allergy,
+            is_diabetic=is_diabetic,
+            timestamp=arc4.UInt64(op.Global.latest_timestamp),
             active=arc4.Bool(True)
         )
-
-        # Store profile
-        self.user_profiles[user_address] = new_profile
-        self.total_users.value += UInt64(1)
-
+        
+        # Store preferences
+        self.user_preferences[pref_key] = new_preferences
+        
+        # Initialize scan count for new users
+        if is_new_user:
+            count_key = String("count_") + user_address_str
+            self.user_scan_counts[count_key] = UInt64(0)
+            self.total_users.value = self.total_users.value + UInt64(1)
+        
         return arc4.Bool(True)
 
     @arc4.abimethod
-    def update_profile(
+    def update_preferences(
         self,
-        dietary_preferences: arc4.String,
-        allergies: arc4.String,
-        health_goals: arc4.String,
-        age_range: arc4.String,
+        is_vegetarian: arc4.Bool,
+        is_vegan: arc4.Bool,
+        is_gluten_free: arc4.Bool,
+        is_lactose_intolerant: arc4.Bool,
+        is_nut_allergy: arc4.Bool,
+        is_diabetic: arc4.Bool,
     ) -> arc4.Bool:
-        """Update existing user profile"""
-
-        user_address = Txn.sender.bytes.hex()
-
-        # Check if profile exists
-        if user_address not in self.user_profiles:
-            return arc4.Bool(False)  # Profile doesn't exist
-
-        # Get current profile and update
-        current_profile = self.user_profiles[user_address]
-
-        updated_profile = UserProfile(
-            user_address=arc4.String(user_address),
-            dietary_preferences=dietary_preferences,
-            allergies=allergies,
-            health_goals=health_goals,
-            age_range=age_range,
-            created_timestamp=current_profile.created_timestamp,
-            total_scans=current_profile.total_scans,
-            active=arc4.Bool(True)
-        )
-
-        self.user_profiles[user_address] = updated_profile
-
+        """Update user dietary preferences"""
+        user_address_str = String.from_bytes(Txn.sender.bytes)
+        pref_key = String("pref_") + user_address_str
+        
+        # Check if user profile exists
+        assert pref_key in self.user_preferences, "Profile not found"
+        
+        # Get current preferences and update
+        current_prefs = self.user_preferences[pref_key]
+        current_prefs.is_vegetarian = is_vegetarian
+        current_prefs.is_vegan = is_vegan
+        current_prefs.is_gluten_free = is_gluten_free
+        current_prefs.is_lactose_intolerant = is_lactose_intolerant
+        current_prefs.is_nut_allergy = is_nut_allergy
+        current_prefs.is_diabetic = is_diabetic
+        current_prefs.timestamp = arc4.UInt64(op.Global.latest_timestamp)
+        
+        # Store updated preferences
+        self.user_preferences[pref_key] = current_prefs
+        
         return arc4.Bool(True)
 
     @arc4.abimethod
-    def record_consumption(
+    def record_scan(
         self,
         product_id: arc4.String,
-        consumption_rating: arc4.UInt64,  # 1-5 rating
-        notes: arc4.String,
+        rating: arc4.UInt8,
+        is_favorite: arc4.Bool,
     ) -> arc4.Bool:
-        """Record user's consumption of a product"""
-
-        user_address = Txn.sender.bytes.hex()
-
-        # Check if user profile exists
-        if user_address not in self.user_profiles:
-            return arc4.Bool(False)  # User must have profile first
-
-        # Create consumption record key
-        consumption_key = f"consumption_{user_address}_{product_id.native}"
-
-        # Create consumption record
-        consumption_record = ConsumptionRecord(
-            user_address=arc4.String(user_address),
+        """Record a product scan by the user"""
+        user_address_str = String.from_bytes(Txn.sender.bytes)
+        
+        # Check if user has a profile
+        pref_key = String("pref_") + user_address_str
+        assert pref_key in self.user_preferences, "User profile not found"
+        
+        # Create scan key
+        scan_key = String("scan_") + user_address_str + String("_") + product_id.native
+        
+        # Check rating is valid (0-5)
+        assert rating.native <= UInt64(5), "Rating must be between 0-5"
+        
+        # Create scan record
+        scan_record = ScannedProduct(
             product_id=product_id,
-            consumption_rating=consumption_rating,
-            notes=notes,
-            timestamp=arc4.UInt64(op.Global.latest_timestamp)
+            scan_timestamp=arc4.UInt64(op.Global.latest_timestamp),
+            rating=rating,
+            is_favorite=is_favorite
         )
-
-        # Store consumption record
-        self.consumption_history[consumption_key] = consumption_record
-
-        # Update user's total scans
-        current_profile = self.user_profiles[user_address]
-        current_profile.total_scans = arc4.UInt64(current_profile.total_scans.native + 1)
-        self.user_profiles[user_address] = current_profile
-
+        
+        # Check if this is a new scan for this user
+        if scan_key not in self.scanned_products:
+            # Increment user's scan count
+            count_key = String("count_") + user_address_str
+            current_count = self.user_scan_counts[count_key]
+            self.user_scan_counts[count_key] = current_count + UInt64(1)
+        
+        # Store scan record (overwrites if already exists)
+        self.scanned_products[scan_key] = scan_record
+        
         return arc4.Bool(True)
 
     @arc4.abimethod(readonly=True)
-    def get_user_profile(self, user_address: arc4.String) -> UserProfile:
-        """Get user profile by address"""
-
-        address_key = user_address.native
-
-        assert address_key in self.user_profiles, "User profile not found"
-
-        return self.user_profiles[address_key]
-
-    @arc4.abimethod(readonly=True)
-    def get_my_profile(self) -> UserProfile:
-        """Get current user's profile"""
-
-        user_address = Txn.sender.bytes.hex()
-
-        assert user_address in self.user_profiles, "User profile not found"
-
-        return self.user_profiles[user_address]
+    def get_preferences(self) -> UserPreferences:
+        """Get user's dietary preferences"""
+        user_address_str = String.from_bytes(Txn.sender.bytes)
+        pref_key = String("pref_") + user_address_str
+        
+        assert pref_key in self.user_preferences, "Profile not found"
+        
+        return self.user_preferences[pref_key]
 
     @arc4.abimethod(readonly=True)
-    def get_consumption_record(
-        self, 
-        user_address: arc4.String, 
-        product_id: arc4.String
-    ) -> ConsumptionRecord:
-        """Get consumption record for a specific user and product"""
+    def get_scan_history(self, product_id: arc4.String) -> ScannedProduct:
+        """Get user's scan record for a specific product"""
+        user_address_str = String.from_bytes(Txn.sender.bytes)
+        scan_key = String("scan_") + user_address_str + String("_") + String(product_id.native)
+        
+        assert scan_key in self.scanned_products, "Scan record not found"
+        
+        return self.scanned_products[scan_key]
 
-        consumption_key = f"consumption_{user_address.native}_{product_id.native}"
+    @arc4.abimethod(readonly=True)
+    def get_scan_count(self) -> arc4.UInt64:
+        """Get total number of products scanned by user"""
+        user_address_str = String.from_bytes(Txn.sender.bytes)
+        count_key = String("count_") + user_address_str
+        
+        if count_key not in self.user_scan_counts:
+            return arc4.UInt64(0)
+        
+        return arc4.UInt64(self.user_scan_counts[count_key])
 
-        assert consumption_key in self.consumption_history, "Consumption record not found"
+    @arc4.abimethod(readonly=True)
+    def has_profile(self) -> arc4.Bool:
+        """Check if user has created a profile"""
+        user_address_str = String.from_bytes(Txn.sender.bytes)
+        pref_key = String("pref_") + user_address_str
+        
+        return arc4.Bool(pref_key in self.user_preferences)
 
-        return self.consumption_history[consumption_key]
+    @arc4.abimethod
+    def delete_profile(self) -> arc4.Bool:
+        """Delete user's profile (user can only delete their own)"""
+        user_address_str = String.from_bytes(Txn.sender.bytes)
+        pref_key = String("pref_") + user_address_str
+        
+        # Check if profile exists
+        if pref_key not in self.user_preferences:
+            return arc4.Bool(False)
+        
+        # Mark profile as inactive (soft delete)
+        current_prefs = self.user_preferences[pref_key]
+        current_prefs.active = arc4.Bool(False)
+        self.user_preferences[pref_key] = current_prefs
+        
+        # Decrement total users
+        if self.total_users.value > UInt64(0):
+            self.total_users.value = self.total_users.value - UInt64(1)
+        
+        return arc4.Bool(True)
 
     @arc4.abimethod(readonly=True)
     def get_total_users(self) -> arc4.UInt64:
-        """Get total number of registered users"""
+        """Get total number of active users"""
         return arc4.UInt64(self.total_users.value)
 
-
-# Define data structures
-class UserProfile(arc4.Struct):
-    """Structure to hold user profile information"""
-    user_address: arc4.String
-    dietary_preferences: arc4.String  # Comma-separated preferences
-    allergies: arc4.String           # Comma-separated allergies
-    health_goals: arc4.String        # User's health objectives
-    age_range: arc4.String          # Age range category
-    created_timestamp: arc4.UInt64   # When profile was created
-    total_scans: arc4.UInt64        # Number of products scanned
-    active: arc4.Bool               # Profile status
-
-
-class ConsumptionRecord(arc4.Struct):
-    """Structure to hold consumption history"""
-    user_address: arc4.String
-    product_id: arc4.String
-    consumption_rating: arc4.UInt64  # 1-5 rating
-    notes: arc4.String              # User notes about the product
-    timestamp: arc4.UInt64          # When consumption was recorded
+    @arc4.abimethod
+    def toggle_favorite(self, product_id: arc4.String) -> arc4.Bool:
+        """Toggle favorite status for a scanned product"""
+        user_address_str = String.from_bytes(Txn.sender.bytes)
+        scan_key = String("scan_") + user_address_str + String("_") + String(product_id.native)
+        
+        # Check if scan record exists
+        if scan_key not in self.scanned_products:
+            return arc4.Bool(False)
+        
+        # Toggle favorite status
+        scan_record = self.scanned_products[scan_key]
+        scan_record.is_favorite = arc4.Bool(not scan_record.is_favorite.native)
+        self.scanned_products[scan_key] = scan_record
+        
+        return arc4.Bool(True)
