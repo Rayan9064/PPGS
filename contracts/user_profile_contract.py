@@ -12,6 +12,26 @@ from algopy import (
     op,
 )
 
+class UserProfile(arc4.Struct):
+    """Structure to hold user profile information"""
+    user_address: arc4.String
+    dietary_preferences: arc4.String  # Comma-separated preferences
+    allergies: arc4.String           # Comma-separated allergies
+    health_goals: arc4.String        # User's health objectives
+    age_range: arc4.String          # Age range category
+    created_timestamp: arc4.UInt64   # When profile was created
+    total_scans: arc4.UInt64        # Number of products scanned
+    active: arc4.Bool               # Profile status
+
+
+class ConsumptionRecord(arc4.Struct):
+    """Structure to hold consumption history"""
+    user_address: arc4.String
+    product_id: arc4.String
+    consumption_rating: arc4.UInt64  # 1-5 rating
+    notes: arc4.String              # User notes about the product
+    timestamp: arc4.UInt64          # When consumption was recorded
+
 class UserProfileContract(ARC4Contract):
     """
     Smart contract to manage user profiles and dietary preferences.
@@ -23,10 +43,10 @@ class UserProfileContract(ARC4Contract):
         self.total_users = GlobalState(UInt64(0))
 
         # Box storage for user profiles - Key: user address
-        self.user_profiles: BoxMap[String, UserProfile] = BoxMap()
+        self.user_profiles = BoxMap(String, UserProfile)
 
         # Track user consumption - Key: "consumption_{user_address}_{product_id}"
-        self.consumption_history: BoxMap[String, ConsumptionRecord] = BoxMap()
+        self.consumption_history = BoxMap(String, ConsumptionRecord)
 
     @arc4.abimethod
     def create_profile(
@@ -38,7 +58,7 @@ class UserProfileContract(ARC4Contract):
     ) -> arc4.Bool:
         """Create user profile with dietary preferences"""
 
-        user_address = Txn.sender.bytes.hex()
+        user_address = String.from_bytes(Txn.sender.bytes)
 
         # Check if profile already exists
         if user_address in self.user_profiles:
@@ -46,7 +66,7 @@ class UserProfileContract(ARC4Contract):
 
         # Create new profile
         new_profile = UserProfile(
-            user_address=arc4.String(user_address),
+            user_address=arc4.String(user_address.native),
             dietary_preferences=dietary_preferences,
             allergies=allergies,
             health_goals=health_goals,
@@ -72,7 +92,7 @@ class UserProfileContract(ARC4Contract):
     ) -> arc4.Bool:
         """Update existing user profile"""
 
-        user_address = Txn.sender.bytes.hex()
+        user_address = String.from_bytes(Txn.sender.bytes)
 
         # Check if profile exists
         if user_address not in self.user_profiles:
@@ -82,7 +102,7 @@ class UserProfileContract(ARC4Contract):
         current_profile = self.user_profiles[user_address]
 
         updated_profile = UserProfile(
-            user_address=arc4.String(user_address),
+            user_address=arc4.String(user_address.native),
             dietary_preferences=dietary_preferences,
             allergies=allergies,
             health_goals=health_goals,
@@ -105,18 +125,18 @@ class UserProfileContract(ARC4Contract):
     ) -> arc4.Bool:
         """Record user's consumption of a product"""
 
-        user_address = Txn.sender.bytes.hex()
+        user_address = String.from_bytes(Txn.sender.bytes)
 
         # Check if user profile exists
         if user_address not in self.user_profiles:
             return arc4.Bool(False)  # User must have profile first
 
         # Create consumption record key
-        consumption_key = f"consumption_{user_address}_{product_id.native}"
+        consumption_key = String("consumption_" + user_address.native + "_" + product_id.native)
 
         # Create consumption record
         consumption_record = ConsumptionRecord(
-            user_address=arc4.String(user_address),
+            user_address=arc4.String(user_address.native),
             product_id=product_id,
             consumption_rating=consumption_rating,
             notes=notes,
@@ -137,7 +157,7 @@ class UserProfileContract(ARC4Contract):
     def get_user_profile(self, user_address: arc4.String) -> UserProfile:
         """Get user profile by address"""
 
-        address_key = user_address.native
+        address_key = String(user_address.native)
 
         assert address_key in self.user_profiles, "User profile not found"
 
@@ -147,7 +167,7 @@ class UserProfileContract(ARC4Contract):
     def get_my_profile(self) -> UserProfile:
         """Get current user's profile"""
 
-        user_address = Txn.sender.bytes.hex()
+        user_address = String.from_bytes(Txn.sender.bytes)
 
         assert user_address in self.user_profiles, "User profile not found"
 
@@ -161,7 +181,7 @@ class UserProfileContract(ARC4Contract):
     ) -> ConsumptionRecord:
         """Get consumption record for a specific user and product"""
 
-        consumption_key = f"consumption_{user_address.native}_{product_id.native}"
+        consumption_key = String("consumption_" + user_address.native + "_" + product_id.native)
 
         assert consumption_key in self.consumption_history, "Consumption record not found"
 
@@ -171,25 +191,3 @@ class UserProfileContract(ARC4Contract):
     def get_total_users(self) -> arc4.UInt64:
         """Get total number of registered users"""
         return arc4.UInt64(self.total_users.value)
-
-
-# Define data structures
-class UserProfile(arc4.Struct):
-    """Structure to hold user profile information"""
-    user_address: arc4.String
-    dietary_preferences: arc4.String  # Comma-separated preferences
-    allergies: arc4.String           # Comma-separated allergies
-    health_goals: arc4.String        # User's health objectives
-    age_range: arc4.String          # Age range category
-    created_timestamp: arc4.UInt64   # When profile was created
-    total_scans: arc4.UInt64        # Number of products scanned
-    active: arc4.Bool               # Profile status
-
-
-class ConsumptionRecord(arc4.Struct):
-    """Structure to hold consumption history"""
-    user_address: arc4.String
-    product_id: arc4.String
-    consumption_rating: arc4.UInt64  # 1-5 rating
-    notes: arc4.String              # User notes about the product
-    timestamp: arc4.UInt64          # When consumption was recorded

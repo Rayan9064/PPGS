@@ -13,6 +13,19 @@ from algopy import (
     op,
 )
 
+# Define the ProductD        return self.product_data[product_key]sing ARC4 types
+class ProductData(arc4.Struct):
+    """Structure to hold product information"""
+    product_id: arc4.String
+    name: arc4.String  
+    ingredients: arc4.String
+    nutri_score: arc4.String  # A+, A, B+, B, C+, C, D, E
+    allergens: arc4.String
+    region: arc4.String       # IN, US, EU, Global, etc.
+    version: arc4.UInt64
+    timestamp: arc4.UInt64
+    active: arc4.Bool
+
 class ProductRegistry(ARC4Contract):
     """
     Smart contract to store and manage product data on Algorand blockchain.
@@ -27,10 +40,10 @@ class ProductRegistry(ARC4Contract):
 
         # Box storage for product data - more efficient for large data
         # Key format: "product_{product_id}"
-        self.product_data: BoxMap[String, ProductData] = BoxMap()
+        self.product_data = BoxMap(String, ProductData)
 
         # Track product versions - Key format: "version_{product_id}" 
-        self.product_versions: BoxMap[String, UInt64] = BoxMap()
+        self.product_versions = BoxMap(String, UInt64)
 
     @arc4.abimethod
     def add_product(
@@ -38,8 +51,6 @@ class ProductRegistry(ARC4Contract):
         product_id: arc4.String,
         name: arc4.String,
         ingredients: arc4.String,
-        nutri_score: arc4.String,
-        allergens: arc4.String,
         region: arc4.String,
     ) -> arc4.Bool:
         """Add a new product to the registry"""
@@ -59,8 +70,6 @@ class ProductRegistry(ARC4Contract):
             product_id=product_id,
             name=name,
             ingredients=ingredients,
-            nutri_score=nutri_score,
-            allergens=allergens,
             region=region,
             version=arc4.UInt64(1),
             timestamp=arc4.UInt64(op.Global.latest_timestamp),
@@ -82,8 +91,6 @@ class ProductRegistry(ARC4Contract):
         product_id: arc4.String,
         name: arc4.String,
         ingredients: arc4.String,
-        nutri_score: arc4.String,
-        allergens: arc4.String,
         region: arc4.String,
     ) -> arc4.Bool:
         """Update existing product data with versioning"""
@@ -107,8 +114,6 @@ class ProductRegistry(ARC4Contract):
             product_id=product_id,
             name=name,
             ingredients=ingredients,
-            nutri_score=nutri_score,
-            allergens=allergens,
             region=region,
             version=arc4.UInt64(new_version),
             timestamp=arc4.UInt64(op.Global.latest_timestamp),
@@ -165,17 +170,3 @@ class ProductRegistry(ARC4Contract):
         self.product_data[product_key] = current_product
 
         return arc4.Bool(True)
-
-
-# Define the ProductData structure using ARC4 types
-class ProductData(arc4.Struct):
-    """Structure to hold product information"""
-    product_id: arc4.String
-    name: arc4.String  
-    ingredients: arc4.String
-    nutri_score: arc4.String  # A+, A, B+, B, C+, C, D, E
-    allergens: arc4.String
-    region: arc4.String       # IN, US, EU, Global, etc.
-    version: arc4.UInt64
-    timestamp: arc4.UInt64
-    active: arc4.Bool
