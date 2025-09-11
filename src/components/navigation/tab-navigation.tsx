@@ -104,9 +104,12 @@ export const TabNavigation = () => {
         );
       case 'scan':
         return (
-          <ScanTab 
+          <ScanTab
             onScanSuccess={handleScanSuccess}
-            onBack={() => setActiveTab('home')}
+            onBack={() => {
+              setActiveTab('home');
+              router.push('/home');
+            }}
           />
         );
       case 'results':
