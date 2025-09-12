@@ -262,16 +262,16 @@ div[class*="fixed"][class*="bottom-0"][class*="z-50"] {
   background: white !important;
 }
 
-/* Ensure main content area is always white */
+/* Ensure main content area uses warm white */
 .flex-1.w-full.overflow-y-auto {
-  background-color: white !important;
-  background: white !important;
+  background-color: #FFFDF6 !important;
+  background: #FFFDF6 !important;
 }
 
-/* Force white background on all main content containers */
+/* Force warm white background on all main content containers */
 .mobile-scroll {
-  background-color: white !important;
-  background: white !important;
+  background-color: #FFFDF6 !important;
+  background: #FFFDF6 !important;
 }
 
 /* Dark mode support for bottom nav */
