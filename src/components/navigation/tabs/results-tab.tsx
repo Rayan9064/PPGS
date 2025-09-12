@@ -68,10 +68,10 @@ export const ResultsTab = ({ currentProduct, recentScans, onScanAnother, onProdu
         <div className="px-6 mb-6">
           <div className="flex items-center justify-between mb-3">
             <h3 className="text-lg font-bold text-secondary-900">NutriGrade</h3>
-            <span className="text-2xl font-bold text-secondary-900">{getNutritionGrade(currentProduct)}</span>
+            <span className="text-2xl font-bold text-secondary-900">{getNutritionGrade(currentProduct).grade}</span>
           </div>
           <div className="w-full bg-secondary-100 rounded-full h-3">
-            <div className="bg-primary-500 h-3 rounded-full" style={{ width: `${getNutritionGrade(currentProduct) === 'A' ? 90 : getNutritionGrade(currentProduct) === 'B' ? 75 : getNutritionGrade(currentProduct) === 'C' ? 60 : getNutritionGrade(currentProduct) === 'D' ? 40 : 20}%` }}></div>
+            <div className="bg-primary-500 h-3 rounded-full" style={{ width: `${getNutritionGrade(currentProduct).grade === 'A' ? 90 : getNutritionGrade(currentProduct).grade === 'B' ? 75 : getNutritionGrade(currentProduct).grade === 'C' ? 60 : getNutritionGrade(currentProduct).grade === 'D' ? 40 : 20}%` }}></div>
           </div>
         </div>
 
