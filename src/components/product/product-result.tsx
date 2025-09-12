@@ -395,7 +395,7 @@ export const ProductResult = memo(function ProductResult({ product, onScanAnothe
         
         <button
           onClick={() => setShowVerification(true)}
-          className="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white py-3 text-lg font-semibold rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl"
+          className="w-full bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white py-3 text-lg font-semibold rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl"
         >
           <ShieldCheckIcon className="w-5 h-5 inline mr-2" />
           Verify with AI

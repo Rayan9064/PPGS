@@ -32,7 +32,7 @@ export default function ContactUs() {
       description: 'Get help via email',
       contact: 'support@nutrigrade.app',
       responseTime: 'Within 24 hours',
-      color: 'text-blue-500',
+      color: 'text-red-500',
     },
     {
       icon: ChatBubbleLeftRightIcon,

@@ -365,8 +365,8 @@ export const ScannerComponent = ({ onScanSuccess, onBack }: ScannerComponentProp
         <div className="w-full max-w-md h-full flex items-center justify-center">
           {hasPermission === null ? (
             <div className="text-center py-12 h-full flex flex-col items-center justify-center">
-              <div className="w-20 h-20 bg-emerald-100 dark:bg-emerald-500/20 rounded-full flex items-center justify-center mb-6 shadow-lg">
-                <CameraIcon className="w-10 h-10 text-emerald-600 dark:text-emerald-400" />
+              <div className="w-20 h-20 bg-red-100 dark:bg-red-500/20 rounded-full flex items-center justify-center mb-6 shadow-lg">
+                <CameraIcon className="w-10 h-10 text-red-600 dark:text-red-400" />
               </div>
               <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3">
                 {permissionChecked ? 'Initializing Camera' : 'Checking Camera Access'}
@@ -377,7 +377,7 @@ export const ScannerComponent = ({ onScanSuccess, onBack }: ScannerComponentProp
                   : 'Please wait while we check camera permissions...'
                 }
               </p>
-              <div className="animate-spin rounded-full h-10 w-10 border-4 border-emerald-200 dark:border-emerald-400/30 border-t-emerald-600 dark:border-t-emerald-400"></div>
+              <div className="animate-spin rounded-full h-10 w-10 border-4 border-red-200 dark:border-red-400/30 border-t-red-600 dark:border-t-red-400"></div>
             </div>
           ) : hasPermission === false ? (
             <div className="text-center py-12 h-full flex flex-col items-center justify-center">
@@ -394,7 +394,7 @@ export const ScannerComponent = ({ onScanSuccess, onBack }: ScannerComponentProp
                   setPermissionChecked(false);
                   getCameras(true); // Force request permission
                 }}
-                className="bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-600 hover:to-cyan-600 text-white px-8 py-3 rounded-xl font-semibold transition-all duration-300 shadow-lg hover:shadow-xl"
+                className="bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white px-8 py-3 rounded-xl font-semibold transition-all duration-300 shadow-lg hover:shadow-xl"
               >
                 Enable Camera
               </button>
@@ -445,9 +445,12 @@ export const ScannerComponent = ({ onScanSuccess, onBack }: ScannerComponentProp
           {isLoading && (
             <div className="absolute inset-0 bg-white/70 dark:bg-black/50 backdrop-blur-sm flex items-center justify-center rounded-3xl z-40">
               <div className="bg-white/90 dark:bg-white/10 backdrop-blur-md rounded-2xl p-8 shadow-2xl text-center border border-gray-200/50 dark:border-white/20">
-                <div className="animate-spin rounded-full h-12 w-12 border-4 border-emerald-200 dark:border-emerald-400/30 border-t-emerald-600 dark:border-t-emerald-400 mx-auto mb-4"></div>
-                <p className="text-gray-900 dark:text-white font-semibold text-lg">Fetching product data...</p>
-                <p className="text-gray-600 dark:text-white/70 text-sm mt-1">Please wait a moment</p>
+                <div className="animate-pulse rounded-full h-12 w-12 bg-red-500 mx-auto mb-4 flex items-center justify-center">
+                  <div className="w-6 h-6 bg-white rounded-full"></div>
+                </div>
+                <p className="text-gray-900 dark:text-white font-semibold text-lg">
+                  Verifying<span className="animate-pulse">.</span><span className="animate-pulse" style={{animationDelay: '0.2s'}}>.</span><span className="animate-pulse" style={{animationDelay: '0.4s'}}>.</span>
+                </p>
               </div>
             </div>
           )}

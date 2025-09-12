@@ -397,7 +397,7 @@ export default function UserProfile() {
                   {userData.dietaryRestrictions.map((restriction) => (
                     <span
                       key={restriction}
-                      className="px-3 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 rounded-full text-sm"
+                      className="px-3 py-1 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 rounded-full text-sm"
                     >
                       {restriction.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
                     </span>
