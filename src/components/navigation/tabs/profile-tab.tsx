@@ -3,8 +3,10 @@
 import { useWeb } from '@/components/providers/web-provider';
 import { useTheme } from '@/components/providers/theme-provider';
 import { useUserData } from '@/components/providers/user-data-provider';
+import { useWallet } from '@/hooks/useWallet';
 import { ConsumptionAnalysis } from '@/components/ai/consumption-analysis';
-import { walletService, WalletInfo } from '@/lib/wallet-service';
+import { formatAddress } from '@/lib/algorand';
+import { getNetworkDisplayName } from '@/lib/network-config';
 import {
     BellIcon,
     ChevronRightIcon,
@@ -23,13 +25,13 @@ import {
     WalletIcon,
     XMarkIcon
 } from '@heroicons/react/24/outline';
-import { useState, memo, useEffect } from 'react';
+import { useState, memo } from 'react';
 
 export const ProfileTab = memo(function ProfileTab() {
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
   const [showConsumptionAnalysis, setShowConsumptionAnalysis] = useState(false);
-  const [connectedWallet, setConnectedWallet] = useState<WalletInfo | null>(null);
   const { hapticFeedback, isAvailable, webUser } = useWeb();
+  const { accounts, isConnected, balance, connect, disconnect } = useWallet();
   const { 
     userData, 
     connectionStatus, 
@@ -40,12 +42,6 @@ export const ProfileTab = memo(function ProfileTab() {
   } = useUserData();
   const { theme, toggleTheme, isDark } = useTheme();
 
-  // Load connected wallet on component mount
-  useEffect(() => {
-    const savedWallet = walletService.loadSavedWallet();
-    setConnectedWallet(savedWallet);
-  }, []);
-
   const handleToggle = (setter: (value: boolean) => void, currentValue: boolean) => {
     hapticFeedback.impact('light');
     setter(!currentValue);
@@ -54,12 +50,18 @@ export const ProfileTab = memo(function ProfileTab() {
   const handleDisconnectWallet = async () => {
     hapticFeedback.impact('medium');
     try {
-      await walletService.disconnectWallet();
-      setConnectedWallet(null);
-      // Reload the page to go back to onboarding
-      window.location.reload();
+      await disconnect();
     } catch (error) {
       console.error('Failed to disconnect wallet:', error);
+    }
+  };
+
+  const handleConnectWallet = async () => {
+    hapticFeedback.impact('medium');
+    try {
+      await connect();
+    } catch (error) {
+      console.error('Failed to connect wallet:', error);
     }
   };
 
@@ -88,9 +90,9 @@ export const ProfileTab = memo(function ProfileTab() {
     } else if (action === 'disconnect-wallet') {
       handleDisconnectWallet();
     } else if (action === 'wallet-info') {
-      console.log('Show wallet info');
+      console.log('Show wallet info:', { accounts, balance, network: getNetworkDisplayName() });
     } else if (action === 'connect-wallet') {
-      console.log('Connect wallet');
+      handleConnectWallet();
     } else if (route) {
       window.location.href = route;
     } else {
@@ -101,10 +103,10 @@ export const ProfileTab = memo(function ProfileTab() {
   const menuSections = [
     {
       title: 'Wallet',
-      items: connectedWallet ? [
+      items: isConnected ? [
         { 
           icon: WalletIcon, 
-          label: `${connectedWallet.name}: ${connectedWallet.address.slice(0, 6)}...${connectedWallet.address.slice(-4)}`, 
+          label: `Pera: ${formatAddress(accounts[0])} (${balance.toFixed(2)} ALGO)`, 
           action: 'wallet-info' 
         },
         { 
@@ -114,7 +116,7 @@ export const ProfileTab = memo(function ProfileTab() {
           isDestructive: true
         },
       ] : [
-        { icon: WalletIcon, label: 'No Wallet Connected', action: 'connect-wallet' },
+        { icon: WalletIcon, label: 'Connect Pera Wallet', action: 'connect-wallet' },
       ]
     },
     {
@@ -254,7 +256,7 @@ export const ProfileTab = memo(function ProfileTab() {
       </div>
 
       {/* Disconnect Wallet Button - Bottom Section */}
-      {connectedWallet && (
+      {isConnected && (
         <div className="px-6 mt-8 pb-8">
           <div className="border-t border-gray-200 pt-6">
             <button
@@ -265,7 +267,7 @@ export const ProfileTab = memo(function ProfileTab() {
               Disconnect Wallet
             </button>
             <p className="text-center text-gray-500 text-sm mt-2">
-              Disconnecting will return you to the onboarding screen
+              Disconnect your Pera wallet connection
             </p>
           </div>
         </div>

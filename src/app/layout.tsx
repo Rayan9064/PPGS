@@ -1,6 +1,7 @@
 import { WebProvider } from '@/components/providers/web-provider'
 import { ThemeProvider } from '@/components/providers/theme-provider'
 import { UserDataProvider } from '@/components/providers/user-data-provider'
+import { WalletProvider } from '@/components/providers/wallet-provider'
 import '@/styles/globals.css'
 import { Inter } from 'next/font/google'
 import { Toaster } from 'react-hot-toast'
@@ -35,19 +36,21 @@ export default function RootLayout({
         <ThemeProvider>
           <WebProvider>
             <UserDataProvider>
-              <main className="min-h-screen w-full flex flex-col bg-primary-50 dark:bg-gray-900 transition-colors">
-                {children}
-              </main>
-              <Toaster 
-                position="top-center"
-                toastOptions={{
-                  duration: 3000,
-                  style: {
-                    background: '#ffffff',
-                    color: '#000000',
-                  },
-                }}
-              />
+              <WalletProvider>
+                <main className="min-h-screen w-full flex flex-col bg-primary-50 dark:bg-gray-900 transition-colors">
+                  {children}
+                </main>
+                <Toaster 
+                  position="top-center"
+                  toastOptions={{
+                    duration: 3000,
+                    style: {
+                      background: '#ffffff',
+                      color: '#000000',
+                    },
+                  }}
+                />
+              </WalletProvider>
             </UserDataProvider>
           </WebProvider>
         </ThemeProvider>

@@ -3,7 +3,7 @@
 import { useWeb } from '@/components/providers/web-provider';
 import { useUserData } from '@/components/providers/user-data-provider';
 import { UserData } from '@/types';
-import { walletService, WalletInfo } from '@/lib/wallet-service';
+// import { walletService, WalletInfo } from '@/lib/wallet-service'; // TODO: Update to use new wallet integration
 import {
     CheckIcon,
     ChevronLeftIcon,
@@ -30,7 +30,7 @@ export const OnboardingFlow = ({ onComplete }: OnboardingFlowProps) => {
   const [currentStep, setCurrentStep] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [walletConnecting, setWalletConnecting] = useState(false);
-  const [connectedWallet, setConnectedWallet] = useState<WalletInfo | null>(null);
+  const [connectedWallet, setConnectedWallet] = useState<any>(null); // TODO: Update type for new wallet integration
   
   // Form data
   const [formData, setFormData] = useState({
@@ -99,22 +99,15 @@ export const OnboardingFlow = ({ onComplete }: OnboardingFlowProps) => {
     setWalletConnecting(true);
     
     try {
-      let walletInfo: WalletInfo | null = null;
-      
-      if (walletType === 'pera') {
-        walletInfo = await walletService.connectPeraWallet();
-      } else if (walletType === 'walletconnect') {
-        walletInfo = await walletService.connectWalletConnect();
-      }
-      
-      if (walletInfo) {
-        setConnectedWallet(walletInfo);
-        hapticFeedback.impact('heavy');
-        // Proceed to next step after successful connection
-        setTimeout(() => {
-          handleNext();
-        }, 1000);
-      }
+      // TODO: Implement new wallet connection
+      console.log('Wallet connection temporarily disabled - updating to new Pera integration');
+      // Simulate connection for now
+      setConnectedWallet({ name: 'Pera Wallet', address: 'TEMP_ADDRESS' });
+      hapticFeedback.impact('heavy');
+      // Proceed to next step after successful connection
+      setTimeout(() => {
+        handleNext();
+      }, 1000);
     } catch (error) {
       console.error('Wallet connection failed:', error);
       hapticFeedback.impact('heavy');
