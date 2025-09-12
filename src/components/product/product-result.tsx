@@ -35,17 +35,20 @@ export const ProductResult = memo(function ProductResult({ product, onScanAnothe
   // Load saved favorites and consumption state using optimized storage
   useEffect(() => {
     // Check if product is in favorites
-    const favorites = optimizedStorage.get('nutripal-favorites', []);
+    const favoritesData = optimizedStorage.get('nutripal-favorites');
+    const favorites = favoritesData || [];
     const isFav = favorites.some((fav: any) => fav.product.code === product.code);
     setIsFavorite(isFav);
 
     // Check if product is in consumption history
-    const consumed = optimizedStorage.get('nutripal-consumed', []);
+    const consumedData = optimizedStorage.get('nutripal-consumed');
+    const consumed = consumedData || [];
     const isConsume = consumed.some((item: any) => item.product.code !== product.code);
     setIsConsumed(isConsume);
 
     // Add to scan history using optimized storage
-    const scanHistory = optimizedStorage.get('nutripal-scan-history', []);
+    const scanHistoryData = optimizedStorage.get('nutripal-scan-history');
+    const scanHistory = scanHistoryData || [];
     const existingScan = scanHistory.find((scan: any) => scan.product.code === product.code);
     
     if (!existingScan) {
@@ -83,7 +86,8 @@ export const ProductResult = memo(function ProductResult({ product, onScanAnothe
     setIsFavorite(!isFavorite);
     
     // Store using optimized storage
-    const favorites = optimizedStorage.get('nutripal-favorites', []);
+    const favoritesData = optimizedStorage.get('nutripal-favorites');
+    const favorites = favoritesData || [];
     if (!isFavorite) {
       favorites.push({
         id: product.code || Date.now().toString(),
@@ -107,7 +111,8 @@ export const ProductResult = memo(function ProductResult({ product, onScanAnothe
     setIsConsumed(!isConsumed);
     
     // Store using optimized storage
-    const consumed = optimizedStorage.get('nutripal-consumed', []);
+    const consumedData = optimizedStorage.get('nutripal-consumed');
+    const consumed = consumedData || [];
     if (!isConsumed) {
       consumed.push({
         id: Date.now().toString(),
