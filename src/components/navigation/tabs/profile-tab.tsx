@@ -23,19 +23,29 @@ import {
     UserIcon,
     ChartBarIcon,
     WalletIcon,
-    XMarkIcon
+    XMarkIcon,
+    CubeIcon,
+    DocumentChartBarIcon,
+    CheckCircleIcon,
+    ClockIcon
 } from '@heroicons/react/24/outline';
-import { useState, memo } from 'react';
+import { useState, memo, useEffect } from 'react';
 
 export const ProfileTab = memo(function ProfileTab() {
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
   const [showConsumptionAnalysis, setShowConsumptionAnalysis] = useState(false);
+  const [blockchainInitializing, setBlockchainInitializing] = useState(false);
   const { hapticFeedback, isAvailable, webUser } = useWeb();
   const { accounts, isConnected, balance, connect, disconnect } = useWallet();
   const { 
     userData, 
     connectionStatus, 
     onboardingState, 
+    blockchainStats,
+    initializeBlockchain,
+    optInToContract,
+    optOutOfContract,
+    refreshBlockchainStats,
     getBMI, 
     getBMICategory,
     getDailyCalories 
@@ -65,6 +75,67 @@ export const ProfileTab = memo(function ProfileTab() {
     }
   };
 
+  const handleInitializeBlockchain = async () => {
+    if (!isConnected) {
+      await handleConnectWallet();
+      return;
+    }
+    
+    setBlockchainInitializing(true);
+    hapticFeedback.impact('medium');
+    
+    try {
+      const success = await initializeBlockchain();
+      if (success) {
+        hapticFeedback.notification('success');
+      } else {
+        hapticFeedback.notification('error');
+      }
+    } catch (error) {
+      console.error('Failed to initialize blockchain:', error);
+      hapticFeedback.notification('error');
+    } finally {
+      setBlockchainInitializing(false);
+    }
+  };
+
+  const handleOptIn = async () => {
+    hapticFeedback.impact('medium');
+    try {
+      const success = await optInToContract();
+      if (success) {
+        hapticFeedback.notification('success');
+      } else {
+        hapticFeedback.notification('error');
+      }
+    } catch (error) {
+      console.error('Failed to opt in:', error);
+      hapticFeedback.notification('error');
+    }
+  };
+
+  const handleOptOut = async () => {
+    hapticFeedback.impact('medium');
+    try {
+      const success = await optOutOfContract();
+      if (success) {
+        hapticFeedback.notification('success');
+      } else {
+        hapticFeedback.notification('error');
+      }
+    } catch (error) {
+      console.error('Failed to opt out:', error);
+      hapticFeedback.notification('error');
+    }
+  };
+
+  // Initialize blockchain when wallet connects
+  useEffect(() => {
+    if (isConnected && !blockchainStats.userStats && !blockchainStats.isLoading) {
+      handleInitializeBlockchain();
+    }
+  }, [isConnected]);
+
   const handleMenuPress = (action: string, route?: string) => {
     hapticFeedback.impact('light');
     if (action === 'theme') {
@@ -93,6 +164,14 @@ export const ProfileTab = memo(function ProfileTab() {
       console.log('Show wallet info:', { accounts, balance, network: getNetworkDisplayName() });
     } else if (action === 'connect-wallet') {
       handleConnectWallet();
+    } else if (action === 'blockchain-opt-in') {
+      handleOptIn();
+    } else if (action === 'blockchain-opt-out') {
+      handleOptOut();
+    } else if (action === 'blockchain-init') {
+      handleInitializeBlockchain();
+    } else if (action === 'refresh-blockchain') {
+      refreshBlockchainStats();
     } else if (route) {
       window.location.href = route;
     } else {
@@ -117,6 +196,45 @@ export const ProfileTab = memo(function ProfileTab() {
         },
       ] : [
         { icon: WalletIcon, label: 'Connect Pera Wallet', action: 'connect-wallet' },
+      ]
+    },
+    {
+      title: 'Blockchain',
+      items: isConnected ? [
+        ...(blockchainStats.isOptedIn ? [
+          { 
+            icon: CheckCircleIcon, 
+            label: 'Contract Enabled', 
+            action: 'refresh-blockchain',
+            description: `${blockchainStats.userStats?.scanCount || 0} scans recorded`
+          },
+          { 
+            icon: XMarkIcon, 
+            label: 'Opt Out of Contract', 
+            action: 'blockchain-opt-out',
+            isDestructive: true 
+          },
+        ] : [
+          { 
+            icon: CubeIcon, 
+            label: blockchainInitializing ? 'Initializing...' : 'Enable Blockchain Features', 
+            action: 'blockchain-opt-in',
+            description: 'Opt into smart contract for tracking'
+          },
+        ]),
+        { 
+          icon: DocumentChartBarIcon, 
+          label: 'View Global Stats', 
+          action: 'refresh-blockchain',
+          description: `${blockchainStats.globalStats?.totalProducts || 0} products, ${blockchainStats.globalStats?.totalScans || 0} total scans`
+        },
+      ] : [
+        { 
+          icon: CubeIcon, 
+          label: 'Connect Wallet for Blockchain Features', 
+          action: 'connect-wallet',
+          description: 'Track your scans on Algorand blockchain'
+        },
       ]
     },
     {
@@ -181,22 +299,59 @@ export const ProfileTab = memo(function ProfileTab() {
       <div className="px-6 mb-6">
         <div className="grid grid-cols-3 gap-4 mb-4">
           <div className="bg-primary-100 rounded-2xl p-4 text-center border border-primary-200">
-            <div className="text-2xl font-bold text-secondary-900 mb-1">22</div>
+            <div className="text-2xl font-bold text-secondary-900 mb-1">
+              {getBMI()?.toFixed(1) || '--'}
+            </div>
             <div className="text-primary-500 text-sm">BMI</div>
           </div>
           <div className="bg-primary-100 rounded-2xl p-4 text-center border border-primary-200">
-            <div className="text-2xl font-bold text-secondary-900 mb-1">15</div>
+            <div className="text-2xl font-bold text-secondary-900 mb-1">
+              {getDailyCalories()?.toFixed(0) || '--'}
+            </div>
             <div className="text-primary-500 text-sm">Daily Calories</div>
           </div>
           <div className="bg-primary-100 rounded-2xl p-4 text-center border border-primary-200">
-            <div className="text-2xl font-bold text-secondary-900 mb-1">18</div>
+            <div className="text-2xl font-bold text-secondary-900 mb-1">
+              {userData?.activityLevel ? userData.activityLevel.replace('_', ' ') : '--'}
+            </div>
             <div className="text-primary-500 text-sm">Activity Level</div>
           </div>
         </div>
+        
+        {/* Blockchain Stats Row */}
+        {isConnected && blockchainStats.isOptedIn && (
+          <div className="grid grid-cols-2 gap-4 mb-4">
+            <div className="bg-gradient-to-br from-blue-100 to-blue-200 rounded-2xl p-4 text-center border border-blue-300">
+              <div className="flex items-center justify-center mb-2">
+                <CubeIcon className="w-5 h-5 text-blue-600 mr-2" />
+                <div className="text-blue-800 font-medium text-sm">Blockchain Scans</div>
+              </div>
+              <div className="text-2xl font-bold text-blue-900">
+                {blockchainStats.userStats?.scanCount.toString() || '0'}
+              </div>
+            </div>
+            <div className="bg-gradient-to-br from-green-100 to-green-200 rounded-2xl p-4 text-center border border-green-300">
+              <div className="flex items-center justify-center mb-2">
+                <DocumentChartBarIcon className="w-5 h-5 text-green-600 mr-2" />
+                <div className="text-green-800 font-medium text-sm">Last Product</div>
+              </div>
+              <div className="text-lg font-bold text-green-900">
+                #{blockchainStats.userStats?.lastScannedProduct.toString() || 'None'}
+              </div>
+            </div>
+          </div>
+        )}
+        
         <div className="grid grid-cols-3 gap-4">
           <div className="bg-primary-100 rounded-2xl p-4 text-center border border-primary-200">
             <div className="text-secondary-900 font-medium text-sm mb-1">Products Scanned</div>
-            <div className="text-2xl font-bold text-secondary-900">120</div>
+            <div className="text-2xl font-bold text-secondary-900">
+              {/* Show blockchain count if available, otherwise show mock data */}
+              {blockchainStats.isOptedIn ? 
+                (blockchainStats.userStats?.scanCount.toString() || '0') : 
+                '120'
+              }
+            </div>
           </div>
           <div className="bg-primary-100 rounded-2xl p-4 text-center border border-primary-200">
             <div className="text-secondary-900 font-medium text-sm mb-1">Healthy Choices</div>
@@ -207,6 +362,29 @@ export const ProfileTab = memo(function ProfileTab() {
             <div className="text-2xl font-bold text-secondary-900">3</div>
           </div>
         </div>
+        
+        {/* Global Blockchain Stats */}
+        {isConnected && blockchainStats.globalStats && (
+          <div className="mt-4 bg-gradient-to-br from-purple-50 to-purple-100 rounded-2xl p-4 border border-purple-200">
+            <div className="text-center">
+              <div className="text-purple-800 font-medium text-sm mb-2">Global Network Stats</div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <div className="text-lg font-bold text-purple-900">
+                    {blockchainStats.globalStats.totalProducts.toString()}
+                  </div>
+                  <div className="text-purple-700 text-sm">Total Products</div>
+                </div>
+                <div>
+                  <div className="text-lg font-bold text-purple-900">
+                    {blockchainStats.globalStats.totalScans.toString()}
+                  </div>
+                  <div className="text-purple-700 text-sm">Total Scans</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Menu Sections */}
@@ -225,7 +403,7 @@ export const ProfileTab = memo(function ProfileTab() {
                       : 'bg-primary-100 hover:bg-primary-200'
                   }`}
                 >
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-3 flex-1">
                     <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
                       (item as any).isDestructive 
                         ? 'bg-red-200' 
@@ -237,11 +415,22 @@ export const ProfileTab = memo(function ProfileTab() {
                           : 'text-primary-600'
                       }`} />
                     </div>
-                    <span className={`font-medium ${
-                      (item as any).isDestructive 
-                        ? 'text-red-900' 
-                        : 'text-secondary-900'
-                    }`}>{item.label}</span>
+                    <div className="flex-1">
+                      <div className={`font-medium ${
+                        (item as any).isDestructive 
+                          ? 'text-red-900' 
+                          : 'text-secondary-900'
+                      }`}>{item.label}</div>
+                      {(item as any).description && (
+                        <div className={`text-sm ${
+                          (item as any).isDestructive 
+                            ? 'text-red-600' 
+                            : 'text-secondary-600'
+                        }`}>
+                          {(item as any).description}
+                        </div>
+                      )}
+                    </div>
                   </div>
                   <ChevronRightIcon className={`w-5 h-5 ${
                     (item as any).isDestructive 

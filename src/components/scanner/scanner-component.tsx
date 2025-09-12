@@ -2,6 +2,8 @@
 
 import { useWeb } from '@/components/providers/web-provider';
 import { fetchProductData } from '@/lib/product-api';
+import { contractService, addProductToBlockchain, scanProductOnBlockchain } from '@/lib/contract-service';
+import { validateProduct } from '@/config/contract-config';
 import { ProductData } from '@/types';
 import { ArrowLeftIcon, CameraIcon } from '@heroicons/react/24/outline';
 import { Html5Qrcode, Html5QrcodeCameraScanConfig } from 'html5-qrcode';
@@ -21,6 +23,7 @@ export const ScannerComponent = ({ onScanSuccess, onBack }: ScannerComponentProp
   const [selectedCamera, setSelectedCamera] = useState<string>('');
   const [isScanning, setIsScanning] = useState(false);
   const [permissionChecked, setPermissionChecked] = useState(false);
+  const [blockchainStatus, setBlockchainStatus] = useState<'idle' | 'adding' | 'scanning' | 'success' | 'error'>('idle');
   const html5QrCodeRef = useRef<Html5Qrcode | null>(null);
   const scanLockRef = useRef(false);
   const monitorIntervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -63,26 +66,87 @@ export const ScannerComponent = ({ onScanSuccess, onBack }: ScannerComponentProp
     scanLockRef.current = true;
     setIsLoading(true);
     setError(null);
+    setBlockchainStatus('idle');
     hapticFeedback.impact('medium');
 
     try {
+      // First, fetch product data from API
       const productData = await fetchProductData(barcode);
       hapticFeedback.notification('success');
+      
+      // If contract service is initialized and product data is valid, handle blockchain operations
+      if (contractService.isInitialized() && productData) {
+        try {
+          // Convert ProductData to blockchain-compatible format
+          const blockchainProduct = {
+            id: barcode, // Use barcode as product ID
+            name: productData.product_name || `Product ${barcode}`,
+            ingredients: productData.ingredients_text ? 
+              productData.ingredients_text.split(',').map(i => i.trim()) : 
+              ['Unknown ingredients']
+          };
+
+          // Validate product data before blockchain operations
+          validateProduct(blockchainProduct);
+
+          // Check if user is opted into the contract
+          const isOptedIn = await contractService.isUserOptedIn();
+          if (!isOptedIn) {
+            toast.error('Please opt into the contract from your profile to use blockchain features');
+          } else {
+            // Try to add product to blockchain (if it doesn't exist already)
+            try {
+              setBlockchainStatus('adding');
+              const addTxId = await addProductToBlockchain(blockchainProduct);
+              console.log('Product added to blockchain:', addTxId);
+              toast.success('Product added to blockchain!');
+            } catch (addError) {
+              // If adding fails, it might already exist - that's okay
+              console.log('Product might already exist on blockchain:', addError);
+            }
+
+            // Record the scan on blockchain
+            try {
+              setBlockchainStatus('scanning');
+              const scanResult = await scanProductOnBlockchain(barcode);
+              console.log('Scan recorded on blockchain:', scanResult);
+              toast.success('Scan recorded on blockchain!');
+              setBlockchainStatus('success');
+            } catch (scanError) {
+              console.error('Failed to record scan on blockchain:', scanError);
+              toast.error('Failed to record scan on blockchain');
+              setBlockchainStatus('error');
+            }
+          }
+        } catch (blockchainError) {
+          console.error('Blockchain operation failed:', blockchainError);
+          setBlockchainStatus('error');
+          // Don't prevent the normal flow - blockchain is optional
+          if (blockchainError instanceof Error) {
+            toast.error(`Blockchain error: ${blockchainError.message}`);
+          }
+        }
+      } else {
+        console.log('Contract service not initialized or invalid product data - skipping blockchain operations');
+      }
       
       // Stop camera before navigating
       await cleanupScanner();
       
+      // Continue with normal flow regardless of blockchain result
       onScanSuccess(productData);
     } catch (error) {
       hapticFeedback.notification('error');
       const errorMessage = error instanceof Error ? error.message : 'Failed to fetch product data';
       setError(errorMessage);
+      setBlockchainStatus('error');
       toast.error(errorMessage);
       
       // Reset scanner after error
       setTimeout(() => {
         setError(null);
         setIsLoading(false);
+        setBlockchainStatus('idle');
         scanLockRef.current = false;
       }, 3000);
     }
@@ -464,9 +528,21 @@ export const ScannerComponent = ({ onScanSuccess, onBack }: ScannerComponentProp
                 <div className="animate-pulse rounded-full h-12 w-12 bg-red-500 mx-auto mb-4 flex items-center justify-center">
                   <div className="w-6 h-6 bg-white rounded-full"></div>
                 </div>
-                <p className="text-gray-900  font-semibold text-lg">
-                  Verifying<span className="animate-pulse">.</span><span className="animate-pulse" style={{animationDelay: '0.2s'}}>.</span><span className="animate-pulse" style={{animationDelay: '0.4s'}}>.</span>
+                <p className="text-gray-900 font-semibold text-lg">
+                  {blockchainStatus === 'adding' ? 'Adding to Blockchain' :
+                   blockchainStatus === 'scanning' ? 'Recording Scan' :
+                   'Verifying'}
+                  <span className="animate-pulse">.</span><span className="animate-pulse" style={{animationDelay: '0.2s'}}>.</span><span className="animate-pulse" style={{animationDelay: '0.4s'}}>.</span>
                 </p>
+                {blockchainStatus !== 'idle' && (
+                  <p className="text-gray-600 text-sm mt-2">
+                    {blockchainStatus === 'adding' ? 'Storing product data on blockchain...' :
+                     blockchainStatus === 'scanning' ? 'Recording your scan on blockchain...' :
+                     blockchainStatus === 'success' ? 'Blockchain operations completed!' :
+                     blockchainStatus === 'error' ? 'Blockchain operation failed' :
+                     'Processing...'}
+                  </p>
+                )}
               </div>
             </div>
           )}

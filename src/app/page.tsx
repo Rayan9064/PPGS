@@ -9,14 +9,22 @@ import { useState, useEffect } from 'react';
 export default function Home() {
   const { connectionStatus, onboardingState } = useUserData();
   const [showConnectionPrompt, setShowConnectionPrompt] = useState(false);
-  const [showOnboarding, setShowOnboarding] = useState(false);
+  const [showOnboarding, setShowOnboarding] = useState(true); // Default to showing onboarding
   const [isWalletConnected, setIsWalletConnected] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
   // Check wallet connection status from localStorage after component mounts
   useEffect(() => {
-    const walletStatus = localStorage.getItem('nutripal-wallet-connected') === 'true';
-    setIsWalletConnected(walletStatus);
+    // Ensure we're in the browser environment
+    if (typeof window !== 'undefined') {
+      const walletStatus = localStorage.getItem('nutripal-wallet-connected') === 'true';
+      console.log('Wallet connection status:', walletStatus);
+      setIsWalletConnected(walletStatus);
+      // If wallet is connected, hide onboarding and show main app
+      if (walletStatus) {
+        setShowOnboarding(false);
+      }
+    }
     setIsLoading(false);
   }, []);
 
@@ -25,6 +33,9 @@ export default function Home() {
 
   // Show main app if wallet is connected
   const shouldShowMainApp = isWalletConnected && !isLoading;
+
+  // Debug logging
+  console.log('Render state:', { isWalletConnected, isLoading, shouldShowOnboarding, shouldShowMainApp });
 
   const handleConnectionPromptClose = () => {
     console.log('Connection prompt close called');
@@ -46,6 +57,7 @@ export default function Home() {
   const handleOnboardingComplete = () => {
     // Set wallet as connected when onboarding is completed
     localStorage.setItem('nutripal-wallet-connected', 'true');
+    setIsWalletConnected(true);
     setShowOnboarding(false);
     // Reload the page to show the main app
     window.location.reload();
@@ -66,11 +78,11 @@ export default function Home() {
 
   return (
     <>
-      {/* Show main app if wallet is connected */}
-      {shouldShowMainApp && <TabNavigation />}
+      {/* Show main app if wallet is connected and not loading */}
+      {isWalletConnected && !isLoading && <TabNavigation />}
       
-      {/* Show onboarding if wallet is not connected */}
-      {shouldShowOnboarding && (
+      {/* Show onboarding if wallet is not connected or still loading */}
+      {showOnboarding && (
         <OnboardingFlow 
           onComplete={handleOnboardingComplete}
         />

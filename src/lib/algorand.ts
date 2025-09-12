@@ -1,5 +1,6 @@
 import { PeraWalletConnect } from '@perawallet/connect';
 import algosdk from 'algosdk';
+import { AlgorandClient } from '@algorandfoundation/algokit-utils';
 import { getAlgorandNetworkConfig } from './network-config';
 
 // Get network configuration
@@ -86,11 +87,6 @@ export const forceDisconnectWallet = async (): Promise<void> => {
   }
 };
 
-// Check if wallet is connected
-export const isWalletConnected = (): boolean => {
-  return peraWallet.isConnected;
-};
-
 // Get connected accounts
 export const getConnectedAccounts = (): string[] => {
   return peraWallet.connector?.accounts || [];
@@ -132,6 +128,41 @@ export const isValidAddress = (address: string): boolean => {
 export const formatAddress = (address: string): string => {
   if (!address) return '';
   return `${address.slice(0, 6)}...${address.slice(-4)}`;
+};
+
+// Get AlgorandClient instance for contract interactions
+export const getAlgorandClient = async (): Promise<AlgorandClient> => {
+  return AlgorandClient.fromConfig({
+    algodConfig: {
+      server: networkConfig.algodServer,
+      port: networkConfig.algodPort,
+      token: networkConfig.algodToken,
+    },
+    indexerConfig: {
+      server: networkConfig.indexerServer,
+      port: networkConfig.indexerPort,
+      token: networkConfig.indexerToken,
+    },
+  });
+};
+
+// Ensure wallet is connected and return default sender
+export const ensureWalletConnected = async (): Promise<string> => {
+  if (!peraWallet.isConnected) {
+    throw new Error('Wallet not connected');
+  }
+  
+  const accounts = peraWallet.connector?.accounts || [];
+  if (accounts.length === 0) {
+    throw new Error('No accounts available');
+  }
+  
+  return accounts[0];
+};
+
+// Check if wallet is connected
+export const isWalletConnected = (): boolean => {
+  return peraWallet.isConnected && (peraWallet.connector?.accounts?.length || 0) > 0;
 };
 
 // Nutrition-specific contract interaction interfaces

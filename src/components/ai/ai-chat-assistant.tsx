@@ -2,13 +2,16 @@
 
 import { aiService } from '@/lib/ai-service';
 import { useUserData } from '@/components/providers/user-data-provider';
+import { getUserBlockchainStats, getGlobalBlockchainStats } from '@/lib/contract-service';
 import { ProductData } from '@/types';
 import { 
   PaperAirplaneIcon, 
   SparklesIcon, 
   LightBulbIcon,
   ChartBarIcon,
-  HeartIcon
+  HeartIcon,
+  CubeIcon,
+  DocumentChartBarIcon
 } from '@heroicons/react/24/outline';
 import { useEffect, useRef, useState } from 'react';
 import toast from 'react-hot-toast';
@@ -20,7 +23,12 @@ interface ChatMessage {
   timestamp: Date;
   suggestions?: string[];
   relatedProducts?: string[];
-  type?: 'analysis' | 'recommendation' | 'general';
+  type?: 'analysis' | 'recommendation' | 'general' | 'blockchain';
+  blockchainData?: {
+    userScans?: string;
+    globalStats?: { products: string; scans: string };
+    txId?: string;
+  };
 }
 
 interface AIChatAssistantProps {
@@ -29,7 +37,7 @@ interface AIChatAssistantProps {
 }
 
 export const AIChatAssistant = ({ currentProduct, onProductSelect }: AIChatAssistantProps) => {
-  const { userData } = useUserData();
+  const { userData, blockchainStats } = useUserData();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -41,8 +49,15 @@ export const AIChatAssistant = ({ currentProduct, onProductSelect }: AIChatAssis
     const initializeNutriBro = async () => {
       if (messages.length === 0 && userData) {
         try {
-          // Generate personalized Nutri Bro welcome message
-          const welcomeContent = await aiService.generateNutriBroWelcome(userData);
+          // Generate personalized Nutri Bro welcome message with blockchain context
+          let welcomeContent = await aiService.generateNutriBroWelcome(userData);
+          
+          // Add blockchain context if available
+          if (blockchainStats.isOptedIn && blockchainStats.userStats) {
+            welcomeContent += `\n\n🔗 I can see you're using our blockchain features! You have ${blockchainStats.userStats.scanCount} scans recorded on the blockchain. This helps me give you more personalized recommendations based on your verified scan history!`;
+          } else if (blockchainStats.globalStats) {
+            welcomeContent += `\n\n🌐 Our community has scanned ${blockchainStats.globalStats.totalScans} products and added ${blockchainStats.globalStats.totalProducts} to our blockchain database. Join the network to get personalized tracking!`;
+          }
           
           const welcomeMessage: ChatMessage = {
             id: 'nutri-bro-welcome',
@@ -52,10 +67,18 @@ export const AIChatAssistant = ({ currentProduct, onProductSelect }: AIChatAssis
             suggestions: [
               'Analyze my current product',
               'Help me reach my health goals',
+              'Show my blockchain scan history',
               'Show me my nutrition progress',
               'Find healthier alternatives'
             ],
-            type: 'general'
+            type: 'general',
+            blockchainData: blockchainStats.isOptedIn ? {
+              userScans: blockchainStats.userStats?.scanCount.toString(),
+              globalStats: {
+                products: blockchainStats.globalStats?.totalProducts.toString() || '0',
+                scans: blockchainStats.globalStats?.totalScans.toString() || '0'
+              }
+            } : undefined
           };
           setMessages([welcomeMessage]);
         } catch (error) {
@@ -80,7 +103,7 @@ export const AIChatAssistant = ({ currentProduct, onProductSelect }: AIChatAssis
     };
 
     initializeNutriBro();
-  }, [messages.length, userData]);
+  }, [messages.length, userData, blockchainStats]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -106,6 +129,12 @@ export const AIChatAssistant = ({ currentProduct, onProductSelect }: AIChatAssis
     setIsLoading(true);
 
     try {
+      // Handle blockchain-specific queries
+      if (suggestion.toLowerCase().includes('blockchain') || suggestion.toLowerCase().includes('scan history')) {
+        await handleBlockchainQuery(suggestion);
+        return;
+      }
+
       // Get conversation history for context
       const conversationHistory = messages.map(msg => ({
         role: msg.role,
@@ -123,12 +152,25 @@ export const AIChatAssistant = ({ currentProduct, onProductSelect }: AIChatAssis
         medicalConditions: []
       };
 
-      // Call Nutri Bro AI service with comprehensive context
-      const response = await aiService.chatWithAI(suggestion, {
+      // Enhanced context with blockchain data
+      const enhancedContext = {
         userProfile: userProfileForAI,
         currentProduct,
-        conversationHistory
-      });
+        conversationHistory,
+        blockchainData: blockchainStats.isOptedIn ? {
+          userScans: blockchainStats.userStats?.scanCount.toString() || '0',
+          lastScannedProduct: blockchainStats.userStats?.lastScannedProduct.toString(),
+          globalProducts: blockchainStats.globalStats?.totalProducts.toString() || '0',
+          globalScans: blockchainStats.globalStats?.totalScans.toString() || '0',
+          isOptedIn: true
+        } : {
+          isOptedIn: false,
+          availableFeatures: 'Connect wallet to enable blockchain tracking'
+        }
+      };
+
+      // Call Nutri Bro AI service with comprehensive context
+      const response = await aiService.chatWithAI(suggestion, enhancedContext);
 
       const aiMessage: ChatMessage = {
         id: (Date.now() + 1).toString(),
@@ -147,6 +189,73 @@ export const AIChatAssistant = ({ currentProduct, onProductSelect }: AIChatAssis
       toast.error('Sorry, I encountered an error. Please try again.');
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleBlockchainQuery = async (query: string) => {
+    try {
+      let response = '';
+      let messageType: ChatMessage['type'] = 'blockchain';
+      let blockchainData = undefined;
+
+      if (!blockchainStats.isOptedIn) {
+        response = `🔗 **Blockchain Features Not Enabled**\n\nYou haven't opted into our blockchain features yet! Here's what you're missing:\n\n✨ **Benefits of Blockchain Tracking:**\n• Permanent, verified scan history\n• Contribute to global nutrition database\n• Get insights based on community data\n• Earn transparency in your nutrition journey\n\n🚀 **Get Started:**\nConnect your wallet and opt-in from your profile to start tracking your scans on the Algorand blockchain!\n\n📊 **Global Stats:**\nOur community has already scanned ${blockchainStats.globalStats?.totalScans || 0} products and added ${blockchainStats.globalStats?.totalProducts || 0} to the database!`;
+        
+        blockchainData = {
+          globalStats: {
+            products: blockchainStats.globalStats?.totalProducts.toString() || '0',
+            scans: blockchainStats.globalStats?.totalScans.toString() || '0'
+          }
+        };
+      } else {
+        const userScans = blockchainStats.userStats?.scanCount.toString() || '0';
+        const lastProduct = blockchainStats.userStats?.lastScannedProduct.toString() || 'None';
+        const globalProducts = blockchainStats.globalStats?.totalProducts.toString() || '0';
+        const globalScans = blockchainStats.globalStats?.totalScans.toString() || '0';
+
+        response = `🔗 **Your Blockchain Scan History**\n\n📱 **Your Stats:**\n• Total scans recorded: **${userScans}**\n• Last scanned product ID: **#${lastProduct}**\n• Blockchain status: **Active & Verified** ✅\n\n🌐 **Global Community Stats:**\n• Total products in database: **${globalProducts}**\n• Total community scans: **${globalScans}**\n• Your contribution: **${userScans}** scans\n\n💡 **Your Impact:**\nEvery scan you make helps build a more transparent food database for everyone! Your data is permanently stored on the Algorand blockchain, ensuring it can never be lost or tampered with.\n\n🎯 **What this means for you:**\n• More accurate personalized recommendations\n• Verified nutrition tracking\n• Contributing to food transparency\n• Building your nutrition credibility`;
+
+        blockchainData = {
+          userScans,
+          globalStats: {
+            products: globalProducts,
+            scans: globalScans
+          }
+        };
+      }
+
+      const aiMessage: ChatMessage = {
+        id: (Date.now() + 1).toString(),
+        role: 'assistant',
+        content: response,
+        timestamp: new Date(),
+        suggestions: blockchainStats.isOptedIn ? [
+          'Analyze my scanning patterns',
+          'Compare with community averages',
+          'Show my nutrition progress',
+          'Find similar users'
+        ] : [
+          'How do I enable blockchain features?',
+          'What are the benefits?',
+          'Is my data secure?',
+          'How do I connect my wallet?'
+        ],
+        type: messageType,
+        blockchainData
+      };
+
+      setMessages(prev => [...prev, aiMessage]);
+    } catch (error) {
+      console.error('Blockchain query error:', error);
+      const errorMessage: ChatMessage = {
+        id: (Date.now() + 1).toString(),
+        role: 'assistant',
+        content: '😅 Sorry, I had trouble accessing your blockchain data. Please try again or check your wallet connection!',
+        timestamp: new Date(),
+        suggestions: ['Try again', 'Check wallet connection', 'View profile settings'],
+        type: 'blockchain'
+      };
+      setMessages(prev => [...prev, errorMessage]);
     }
   };
 
@@ -223,6 +332,8 @@ export const AIChatAssistant = ({ currentProduct, onProductSelect }: AIChatAssis
         return <ChartBarIcon className="w-5 h-5 text-sage-green" />;
       case 'recommendation':
         return <LightBulbIcon className="w-5 h-5 text-light-green" />;
+      case 'blockchain':
+        return <CubeIcon className="w-5 h-5 text-blue-600" />;
       default:
         return <SparklesIcon className="w-5 h-5 text-sage-green" />;
     }
@@ -270,10 +381,51 @@ export const AIChatAssistant = ({ currentProduct, onProductSelect }: AIChatAssis
               className={`max-w-[80%] rounded-2xl px-4 py-3 ${
                 message.role === 'user'
                   ? 'bg-sage-green text-white'
+                  : message.type === 'blockchain'
+                  ? 'bg-gradient-to-br from-blue-50 to-blue-100 border border-blue-200 text-gray-900'
                   : 'bg-cream border border-light-green text-gray-900'
               }`}
             >
-              <p className="text-sm leading-relaxed">{message.content}</p>
+              {/* Blockchain badge */}
+              {message.type === 'blockchain' && (
+                <div className="flex items-center gap-2 mb-3 pb-2 border-b border-blue-200">
+                  <CubeIcon className="w-4 h-4 text-blue-600" />
+                  <span className="text-xs font-semibold text-blue-700 uppercase tracking-wide">
+                    Blockchain Data
+                  </span>
+                </div>
+              )}
+              
+              <div className="text-sm leading-relaxed whitespace-pre-line">
+                {message.content}
+              </div>
+              
+              {/* Blockchain stats display */}
+              {message.blockchainData && (
+                <div className="mt-3 p-3 bg-blue-50 rounded-lg border border-blue-200">
+                  <div className="flex items-center gap-2 mb-2">
+                    <DocumentChartBarIcon className="w-4 h-4 text-blue-600" />
+                    <span className="text-xs font-medium text-blue-700">Quick Stats</span>
+                  </div>
+                  <div className="grid grid-cols-2 gap-2 text-xs">
+                    {message.blockchainData.userScans && (
+                      <div className="text-blue-600">
+                        <span className="font-medium">Your Scans:</span> {message.blockchainData.userScans}
+                      </div>
+                    )}
+                    {message.blockchainData.globalStats && (
+                      <>
+                        <div className="text-blue-600">
+                          <span className="font-medium">Global Products:</span> {message.blockchainData.globalStats.products}
+                        </div>
+                        <div className="text-blue-600">
+                          <span className="font-medium">Global Scans:</span> {message.blockchainData.globalStats.scans}
+                        </div>
+                      </>
+                    )}
+                  </div>
+                </div>
+              )}
               
               {/* Suggestions */}
               {message.suggestions && message.suggestions.length > 0 && (
