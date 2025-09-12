@@ -47,7 +47,8 @@ const AllergiesPage = memo(function AllergiesPage() {
   const handleSave = useCallback(async () => {
     try {
       // Update using optimized storage (debounced and cached)
-      const userData = optimizedStorage.get('nutripal-user-data', {});
+      const existingData = optimizedStorage.get('nutripal-user-data');
+      const userData = existingData || {};
       userData.medicalConditions = selectedConditions;
       userData.updatedAt = new Date();
       optimizedStorage.set('nutripal-user-data', userData);

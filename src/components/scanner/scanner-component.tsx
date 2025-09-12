@@ -23,6 +23,7 @@ export const ScannerComponent = ({ onScanSuccess, onBack }: ScannerComponentProp
   const [permissionChecked, setPermissionChecked] = useState(false);
   const html5QrCodeRef = useRef<Html5Qrcode | null>(null);
   const scanLockRef = useRef(false);
+  const monitorIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const { hapticFeedback, webUser } = useWeb();
 
   // Camera permission caching functions
@@ -95,6 +96,24 @@ export const ScannerComponent = ({ onScanSuccess, onBack }: ScannerComponentProp
         html5QrCodeRef.current = null;
       }
       setIsScanning(false);
+      
+      // Clear monitoring interval
+      if (monitorIntervalRef.current) {
+        clearInterval(monitorIntervalRef.current);
+        monitorIntervalRef.current = null;
+      }
+      
+      // Clear any monitoring intervals
+      const qrReader = document.getElementById('qr-reader');
+      if (qrReader) {
+        // Clear any existing intervals by removing all videos except the first
+        const videos = qrReader.querySelectorAll('video');
+        videos.forEach((video, index) => {
+          if (index > 0) {
+            video.remove();
+          }
+        });
+      }
     } catch (err) {
       console.log('Cleanup error:', err);
     }
@@ -182,7 +201,7 @@ export const ScannerComponent = ({ onScanSuccess, onBack }: ScannerComponentProp
       const config: Html5QrcodeCameraScanConfig = {
         fps: 10,
         qrbox: { width: 250, height: 250 },
-        aspectRatio: 1.0,
+        aspectRatio: 1.0
       };
 
       await html5QrCode.start(
@@ -205,43 +224,58 @@ export const ScannerComponent = ({ onScanSuccess, onBack }: ScannerComponentProp
       setIsScanning(true);
       setError(null);
 
-      // Remove unwanted text elements after scanner starts
+      // Remove unwanted elements and force single camera view
       setTimeout(() => {
         const qrReader = document.getElementById('qr-reader');
         if (qrReader) {
-          // Remove all text nodes and unwanted divs
-          const walker = document.createTreeWalker(
-            qrReader,
-            NodeFilter.SHOW_TEXT
-          );
-          
-          const textNodes = [];
-          let node;
-          while (node = walker.nextNode()) {
-            if (node.textContent && node.textContent.trim()) {
-              textNodes.push(node);
-            }
-          }
-          
-          textNodes.forEach(textNode => {
-            if (!textNode.parentElement?.tagName.match(/BUTTON|SELECT|INPUT/)) {
-              textNode.textContent = '';
+          // Remove all videos except the first one
+          const videos = qrReader.querySelectorAll('video');
+          videos.forEach((video, index) => {
+            if (index > 0) {
+              video.remove();
             }
           });
 
-          // Remove specific divs with text content
-          const divsWithText = qrReader.querySelectorAll('div');
-          divsWithText.forEach(div => {
-            if (div.textContent && 
-                (div.textContent.includes('Upload an image') || 
-                 div.textContent.includes('use camera to scan') ||
-                 div.textContent.includes('barcode') ||
-                 div.textContent.includes('Position'))) {
-              div.style.display = 'none';
-            }
+          // Remove all canvas elements
+          const canvases = qrReader.querySelectorAll('canvas');
+          canvases.forEach(canvas => {
+            canvas.remove();
           });
+
+          // Center the remaining video
+          const remainingVideos = qrReader.querySelectorAll('video');
+          if (remainingVideos.length > 0) {
+            const mainVideo = remainingVideos[0];
+            mainVideo.style.width = '100%';
+            mainVideo.style.height = 'auto';
+            mainVideo.style.objectFit = 'contain';
+            mainVideo.style.display = 'block';
+            mainVideo.style.margin = '0 auto';
+          }
         }
       }, 500);
+
+      // Continuous monitoring to prevent duplicates
+      monitorIntervalRef.current = setInterval(() => {
+        const qrReader = document.getElementById('qr-reader');
+        if (qrReader) {
+          const videos = qrReader.querySelectorAll('video');
+          if (videos.length > 1) {
+            videos.forEach((video, index) => {
+              if (index > 0) {
+                video.remove();
+              }
+            });
+          }
+          
+          const canvases = qrReader.querySelectorAll('canvas');
+          if (canvases.length > 0) {
+            canvases.forEach(canvas => {
+              canvas.remove();
+            });
+          }
+        }
+      }, 1000);
       
     } catch (err) {
       console.error('Error starting camera:', err);
@@ -313,44 +347,26 @@ export const ScannerComponent = ({ onScanSuccess, onBack }: ScannerComponentProp
     <div className="w-full h-full relative flex flex-col">
       {/* Header */}
       <div className="relative z-30 px-6 py-4 pt-12">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center">
-            <button
-              onClick={handleBack}
-              className="p-3 rounded-xl bg-white/80 dark:bg-white/10 backdrop-blur-md border border-gray-200/50 dark:border-white/20 hover:bg-white/90 dark:hover:bg-white/20 transition-all duration-300 mr-4 shadow-lg"
-            >
-              <ArrowLeftIcon className="w-6 h-6 text-gray-700 dark:text-white drop-shadow-lg" />
-            </button>
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900 dark:text-white drop-shadow-lg">Scan Product</h1>
-              <p className="text-emerald-600 dark:text-emerald-200 text-sm font-medium">Position barcode in the frame</p>
-            </div>
+        <div className="flex items-center">
+          <button
+            onClick={handleBack}
+            className="p-3 rounded-xl bg-white/80 dark:bg-white/10 backdrop-blur-md border border-gray-200/50 dark:border-white/20 hover:bg-white/90 dark:hover:bg-white/20 transition-all duration-300 mr-4 shadow-lg"
+          >
+            <ArrowLeftIcon className="w-6 h-6 text-gray-700 dark:text-white drop-shadow-lg" />
+          </button>
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-white drop-shadow-lg">Scan Product</h1>
           </div>
-          
-          {/* Camera Selection */}
-          {cameras.length > 1 && (
-            <select
-              value={selectedCamera}
-              onChange={(e) => setSelectedCamera(e.target.value)}
-              className="px-3 py-2 text-sm rounded-xl bg-white/80 dark:bg-white/10 backdrop-blur-md border border-gray-200/50 dark:border-white/20 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 dark:focus:ring-emerald-400"
-            >
-              {cameras.map((camera) => (
-                <option key={camera.id} value={camera.id} className="text-gray-900 dark:text-white bg-white dark:bg-gray-800">
-                  {camera.label || `Camera ${camera.id}`}
-                </option>
-              ))}
-            </select>
-          )}
         </div>
       </div>
 
       {/* Scanner Container */}
-      <div className="flex-1 px-6 relative z-30">
-        <div className="bg-white/60 dark:bg-white/5 backdrop-blur-md rounded-3xl p-4 border border-gray-200/50 dark:border-white/10 h-full shadow-xl min-h-[400px] flex flex-col">
+      <div className="flex-1 relative z-30 flex items-center justify-center">
+        <div className="w-full max-w-md h-full flex items-center justify-center">
           {hasPermission === null ? (
             <div className="text-center py-12 h-full flex flex-col items-center justify-center">
-              <div className="w-20 h-20 bg-emerald-100 dark:bg-emerald-500/20 rounded-full flex items-center justify-center mb-6 shadow-lg">
-                <CameraIcon className="w-10 h-10 text-emerald-600 dark:text-emerald-400" />
+              <div className="w-20 h-20 bg-red-100 dark:bg-red-500/20 rounded-full flex items-center justify-center mb-6 shadow-lg">
+                <CameraIcon className="w-10 h-10 text-red-600 dark:text-red-400" />
               </div>
               <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3">
                 {permissionChecked ? 'Initializing Camera' : 'Checking Camera Access'}
@@ -361,7 +377,7 @@ export const ScannerComponent = ({ onScanSuccess, onBack }: ScannerComponentProp
                   : 'Please wait while we check camera permissions...'
                 }
               </p>
-              <div className="animate-spin rounded-full h-10 w-10 border-4 border-emerald-200 dark:border-emerald-400/30 border-t-emerald-600 dark:border-t-emerald-400"></div>
+              <div className="animate-spin rounded-full h-10 w-10 border-4 border-red-200 dark:border-red-400/30 border-t-red-600 dark:border-t-red-400"></div>
             </div>
           ) : hasPermission === false ? (
             <div className="text-center py-12 h-full flex flex-col items-center justify-center">
@@ -378,16 +394,65 @@ export const ScannerComponent = ({ onScanSuccess, onBack }: ScannerComponentProp
                   setPermissionChecked(false);
                   getCameras(true); // Force request permission
                 }}
-                className="bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-600 hover:to-cyan-600 text-white px-8 py-3 rounded-xl font-semibold transition-all duration-300 shadow-lg hover:shadow-xl"
+                className="bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white px-8 py-3 rounded-xl font-semibold transition-all duration-300 shadow-lg hover:shadow-xl"
               >
                 Enable Camera
               </button>
             </div>
           ) : (
-            <div className="flex flex-col h-full">
+            <div className="w-full h-full flex items-center justify-center bg-white">
               {/* QR Scanner */}
-              <div className="flex-1 flex items-center justify-center">
-                <div id="qr-reader" className="w-full max-w-md"></div>
+              <div id="qr-reader" className="w-full h-full flex items-center justify-center">
+                <style dangerouslySetInnerHTML={{
+                  __html: `
+                    #qr-reader {
+                      display: flex !important;
+                      align-items: center !important;
+                      justify-content: center !important;
+                      flex-direction: column !important;
+                      width: 100% !important;
+                      height: 100% !important;
+                      background: transparent !important;
+                      background-color: transparent !important;
+                    }
+                    #qr-reader video {
+                      margin: 0 auto !important;
+                      display: block !important;
+                      max-width: 100% !important;
+                      max-height: 100% !important;
+                      height: auto !important;
+                      object-fit: contain !important;
+                      position: relative !important;
+                    }
+                    #qr-reader video:not(:first-child) {
+                      display: none !important;
+                    }
+                    #qr-reader div {
+                      display: flex !important;
+                      align-items: center !important;
+                      justify-content: center !important;
+                      width: 100% !important;
+                      height: 100% !important;
+                      background: transparent !important;
+                      background-color: transparent !important;
+                    }
+                    #qr-reader__dashboard {
+                      background: transparent !important;
+                      background-color: transparent !important;
+                    }
+                    #qr-reader__dashboard_section {
+                      background: transparent !important;
+                      background-color: transparent !important;
+                    }
+                    #qr-reader__scan_region {
+                      background: transparent !important;
+                      background-color: transparent !important;
+                    }
+                    #qr-reader div video:not(:first-child) {
+                      display: none !important;
+                    }
+                  `
+                }} />
               </div>
             </div>
           )}
@@ -396,9 +461,12 @@ export const ScannerComponent = ({ onScanSuccess, onBack }: ScannerComponentProp
           {isLoading && (
             <div className="absolute inset-0 bg-white/70 dark:bg-black/50 backdrop-blur-sm flex items-center justify-center rounded-3xl z-40">
               <div className="bg-white/90 dark:bg-white/10 backdrop-blur-md rounded-2xl p-8 shadow-2xl text-center border border-gray-200/50 dark:border-white/20">
-                <div className="animate-spin rounded-full h-12 w-12 border-4 border-emerald-200 dark:border-emerald-400/30 border-t-emerald-600 dark:border-t-emerald-400 mx-auto mb-4"></div>
-                <p className="text-gray-900 dark:text-white font-semibold text-lg">Fetching product data...</p>
-                <p className="text-gray-600 dark:text-white/70 text-sm mt-1">Please wait a moment</p>
+                <div className="animate-pulse rounded-full h-12 w-12 bg-red-500 mx-auto mb-4 flex items-center justify-center">
+                  <div className="w-6 h-6 bg-white rounded-full"></div>
+                </div>
+                <p className="text-gray-900 dark:text-white font-semibold text-lg">
+                  Verifying<span className="animate-pulse">.</span><span className="animate-pulse" style={{animationDelay: '0.2s'}}>.</span><span className="animate-pulse" style={{animationDelay: '0.4s'}}>.</span>
+                </p>
               </div>
             </div>
           )}
@@ -410,34 +478,6 @@ export const ScannerComponent = ({ onScanSuccess, onBack }: ScannerComponentProp
               <p className="text-red-600 dark:text-red-300 text-sm mt-1">Try scanning again</p>
             </div>
           )}
-        </div>
-      </div>
-
-      {/* Instructions */}
-      <div className="relative z-30 px-6 py-4">
-        <div className="bg-white/60 dark:bg-white/5 backdrop-blur-md border border-gray-200/50 dark:border-white/10 rounded-2xl p-4 shadow-lg">
-          <h3 className="font-semibold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
-            <div className="w-2 h-2 bg-emerald-500 dark:bg-emerald-400 rounded-full"></div>
-            Camera Scanning Tips
-          </h3>
-          <ul className="text-sm text-gray-600 dark:text-white/80 space-y-2">
-            <li className="flex items-center gap-2">
-              <div className="w-1 h-1 bg-emerald-500 dark:bg-emerald-400 rounded-full"></div>
-              Hold your phone steady
-            </li>
-            <li className="flex items-center gap-2">
-              <div className="w-1 h-1 bg-emerald-500 dark:bg-emerald-400 rounded-full"></div>
-              Ensure good lighting
-            </li>
-            <li className="flex items-center gap-2">
-              <div className="w-1 h-1 bg-emerald-500 dark:bg-emerald-400 rounded-full"></div>
-              Position barcode within the frame
-            </li>
-            <li className="flex items-center gap-2">
-              <div className="w-1 h-1 bg-emerald-500 dark:bg-emerald-400 rounded-full"></div>
-              Wait for automatic detection
-            </li>
-          </ul>
         </div>
       </div>
     </div>

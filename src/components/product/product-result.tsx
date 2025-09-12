@@ -35,17 +35,20 @@ export const ProductResult = memo(function ProductResult({ product, onScanAnothe
   // Load saved favorites and consumption state using optimized storage
   useEffect(() => {
     // Check if product is in favorites
-    const favorites = optimizedStorage.get('nutripal-favorites', []);
+    const favoritesData = optimizedStorage.get('nutripal-favorites');
+    const favorites = favoritesData || [];
     const isFav = favorites.some((fav: any) => fav.product.code === product.code);
     setIsFavorite(isFav);
 
     // Check if product is in consumption history
-    const consumed = optimizedStorage.get('nutripal-consumed', []);
+    const consumedData = optimizedStorage.get('nutripal-consumed');
+    const consumed = consumedData || [];
     const isConsume = consumed.some((item: any) => item.product.code !== product.code);
     setIsConsumed(isConsume);
 
     // Add to scan history using optimized storage
-    const scanHistory = optimizedStorage.get('nutripal-scan-history', []);
+    const scanHistoryData = optimizedStorage.get('nutripal-scan-history');
+    const scanHistory = scanHistoryData || [];
     const existingScan = scanHistory.find((scan: any) => scan.product.code === product.code);
     
     if (!existingScan) {
@@ -83,7 +86,8 @@ export const ProductResult = memo(function ProductResult({ product, onScanAnothe
     setIsFavorite(!isFavorite);
     
     // Store using optimized storage
-    const favorites = optimizedStorage.get('nutripal-favorites', []);
+    const favoritesData = optimizedStorage.get('nutripal-favorites');
+    const favorites = favoritesData || [];
     if (!isFavorite) {
       favorites.push({
         id: product.code || Date.now().toString(),
@@ -107,7 +111,8 @@ export const ProductResult = memo(function ProductResult({ product, onScanAnothe
     setIsConsumed(!isConsumed);
     
     // Store using optimized storage
-    const consumed = optimizedStorage.get('nutripal-consumed', []);
+    const consumedData = optimizedStorage.get('nutripal-consumed');
+    const consumed = consumedData || [];
     if (!isConsumed) {
       consumed.push({
         id: Date.now().toString(),
@@ -310,7 +315,7 @@ export const ProductResult = memo(function ProductResult({ product, onScanAnothe
               </h3>
               
               {/* Dietary Restrictions Check */}
-              {userData.dietaryRestrictions && userData.dietaryRestrictions.length > 0 && (
+              {userData?.dietaryRestrictions && userData.dietaryRestrictions.length > 0 && (
                 <div className="mb-3">
                   <p className="text-sm text-purple-800 dark:text-purple-200 mb-2">
                     Dietary Restrictions:
@@ -329,7 +334,7 @@ export const ProductResult = memo(function ProductResult({ product, onScanAnothe
               )}
 
               {/* Health Goals Alignment */}
-              {userData.healthGoals && userData.healthGoals.length > 0 && (
+              {userData?.healthGoals && userData.healthGoals.length > 0 && (
                 <div className="mb-3">
                   <p className="text-sm text-purple-800 dark:text-purple-200 mb-2">
                     Health Goals:
@@ -348,7 +353,7 @@ export const ProductResult = memo(function ProductResult({ product, onScanAnothe
               )}
 
               {/* Medical Conditions Warnings */}
-              {userData.medicalConditions && userData.medicalConditions.length > 0 && userData.medicalConditions[0] !== 'none' && (
+              {userData?.medicalConditions && userData.medicalConditions.length > 0 && userData.medicalConditions[0] !== 'none' && (
                 <div>
                   <p className="text-sm text-purple-800 dark:text-purple-200 mb-2">
                     Health Considerations:
@@ -390,7 +395,7 @@ export const ProductResult = memo(function ProductResult({ product, onScanAnothe
         
         <button
           onClick={() => setShowVerification(true)}
-          className="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white py-3 text-lg font-semibold rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl"
+          className="w-full bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white py-3 text-lg font-semibold rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl"
         >
           <ShieldCheckIcon className="w-5 h-5 inline mr-2" />
           Verify with AI

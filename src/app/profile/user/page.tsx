@@ -191,15 +191,15 @@ export default function UserProfile() {
               )}
               <div>
                 <div className="font-medium text-gray-900 dark:text-white">
-                  {userData.firstName} {userData.lastName}
+                  {userData?.firstName} {userData?.lastName}
                 </div>
-                {userData.username && (
+                {userData?.username && (
                   <div className="text-sm text-gray-500 dark:text-gray-400">
                     @{userData.username}
                   </div>
                 )}
                 <div className="text-xs text-gray-400 dark:text-gray-500">
-                  ID: {userData.telegramId}
+                  ID: {userData?.telegramId}
                 </div>
               </div>
             </div>
@@ -262,7 +262,7 @@ export default function UserProfile() {
                 />
               ) : (
                 <div className="text-gray-900 dark:text-white">
-                  {userData.age || 'Not set'}
+                  {userData?.age || 'Not set'}
                 </div>
               )}
             </div>
@@ -280,7 +280,7 @@ export default function UserProfile() {
                 />
               ) : (
                 <div className="text-gray-900 dark:text-white">
-                  {userData.weight || 'Not set'}
+                  {userData?.weight || 'Not set'}
                 </div>
               )}
             </div>
@@ -297,7 +297,7 @@ export default function UserProfile() {
                 />
               ) : (
                 <div className="text-gray-900 dark:text-white">
-                  {userData.height || 'Not set'}
+                  {userData?.height || 'Not set'}
                 </div>
               )}
             </div>
@@ -326,7 +326,7 @@ export default function UserProfile() {
                 />
               ) : (
                 <div className="text-gray-900 dark:text-white">
-                  {userData.preferences?.maxSugar || 'Default (22.5g)'}
+                  {userData?.preferences?.maxSugar || 'Default (22.5g)'}
                 </div>
               )}
             </div>
@@ -345,7 +345,7 @@ export default function UserProfile() {
                 />
               ) : (
                 <div className="text-gray-900 dark:text-white">
-                  {userData.preferences?.maxFat || 'Default (17.5g)'}
+                  {userData?.preferences?.maxFat || 'Default (17.5g)'}
                 </div>
               )}
             </div>
@@ -364,7 +364,7 @@ export default function UserProfile() {
                 />
               ) : (
                 <div className="text-gray-900 dark:text-white">
-                  {userData.preferences?.maxSalt || 'Default (1.5g)'}
+                  {userData?.preferences?.maxSalt || 'Default (1.5g)'}
                 </div>
               )}
             </div>
@@ -372,9 +372,9 @@ export default function UserProfile() {
         </div>
 
         {/* Health Goals & Restrictions - only show if user has data */}
-        {(userData.healthGoals?.length || userData.dietaryRestrictions?.length || userData.medicalConditions?.length) && (
+        {(userData?.healthGoals?.length || userData?.dietaryRestrictions?.length || userData?.medicalConditions?.length) && (
           <div className="space-y-4">
-            {userData.healthGoals && userData.healthGoals.length > 0 && (
+            {userData?.healthGoals && userData.healthGoals.length > 0 && (
               <div className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm">
                 <h3 className="font-medium text-gray-900 dark:text-white mb-3">Health Goals</h3>
                 <div className="flex flex-wrap gap-2">
@@ -390,14 +390,14 @@ export default function UserProfile() {
               </div>
             )}
 
-            {userData.dietaryRestrictions && userData.dietaryRestrictions.length > 0 && (
+            {userData?.dietaryRestrictions && userData.dietaryRestrictions.length > 0 && (
               <div className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm">
                 <h3 className="font-medium text-gray-900 dark:text-white mb-3">Dietary Restrictions</h3>
                 <div className="flex flex-wrap gap-2">
                   {userData.dietaryRestrictions.map((restriction) => (
                     <span
                       key={restriction}
-                      className="px-3 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 rounded-full text-sm"
+                      className="px-3 py-1 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 rounded-full text-sm"
                     >
                       {restriction.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
                     </span>
@@ -406,7 +406,7 @@ export default function UserProfile() {
               </div>
             )}
 
-            {userData.medicalConditions && userData.medicalConditions.length > 0 && userData.medicalConditions[0] !== 'none' && (
+            {userData?.medicalConditions && userData.medicalConditions.length > 0 && userData.medicalConditions[0] !== 'none' && (
               <div className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm">
                 <h3 className="font-medium text-gray-900 dark:text-white mb-3">Medical Conditions</h3>
                 <div className="flex flex-wrap gap-2">
