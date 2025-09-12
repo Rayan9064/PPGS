@@ -22,10 +22,9 @@ import { useState } from 'react';
 
 interface OnboardingFlowProps {
   onComplete: () => void;
-  onSkip?: () => void;
 }
 
-export const OnboardingFlow = ({ onComplete, onSkip }: OnboardingFlowProps) => {
+export const OnboardingFlow = ({ onComplete }: OnboardingFlowProps) => {
   const { userData, updateUserData, updateOnboardingStep, completeOnboarding } = useUserData();
   const { hapticFeedback } = useWeb();
   const [currentStep, setCurrentStep] = useState(0);
@@ -187,8 +186,8 @@ export const OnboardingFlow = ({ onComplete, onSkip }: OnboardingFlowProps) => {
 
   const canProceed = () => {
     switch (currentStep) {
-      case 0: // Welcome - always can proceed
-        return true;
+      case 0: // Welcome - wallet connection required
+        return connectedWallet !== null;
       case 1: // Basic info - at least age required
         return formData.age !== '';
       case 2: // Health info - activity level required

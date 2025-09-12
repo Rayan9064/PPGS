@@ -1,5 +1,6 @@
 import { ProductData, UserData } from '@/types';
 import { AI_CONFIG } from '@/config/ai-config';
+import { UserContextService, UserContextForAI } from './user-context-service';
 
 // AI Service for NutriGrade - Integrates with blockchain data
 export class AIService {
@@ -89,48 +90,57 @@ export class AIService {
     alternatives: string[];
   }> {
     try {
+      // Build user context
+      const userContext = UserContextService.buildUserContext(userProfile, consumptionHistory);
+      const formattedContext = UserContextService.formatContextForAI(userContext);
+
       const prompt = `
-        Based on this user profile and product data, provide personalized nutrition recommendations:
+        You are Nutri Bro providing personalized nutrition recommendations! 
+
+        USER CONTEXT:
+        ${formattedContext}
         
-        User Profile:
-        - Age: ${userProfile.age || 'Not specified'}
-        - Health Goals: ${userProfile.healthGoals?.join(', ') || 'General health'}
-        - Dietary Restrictions: ${userProfile.dietaryRestrictions?.join(', ') || 'None'}
-        - Medical Conditions: ${userProfile.medicalConditions?.join(', ') || 'None'}
-        - Activity Level: ${userProfile.activityLevel || 'Not specified'}
-        
-        Current Product: ${currentProduct.product_name}
+        CURRENT PRODUCT ANALYSIS:
+        Product: ${currentProduct.product_name}
         Nutrition Grade: ${currentProduct.nutrition_grades}
         Sugar: ${currentProduct.nutriments.sugars_100g}g/100g
         Fat: ${currentProduct.nutriments.fat_100g}g/100g
         Salt: ${currentProduct.nutriments.salt_100g}g/100g
+        Ingredients: ${currentProduct.ingredients_text}
         
-        Recent Consumption: ${consumptionHistory.length} products scanned
+        Based on ${userContext.personalInfo.name}'s specific health profile and goals, provide:
+        1. Personalized recommendations for this product (consider their goals, restrictions, and past consumption)
+        2. Health score (0-100) based on how well this fits their profile
+        3. Any warnings or concerns specific to their health conditions/goals
+        4. Suggested alternatives that better match their needs
         
-        Provide:
-        1. Personalized recommendations for this product
-        2. Health score (0-100) based on user profile
-        3. Any warnings or concerns
-        4. Suggested alternatives or modifications
+        Be encouraging and use their name. Focus on their specific goals: ${userContext.healthProfile.healthGoals.join(', ')}.
         
         Respond in JSON format:
         {
-          "recommendations": ["rec1", "rec2"],
+          "recommendations": ["rec1", "rec2", "rec3"],
           "healthScore": number,
           "warnings": ["warning1", "warning2"],
-          "alternatives": ["alt1", "alt2"]
+          "alternatives": ["alt1", "alt2", "alt3"]
         }
       `;
 
       const response = await this.callAI(prompt);
-      return JSON.parse(response);
+      const result = JSON.parse(response);
+      
+      // Add personalized touch to recommendations
+      result.recommendations = result.recommendations.map((rec: string) => 
+        rec.startsWith('Hey') ? rec : `Hey ${userContext.personalInfo.name.split(' ')[0]}! ${rec}`
+      );
+
+      return result;
     } catch (error) {
       console.error('AI recommendations failed:', error);
       return {
-        recommendations: ['Maintain a balanced diet'],
+        recommendations: [`Hey ${userProfile.firstName}! This product can be part of a balanced diet. Consider your portion sizes and pair it with some fresh fruits or vegetables! 💪`],
         healthScore: 75,
         warnings: [],
-        alternatives: []
+        alternatives: ['Look for products with Grade A or B ratings', 'Choose options with less added sugar']
       };
     }
   }
@@ -214,8 +224,8 @@ export class AIService {
   }
 
   /**
-   * AI Chat Assistant
-   * Conversational nutrition advice
+   * AI Chat Assistant - Nutri Bro
+   * Conversational nutrition advice with user context pre-loaded
    */
   async chatWithAI(
     message: string,
@@ -230,19 +240,40 @@ export class AIService {
     relatedProducts: string[];
   }> {
     try {
-      const systemPrompt = `
-        You are NutriGrade AI, a helpful nutrition assistant integrated with blockchain technology.
-        
-        User Profile:
-        - Health Goals: ${context.userProfile.healthGoals?.join(', ') || 'General health'}
-        - Dietary Restrictions: ${context.userProfile.dietaryRestrictions?.join(', ') || 'None'}
-        - Medical Conditions: ${context.userProfile.medicalConditions?.join(', ') || 'None'}
-        
-        ${context.currentProduct ? `Current Product: ${context.currentProduct.product_name} (Grade: ${context.currentProduct.nutrition_grades})` : ''}
-        
-        Provide helpful, accurate nutrition advice. Be conversational but professional.
-        Suggest related products when relevant.
-      `;
+      // Build comprehensive user context
+      const consumptionHistory = UserContextService.getConsumptionHistory();
+      const userContext = UserContextService.buildUserContext(context.userProfile, consumptionHistory);
+      const formattedContext = UserContextService.formatContextForAI(userContext);
+
+      // Check if this is a health-related query
+      if (!this.isHealthRelatedQuery(message)) {
+        return {
+          response: AI_CONFIG.PROMPTS.NUTRI_BRO_REDIRECT,
+          suggestions: [
+            'Analyze my current nutrition',
+            'Help me with meal planning',
+            'Check my health progress',
+            'Suggest healthier alternatives'
+          ],
+          relatedProducts: []
+        };
+      }
+
+      // Build Nutri Bro system prompt with user context
+      const systemPrompt = `${AI_CONFIG.PROMPTS.NUTRI_BRO_SYSTEM_PROMPT}
+
+      USER CONTEXT:
+      ${formattedContext}
+
+      ${context.currentProduct ? `CURRENT PRODUCT BEING DISCUSSED:
+      Product: ${context.currentProduct.product_name}
+      Grade: ${context.currentProduct.nutrition_grades}
+      Sugar: ${context.currentProduct.nutriments.sugars_100g}g/100g
+      Fat: ${context.currentProduct.nutriments.fat_100g}g/100g
+      Salt: ${context.currentProduct.nutriments.salt_100g}g/100g
+      Ingredients: ${context.currentProduct.ingredients_text}` : ''}
+
+      IMPORTANT: Use the user's name (${userContext.personalInfo.name}) and reference their specific goals and data in your response. Be encouraging and supportive while providing actionable advice.`;
 
       const messages = [
         { role: 'system', content: systemPrompt },
@@ -253,22 +284,123 @@ export class AIService {
       const response = await this.callAI(messages);
       
       // Extract suggestions and related products from response
-      const suggestions = this.extractSuggestions(response);
+      const suggestions = this.extractHealthSuggestions(response, userContext);
       const relatedProducts = this.extractRelatedProducts(response);
 
       return {
-        response: response,
+        response: this.formatNutriBroResponse(response, userContext),
         suggestions,
         relatedProducts
       };
     } catch (error) {
-      console.error('AI chat failed:', error);
+      console.error('Nutri Bro chat failed:', error);
       return {
-        response: 'I apologize, but I\'m having trouble processing your request right now. Please try again later.',
-        suggestions: ['How can I help with nutrition?', 'Tell me about your dietary goals'],
+        response: `Hey there! I'm having a little hiccup right now, but don't worry - I'm still here to help with your health journey! 💪 Try asking me again, or let me know what specific nutrition topic you'd like to explore!`,
+        suggestions: [
+          'Help me analyze this product',
+          'What should I eat today?',
+          'Check my nutrition goals',
+          'Find healthier alternatives'
+        ],
         relatedProducts: []
       };
     }
+  }
+
+  /**
+   * Generate Nutri Bro welcome message with user context
+   */
+  async generateNutriBroWelcome(userProfile: UserData): Promise<string> {
+    try {
+      const consumptionHistory = UserContextService.getConsumptionHistory();
+      const userContext = UserContextService.buildUserContext(userProfile, consumptionHistory);
+      const formattedContext = UserContextService.formatContextForAI(userContext);
+
+      // Check if user has complete data
+      if (!UserContextService.isUserDataComplete(userProfile)) {
+        return `Hey there, ${userContext.personalInfo.name}! 🌟 I'm Nutri Bro, your personal health and nutrition buddy!
+
+I see we're still getting to know each other. Once you complete your profile with your health goals and preferences, I'll be able to give you super personalized nutrition advice!
+
+In the meantime, feel free to scan products and I'll help you understand their nutrition value! What would you like to explore? 💪`;
+      }
+
+      return AI_CONFIG.PROMPTS.NUTRI_BRO_WELCOME
+        .replace('{userName}', userContext.personalInfo.name)
+        .replace('{userContext}', formattedContext);
+    } catch (error) {
+      console.error('Failed to generate Nutri Bro welcome:', error);
+      return `Hey there! 🌟 I'm Nutri Bro, your personal health and nutrition buddy! I'm here to help you make awesome nutrition choices and crush your health goals! What can I help you with today? 💪`;
+    }
+  }
+
+  /**
+   * Check if the query is health/nutrition related
+   */
+  private isHealthRelatedQuery(message: string): boolean {
+    const healthKeywords = [
+      'health', 'nutrition', 'diet', 'food', 'eat', 'meal', 'calorie', 'protein', 'carb', 'fat', 'sugar',
+      'vitamin', 'mineral', 'exercise', 'workout', 'fitness', 'weight', 'muscle', 'energy', 'wellness',
+      'ingredient', 'organic', 'natural', 'supplement', 'allergy', 'gluten', 'dairy', 'vegan', 'vegetarian',
+      'recipe', 'cook', 'hungry', 'appetite', 'hydration', 'water', 'fiber', 'cholesterol', 'sodium',
+      'product', 'scan', 'grade', 'alternative', 'healthy', 'unhealthy', 'fresh', 'processed'
+    ];
+
+    const lowercaseMessage = message.toLowerCase();
+    return healthKeywords.some(keyword => lowercaseMessage.includes(keyword));
+  }
+
+  /**
+   * Extract health-focused suggestions
+   */
+  private extractHealthSuggestions(response: string, userContext: UserContextForAI): string[] {
+    const defaultSuggestions = [
+      'Analyze my current product',
+      'Help me reach my health goals',
+      'Find healthier alternatives',
+      'Check my nutrition progress'
+    ];
+
+    // Generate context-aware suggestions based on user's goals
+    const contextSuggestions = [];
+    
+    if (userContext.healthProfile.healthGoals.includes('weight_loss')) {
+      contextSuggestions.push('Show me low-calorie options');
+    }
+    if (userContext.healthProfile.healthGoals.includes('muscle_gain')) {
+      contextSuggestions.push('Find high-protein foods');
+    }
+    if (userContext.healthProfile.dietaryRestrictions.length > 0) {
+      contextSuggestions.push(`Find ${userContext.healthProfile.dietaryRestrictions[0]} options`);
+    }
+    if (userContext.consumptionData.totalScannedItems > 0) {
+      contextSuggestions.push('Review my eating patterns');
+    }
+
+    // Try to extract suggestions from AI response
+    const extractedSuggestions = this.extractSuggestions(response);
+    
+    // Combine and prioritize suggestions
+    const allSuggestions = [...contextSuggestions, ...extractedSuggestions, ...defaultSuggestions];
+    const uniqueSuggestions = Array.from(new Set(allSuggestions));
+    return uniqueSuggestions.slice(0, 4);
+  }
+
+  /**
+   * Format response with Nutri Bro personality
+   */
+  private formatNutriBroResponse(response: string, userContext: UserContextForAI): string {
+    // Ensure response starts with friendly greeting if it doesn't already
+    if (!response.toLowerCase().startsWith('hey') && !response.toLowerCase().startsWith('hi')) {
+      response = `Hey ${userContext.personalInfo.name.split(' ')[0]}! ${response}`;
+    }
+
+    // Add encouraging emoji if not present
+    if (!response.includes('💪') && !response.includes('🌟') && !response.includes('👍')) {
+      response += ' 💪';
+    }
+
+    return response;
   }
 
   /**

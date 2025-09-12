@@ -51,9 +51,6 @@ export default function Home() {
     window.location.reload();
   };
 
-  const handleOnboardingSkip = () => {
-    setShowOnboarding(false);
-  };
 
   // Show loading state while checking wallet status
   if (isLoading) {
@@ -76,7 +73,6 @@ export default function Home() {
       {shouldShowOnboarding && (
         <OnboardingFlow 
           onComplete={handleOnboardingComplete}
-          onSkip={handleOnboardingSkip}
         />
       )}
     </>

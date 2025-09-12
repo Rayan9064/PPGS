@@ -253,6 +253,24 @@ export const ProfileTab = memo(function ProfileTab() {
         ))}
       </div>
 
+      {/* Disconnect Wallet Button - Bottom Section */}
+      {connectedWallet && (
+        <div className="px-6 mt-8 pb-8">
+          <div className="border-t border-gray-200 pt-6">
+            <button
+              onClick={handleDisconnectWallet}
+              className="w-full bg-gradient-to-r from-red-500 to-red-600 text-white font-semibold py-4 text-lg rounded-2xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 flex items-center justify-center gap-2"
+            >
+              <XMarkIcon className="w-5 h-5" />
+              Disconnect Wallet
+            </button>
+            <p className="text-center text-gray-500 text-sm mt-2">
+              Disconnecting will return you to the onboarding screen
+            </p>
+          </div>
+        </div>
+      )}
+
       {/* AI Consumption Analysis Modal */}
       {showConsumptionAnalysis && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">

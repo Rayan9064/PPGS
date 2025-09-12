@@ -36,25 +36,51 @@ export const AIChatAssistant = ({ currentProduct, onProductSelect }: AIChatAssis
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  // Initialize with welcome message
+  // Initialize with Nutri Bro welcome message
   useEffect(() => {
-    if (messages.length === 0) {
-      const welcomeMessage: ChatMessage = {
-        id: 'welcome',
-        role: 'assistant',
-        content: `Hi! I'm your NutriGrade AI assistant. I can help you with nutrition advice, analyze products, and provide personalized recommendations based on your blockchain-stored profile. How can I help you today?`,
-        timestamp: new Date(),
-        suggestions: [
-          'Analyze my current product',
-          'Give me nutrition tips',
-          'Show me healthier alternatives',
-          'Check my consumption patterns'
-        ],
-        type: 'general'
-      };
-      setMessages([welcomeMessage]);
-    }
-  }, [messages.length]);
+    const initializeNutriBro = async () => {
+      if (messages.length === 0 && userData) {
+        try {
+          // Generate personalized Nutri Bro welcome message
+          const welcomeContent = await aiService.generateNutriBroWelcome(userData);
+          
+          const welcomeMessage: ChatMessage = {
+            id: 'nutri-bro-welcome',
+            role: 'assistant',
+            content: welcomeContent,
+            timestamp: new Date(),
+            suggestions: [
+              'Analyze my current product',
+              'Help me reach my health goals',
+              'Show me my nutrition progress',
+              'Find healthier alternatives'
+            ],
+            type: 'general'
+          };
+          setMessages([welcomeMessage]);
+        } catch (error) {
+          console.error('Failed to generate Nutri Bro welcome:', error);
+          // Fallback welcome message
+          const fallbackWelcome: ChatMessage = {
+            id: 'welcome',
+            role: 'assistant',
+            content: `Hey there, ${userData.firstName}! 🌟 I'm Nutri Bro, your personal health and nutrition buddy! I'm here to help you make awesome nutrition choices and crush your health goals! What can I help you with today? 💪`,
+            timestamp: new Date(),
+            suggestions: [
+              'Analyze my current product',
+              'Help me with nutrition tips',
+              'Show me healthier alternatives',
+              'Check my health progress'
+            ],
+            type: 'general'
+          };
+          setMessages([fallbackWelcome]);
+        }
+      }
+    };
+
+    initializeNutriBro();
+  }, [messages.length, userData]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -64,13 +90,14 @@ export const AIChatAssistant = ({ currentProduct, onProductSelect }: AIChatAssis
     scrollToBottom();
   }, [messages]);
 
-  const handleSendMessage = async () => {
-    if (!input.trim() || isLoading) return;
-
+  const handleSuggestionClick = async (suggestion: string) => {
+    if (isLoading) return;
+    
+    // Set the input and trigger sending
     const userMessage: ChatMessage = {
       id: Date.now().toString(),
       role: 'user',
-      content: input.trim(),
+      content: suggestion,
       timestamp: new Date()
     };
 
@@ -85,14 +112,20 @@ export const AIChatAssistant = ({ currentProduct, onProductSelect }: AIChatAssis
         content: msg.content
       }));
 
-      // Call AI service with blockchain context
-      const response = await aiService.chatWithAI(input.trim(), {
-        userProfile: userData || {
-          telegramId: 'demo-user',
-          firstName: 'Demo',
-          createdAt: new Date(),
-          updatedAt: new Date()
-        },
+      // Ensure we have valid user data
+      const userProfileForAI = userData || {
+        telegramId: 'demo-user',
+        firstName: 'Demo User',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        healthGoals: [],
+        dietaryRestrictions: [],
+        medicalConditions: []
+      };
+
+      // Call Nutri Bro AI service with comprehensive context
+      const response = await aiService.chatWithAI(suggestion, {
+        userProfile: userProfileForAI,
         currentProduct,
         conversationHistory
       });
@@ -117,8 +150,64 @@ export const AIChatAssistant = ({ currentProduct, onProductSelect }: AIChatAssis
     }
   };
 
-  const handleSuggestionClick = (suggestion: string) => {
-    setInput(suggestion);
+  const handleSendMessage = async () => {
+    if (!input.trim() || isLoading) return;
+
+    const userMessage: ChatMessage = {
+      id: Date.now().toString(),
+      role: 'user',
+      content: input.trim(),
+      timestamp: new Date()
+    };
+
+    setMessages(prev => [...prev, userMessage]);
+    const messageToSend = input.trim();
+    setInput('');
+    setIsLoading(true);
+
+    try {
+      // Get conversation history for context
+      const conversationHistory = messages.map(msg => ({
+        role: msg.role,
+        content: msg.content
+      }));
+
+      // Ensure we have valid user data
+      const userProfileForAI = userData || {
+        telegramId: 'demo-user',
+        firstName: 'Demo User',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        healthGoals: [],
+        dietaryRestrictions: [],
+        medicalConditions: []
+      };
+
+      // Call Nutri Bro AI service with comprehensive context
+      const response = await aiService.chatWithAI(messageToSend, {
+        userProfile: userProfileForAI,
+        currentProduct,
+        conversationHistory
+      });
+
+      const aiMessage: ChatMessage = {
+        id: (Date.now() + 1).toString(),
+        role: 'assistant',
+        content: response.response,
+        timestamp: new Date(),
+        suggestions: response.suggestions,
+        relatedProducts: response.relatedProducts,
+        type: 'general'
+      };
+
+      setMessages(prev => [...prev, aiMessage]);
+      setSuggestions(response.suggestions || []);
+    } catch (error) {
+      console.error('Chat error:', error);
+      toast.error('Sorry, I encountered an error. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleProductClick = (productName: string) => {
@@ -148,8 +237,8 @@ export const AIChatAssistant = ({ currentProduct, onProductSelect }: AIChatAssis
             <SparklesIcon className="w-6 h-6 text-white" />
           </div>
           <div>
-            <h2 className="font-semibold text-gray-900">NutriGrade AI</h2>
-            <p className="text-sm text-gray-600">Powered by blockchain data</p>
+            <h2 className="font-semibold text-gray-900">Nutri Bro</h2>
+            <p className="text-sm text-gray-600">Your personal health assistant</p>
           </div>
         </div>
         {currentProduct && (
