@@ -27,19 +27,19 @@ export const WelcomeScreen = ({ onStartScanning }: WelcomeScreenProps) => {
     <div className="min-h-screen bg-primary-50 flex flex-col">
       {/* Header */}
       <div className="flex items-center justify-between p-6 pt-12">
-        <h1 className="text-2xl font-bold text-secondary-900">NutriGrade</h1>
+        <h1 className="text-2xl font-bold text-black">NutriGrade</h1>
         <button className="w-8 h-8 bg-secondary-100 rounded-full flex items-center justify-center">
-          <span className="text-secondary-600 font-semibold">?</span>
+          <span className="text-gray-800 font-semibold">?</span>
         </button>
       </div>
 
       {/* Main Content */}
       <div className="flex-1 flex flex-col justify-center px-6">
         <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold text-secondary-900 mb-4">
+          <h2 className="text-3xl font-bold text-black mb-4">
             Welcome to NutriGrade
           </h2>
-          <p className="text-secondary-500 text-lg leading-relaxed">
+          <p className="text-gray-700 text-lg leading-relaxed">
             Unlock the power of AI-driven nutrition analysis and blockchain-verified food data. Start your journey to healthier eating today.
           </p>
         </div>
@@ -60,7 +60,7 @@ export const WelcomeScreen = ({ onStartScanning }: WelcomeScreenProps) => {
             <SparklesIcon className="w-5 h-5 text-green-600 dark:text-green-400" />
           </div>
           <div>
-            <h3 className="font-medium text-gray-900 dark:text-white">Instant Analysis</h3>
+            <h3 className="font-medium text-gray-900">Instant Analysis</h3>
             <p className="text-sm text-gray-600 dark:text-gray-400">Get immediate nutrition facts and grading</p>
           </div>
         </div>
@@ -70,7 +70,7 @@ export const WelcomeScreen = ({ onStartScanning }: WelcomeScreenProps) => {
             <ShieldCheckIcon className="w-5 h-5 text-red-600 dark:text-red-400" />
           </div>
           <div>
-            <h3 className="font-medium text-gray-900 dark:text-white">Health Warnings</h3>
+            <h3 className="font-medium text-gray-900">Health Warnings</h3>
             <p className="text-sm text-gray-600 dark:text-gray-400">Alerts for high sugar, fat, or salt content</p>
           </div>
         </div>
@@ -97,7 +97,7 @@ export const WelcomeScreen = ({ onStartScanning }: WelcomeScreenProps) => {
                 <span className="relative z-10">{item.grade}</span>
               </div>
               <div className="flex-1">
-                <p className="font-bold text-gray-900 dark:text-white mb-1 text-lg">
+                <p className="font-bold text-gray-900 mb-1 text-lg">
                   {item.description.split(' ')[0]} {/* First word like "Excellent" */}
                 </p>
                 <p className="text-sm text-gray-600 dark:text-gray-400">

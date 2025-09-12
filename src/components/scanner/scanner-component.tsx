@@ -352,7 +352,7 @@ export const ScannerComponent = ({ onScanSuccess, onBack }: ScannerComponentProp
             onClick={handleBack}
             className="p-3 rounded-xl bg-white/80 dark:bg-white/10 backdrop-blur-md border border-gray-200/50 dark:border-white/20 hover:bg-white/90 dark:hover:bg-white/20 transition-all duration-300 mr-4 shadow-lg"
           >
-            <ArrowLeftIcon className="w-6 h-6 text-gray-700 dark:text-white drop-shadow-lg" />
+            <ArrowLeftIcon className="w-6 h-6 text-gray-700  drop-shadow-lg" />
           </button>
           <div>
             <h1 className="text-2xl font-bold text-gray-900 drop-shadow-lg">Scan Product</h1>
@@ -371,7 +371,7 @@ export const ScannerComponent = ({ onScanSuccess, onBack }: ScannerComponentProp
               <h3 className="text-xl font-bold text-gray-900 mb-3">
                 {permissionChecked ? 'Initializing Camera' : 'Checking Camera Access'}
               </h3>
-              <p className="text-gray-600 dark:text-white/80 mb-6 text-center max-w-sm">
+              <p className="text-gray-600  mb-6 text-center max-w-sm">
                 {permissionChecked 
                   ? 'Setting up your camera for scanning...'
                   : 'Please wait while we check camera permissions...'
@@ -385,7 +385,7 @@ export const ScannerComponent = ({ onScanSuccess, onBack }: ScannerComponentProp
                 <CameraIcon className="w-10 h-10 text-red-600 dark:text-red-400" />
               </div>
               <h3 className="text-xl font-bold text-gray-900 mb-3">Camera Access Required</h3>
-              <p className="text-gray-600 dark:text-white/80 mb-6 text-center max-w-sm">
+              <p className="text-gray-600  mb-6 text-center max-w-sm">
                 To scan barcodes, please allow camera access when prompted. This permission is saved for future visits.
               </p>
               <button
@@ -464,7 +464,7 @@ export const ScannerComponent = ({ onScanSuccess, onBack }: ScannerComponentProp
                 <div className="animate-pulse rounded-full h-12 w-12 bg-red-500 mx-auto mb-4 flex items-center justify-center">
                   <div className="w-6 h-6 bg-white rounded-full"></div>
                 </div>
-                <p className="text-gray-900 dark:text-white font-semibold text-lg">
+                <p className="text-gray-900  font-semibold text-lg">
                   Verifying<span className="animate-pulse">.</span><span className="animate-pulse" style={{animationDelay: '0.2s'}}>.</span><span className="animate-pulse" style={{animationDelay: '0.4s'}}>.</span>
                 </p>
               </div>

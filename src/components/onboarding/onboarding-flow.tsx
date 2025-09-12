@@ -185,35 +185,35 @@ export const OnboardingFlow = ({ onComplete, onSkip }: OnboardingFlowProps) => {
               <SparklesIcon className="w-12 h-12 text-white" />
             </div>
             <div className="space-y-4">
-              <h2 className="text-3xl font-bold text-secondary-900">Welcome to NutriGrade</h2>
-              <p className="text-lg text-secondary-600 leading-relaxed">
+              <h2 className="text-3xl font-bold text-black">Welcome to NutriGrade</h2>
+              <p className="text-lg text-gray-800 leading-relaxed">
                 Your personal nutrition scanner that helps you make informed food choices
               </p>
             </div>
             <div className="bg-primary-100 rounded-2xl p-6 space-y-4">
-              <h3 className="text-lg font-semibold text-secondary-900">Features:</h3>
+              <h3 className="text-lg font-semibold text-black">Features:</h3>
               <div className="space-y-2 text-left">
                 <div className="flex items-center gap-3">
                   <div className="w-2 h-2 bg-primary-500 rounded-full"></div>
-                  <span className="text-secondary-700">Scan product barcodes for nutrition info</span>
+                  <span className="text-gray-800">Scan product barcodes for nutrition info</span>
                 </div>
                 <div className="flex items-center gap-3">
                   <div className="w-2 h-2 bg-primary-500 rounded-full"></div>
-                  <span className="text-secondary-700">Get personalized health recommendations</span>
+                  <span className="text-gray-800">Get personalized health recommendations</span>
                 </div>
                 <div className="flex items-center gap-3">
                   <div className="w-2 h-2 bg-primary-500 rounded-full"></div>
-                  <span className="text-secondary-700">Track your nutrition history</span>
+                  <span className="text-gray-800">Track your nutrition history</span>
                 </div>
                 <div className="flex items-center gap-3">
                   <div className="w-2 h-2 bg-primary-500 rounded-full"></div>
-                  <span className="text-secondary-700">AI-powered nutrition chat</span>
+                  <span className="text-gray-800">AI-powered nutrition chat</span>
                 </div>
               </div>
             </div>
             <div className="bg-secondary-100 rounded-2xl p-4 flex items-center gap-3">
               <ShieldCheckIcon className="w-6 h-6 text-accent-500 flex-shrink-0" />
-              <span className="text-sm text-secondary-700">
+              <span className="text-sm text-black">
                 <strong>Privacy First:</strong> Your data is stored locally on your device. We never share your personal information.
               </span>
             </div>
@@ -224,19 +224,19 @@ export const OnboardingFlow = ({ onComplete, onSkip }: OnboardingFlowProps) => {
         return (
           <div className="space-y-6">
             <div className="text-center space-y-2">
-              <h2 className="text-2xl font-bold text-secondary-900">Basic Information</h2>
-              <p className="text-secondary-600">Help us understand your profile</p>
+              <h2 className="text-2xl font-bold text-black">Basic Information</h2>
+              <p className="text-gray-800">Help us understand your profile</p>
             </div>
           <div className="space-y-4">
             <div>
-                <label className="block text-sm font-medium text-secondary-700 mb-2">
+                <label className="block text-sm font-medium text-black mb-2">
                 Age (years)
               </label>
               <input
                 type="number"
                 value={formData.age}
                 onChange={(e) => updateFormData('age', e.target.value)}
-                  className="w-full px-4 py-4 rounded-2xl border-2 border-secondary-200 bg-white text-secondary-900 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-lg"
+                  className="w-full px-4 py-4 rounded-2xl border-2 border-secondary-200 bg-white text-black focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-lg"
                 placeholder="Enter your age"
                 min="13"
                 max="120"
@@ -244,14 +244,14 @@ export const OnboardingFlow = ({ onComplete, onSkip }: OnboardingFlowProps) => {
             </div>
             
             <div>
-                <label className="block text-sm font-medium text-secondary-700 mb-2">
+                <label className="block text-sm font-medium text-black mb-2">
                 Weight (kg)
               </label>
               <input
                 type="number"
                 value={formData.weight}
                 onChange={(e) => updateFormData('weight', e.target.value)}
-                  className="w-full px-4 py-4 rounded-2xl border-2 border-secondary-200 bg-white text-secondary-900 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-lg"
+                  className="w-full px-4 py-4 rounded-2xl border-2 border-secondary-200 bg-white text-black focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-lg"
                 placeholder="Enter your weight"
                 min="20"
                 max="500"
@@ -260,14 +260,14 @@ export const OnboardingFlow = ({ onComplete, onSkip }: OnboardingFlowProps) => {
             </div>
             
             <div>
-                <label className="block text-sm font-medium text-secondary-700 mb-2">
+                <label className="block text-sm font-medium text-black mb-2">
                 Height (cm)
               </label>
               <input
                 type="number"
                 value={formData.height}
                 onChange={(e) => updateFormData('height', e.target.value)}
-                  className="w-full px-4 py-4 rounded-2xl border-2 border-secondary-200 bg-white text-secondary-900 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-lg"
+                  className="w-full px-4 py-4 rounded-2xl border-2 border-secondary-200 bg-white text-black focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-lg"
                 placeholder="Enter your height"
                 min="100"
                 max="250"
@@ -289,8 +289,8 @@ export const OnboardingFlow = ({ onComplete, onSkip }: OnboardingFlowProps) => {
         return (
           <div className="space-y-6">
             <div className="text-center space-y-2">
-              <h2 className="text-2xl font-bold text-secondary-900">Activity Level</h2>
-              <p className="text-secondary-600">How active are you in your daily life?</p>
+              <h2 className="text-2xl font-bold text-black">Activity Level</h2>
+              <p className="text-gray-800">How active are you in your daily life?</p>
             </div>
             <div className="space-y-3">
                 {activityLevels.map((level) => (
@@ -303,10 +303,10 @@ export const OnboardingFlow = ({ onComplete, onSkip }: OnboardingFlowProps) => {
                       : 'border-secondary-200 hover:border-secondary-300'
                     }`}
                   >
-                  <div className="font-semibold text-secondary-900 text-lg">
+                  <div className="font-semibold text-black text-lg">
                       {level.label}
                     </div>
-                  <div className="text-sm text-secondary-600 mt-1">
+                  <div className="text-sm text-gray-800 mt-1">
                       {level.description}
                     </div>
                   </button>
@@ -328,12 +328,12 @@ export const OnboardingFlow = ({ onComplete, onSkip }: OnboardingFlowProps) => {
         return (
           <div className="space-y-6">
             <div className="text-center space-y-2">
-              <h2 className="text-2xl font-bold text-secondary-900">Dietary Preferences</h2>
-              <p className="text-secondary-600">Any restrictions or special needs?</p>
+              <h2 className="text-2xl font-bold text-black">Dietary Preferences</h2>
+              <p className="text-gray-800">Any restrictions or special needs?</p>
             </div>
             
             <div>
-              <label className="block text-sm font-medium text-secondary-700 mb-3">
+              <label className="block text-sm font-medium text-black mb-3">
                 Dietary Restrictions
               </label>
               <div className="grid grid-cols-2 gap-3">
@@ -354,7 +354,7 @@ export const OnboardingFlow = ({ onComplete, onSkip }: OnboardingFlowProps) => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-secondary-700 mb-3">
+              <label className="block text-sm font-medium text-black mb-3">
                 Medical Conditions
               </label>
               <div className="space-y-2">
@@ -394,8 +394,8 @@ export const OnboardingFlow = ({ onComplete, onSkip }: OnboardingFlowProps) => {
         return (
           <div className="space-y-6">
             <div className="text-center space-y-2">
-              <h2 className="text-2xl font-bold text-secondary-900">Health Goals</h2>
-              <p className="text-secondary-600">What are you working towards?</p>
+              <h2 className="text-2xl font-bold text-black">Health Goals</h2>
+              <p className="text-gray-800">What are you working towards?</p>
             </div>
             <div className="space-y-3">
                 {goals.map((goal) => (
@@ -418,7 +418,7 @@ export const OnboardingFlow = ({ onComplete, onSkip }: OnboardingFlowProps) => {
                         <CheckIcon className="w-4 h-4 text-white" />
                         )}
                       </div>
-                    <span className="font-semibold text-secondary-900 text-lg">
+                    <span className="font-semibold text-black text-lg">
                         {goal.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
                       </span>
                     </div>
@@ -435,29 +435,29 @@ export const OnboardingFlow = ({ onComplete, onSkip }: OnboardingFlowProps) => {
               <CheckIcon className="w-12 h-12 text-white" />
             </div>
             <div className="space-y-4">
-              <h2 className="text-3xl font-bold text-secondary-900">You're All Set!</h2>
-              <p className="text-lg text-secondary-600 leading-relaxed">
+              <h2 className="text-3xl font-bold text-black">You're All Set!</h2>
+              <p className="text-lg text-gray-800 leading-relaxed">
                 Your profile is complete. Let's start scanning products and making healthier choices together!
               </p>
             </div>
             <div className="rounded-2xl p-6">
-              <h3 className="text-lg font-semibold text-secondary-900 mb-3">What's Next?</h3>
+              <h3 className="text-lg font-semibold text-black mb-3">What's Next?</h3>
               <div className="space-y-2 text-left">
                 <div className="flex items-center gap-3">
                   <div className="w-2 h-2 bg-primary-500 rounded-full"></div>
-                  <span className="text-secondary-700">Scan product barcodes to get nutrition grades</span>
+                  <span className="text-black">Scan product barcodes to get nutrition grades</span>
                 </div>
                 <div className="flex items-center gap-3">
                   <div className="w-2 h-2 bg-primary-500 rounded-full"></div>
-                  <span className="text-secondary-700">Get personalized recommendations</span>
+                  <span className="text-black">Get personalized recommendations</span>
                 </div>
                 <div className="flex items-center gap-3">
                   <div className="w-2 h-2 bg-primary-500 rounded-full"></div>
-                  <span className="text-secondary-700">Track your nutrition history</span>
+                  <span className="text-black">Track your nutrition history</span>
                 </div>
                 <div className="flex items-center gap-3">
                   <div className="w-2 h-2 bg-primary-500 rounded-full"></div>
-                  <span className="text-secondary-700">Chat with our AI nutrition assistant</span>
+                  <span className="text-black">Chat with our AI nutrition assistant</span>
                 </div>
               </div>
             </div>
@@ -481,7 +481,7 @@ export const OnboardingFlow = ({ onComplete, onSkip }: OnboardingFlowProps) => {
             onClick={handleBack}
             className={`p-2 rounded-xl transition-all ${
               currentStep > 0 
-                ? 'text-secondary-600 hover:bg-secondary-100' 
+                ? 'text-gray-800 hover:bg-secondary-100' 
                 : 'invisible'
             }`}
           >
@@ -493,8 +493,8 @@ export const OnboardingFlow = ({ onComplete, onSkip }: OnboardingFlowProps) => {
               <IconComponent className="w-5 h-5 text-white" />
             </div>
             <div>
-              <h1 className="text-lg font-bold text-secondary-900">{currentStepData.title}</h1>
-              <p className="text-sm text-secondary-600">{currentStepData.subtitle}</p>
+              <h1 className="text-lg font-bold text-black">{currentStepData.title}</h1>
+              <p className="text-sm text-gray-800">{currentStepData.subtitle}</p>
             </div>
           </div>
 
@@ -509,7 +509,7 @@ export const OnboardingFlow = ({ onComplete, onSkip }: OnboardingFlowProps) => {
           />
         </div>
         <div className="flex justify-between mt-2">
-          <span className="text-sm text-secondary-600">Step {currentStep + 1} of {steps.length}</span>
+          <span className="text-sm text-gray-800">Step {currentStep + 1} of {steps.length}</span>
           <span className="text-sm font-medium text-primary-600">{currentStepData.progress}%</span>
         </div>
       </div>
@@ -535,7 +535,7 @@ export const OnboardingFlow = ({ onComplete, onSkip }: OnboardingFlowProps) => {
               </button>
               {/* <button
                 onClick={onSkip}
-                className="w-full bg-secondary-100 hover:bg-secondary-200 text-secondary-700 font-medium py-3 rounded-2xl transition-all duration-200"
+                className="w-full bg-secondary-100 hover:bg-secondary-200 text-black font-medium py-3 rounded-2xl transition-all duration-200"
               >
                 Continue without account (Demo Mode)
               </button> */}
