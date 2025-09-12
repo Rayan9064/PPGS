@@ -43,12 +43,11 @@ const DietaryPreferencesPage = memo(function DietaryPreferencesPage() {
   const handleSave = useCallback(async () => {
     try {
       // Update using optimized storage (debounced and cached)
-      const userData = optimizedStorage.get('nutripal-user-data', {}) as any;
-      if (userData) {
-        userData.dietaryRestrictions = selectedRestrictions;
-        userData.updatedAt = new Date();
-        optimizedStorage.set('nutripal-user-data', userData);
-      }
+      const existingData = optimizedStorage.get('nutripal-user-data');
+      const userData = existingData || {};
+      userData.dietaryRestrictions = selectedRestrictions;
+      userData.updatedAt = new Date();
+      optimizedStorage.set('nutripal-user-data', userData);
       console.log('Dietary preferences updated successfully');
     } catch (error) {
       console.error('Failed to update dietary preferences:', error);

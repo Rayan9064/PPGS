@@ -50,16 +50,15 @@ const SettingsPage = memo(function SettingsPage() {
     
     try {
       // Update using optimized storage (debounced and cached)
-      const userData = optimizedStorage.get('nutripal-user-data', {}) as any;
-      if (userData) {
-        userData.firstName = formData.firstName;
-        userData.lastName = formData.lastName;
-        userData.age = parseInt(formData.age) || 0;
-        userData.weight = parseFloat(formData.weight) || 0;
-        userData.height = parseFloat(formData.height) || 0;
-        userData.updatedAt = new Date();
-        optimizedStorage.set('nutripal-user-data', userData);
-      }
+      const existingData = optimizedStorage.get('nutripal-user-data');
+      const userData = existingData || {};
+      userData.firstName = formData.firstName;
+      userData.lastName = formData.lastName;
+      userData.age = parseInt(formData.age) || 0;
+      userData.weight = parseFloat(formData.weight) || 0;
+      userData.height = parseFloat(formData.height) || 0;
+      userData.updatedAt = new Date();
+      optimizedStorage.set('nutripal-user-data', userData);
       
       setShowSuccess(true);
       setTimeout(() => setShowSuccess(false), 3000);
