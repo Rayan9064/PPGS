@@ -5,6 +5,8 @@ import { useTheme } from '@/components/providers/theme-provider';
 import { useUserData } from '@/components/providers/user-data-provider';
 import { useWallet } from '@/hooks/useWallet';
 import { ConsumptionAnalysis } from '@/components/ai/consumption-analysis';
+import { WalletSelector } from '@/components/wallet/wallet-selector';
+import { walletService } from '@/lib/wallet-service';
 import { formatAddress } from '@/lib/algorand';
 import { getNetworkDisplayName } from '@/lib/network-config';
 import {
@@ -34,6 +36,7 @@ import { useState, memo, useEffect } from 'react';
 export const ProfileTab = memo(function ProfileTab() {
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
   const [showConsumptionAnalysis, setShowConsumptionAnalysis] = useState(false);
+  const [showWalletSelector, setShowWalletSelector] = useState(false);
   const [blockchainInitializing, setBlockchainInitializing] = useState(false);
   const { hapticFeedback, isAvailable, webUser } = useWeb();
   const { accounts, isConnected, balance, connect, disconnect } = useWallet();
@@ -163,7 +166,7 @@ export const ProfileTab = memo(function ProfileTab() {
     } else if (action === 'wallet-info') {
       console.log('Show wallet info:', { accounts, balance, network: getNetworkDisplayName() });
     } else if (action === 'connect-wallet') {
-      handleConnectWallet();
+      setShowWalletSelector(true);
     } else if (action === 'blockchain-opt-in') {
       handleOptIn();
     } else if (action === 'blockchain-opt-out') {
@@ -471,6 +474,21 @@ export const ProfileTab = memo(function ProfileTab() {
             />
           </div>
         </div>
+      )}
+
+      {/* Wallet Selector Modal */}
+      {showWalletSelector && (
+        <WalletSelector
+          onWalletConnected={(walletInfo) => {
+            console.log('Wallet connected:', walletInfo);
+            setShowWalletSelector(false);
+            // Refresh blockchain stats after connection
+            setTimeout(() => {
+              refreshBlockchainStats();
+            }, 1000);
+          }}
+          onClose={() => setShowWalletSelector(false)}
+        />
       )}
     </div>
   );

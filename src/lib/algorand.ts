@@ -9,6 +9,7 @@ const networkConfig = getAlgorandNetworkConfig();
 // Initialize Pera Wallet Connect
 export const peraWallet = new PeraWalletConnect({
   shouldShowSignTxnToast: true,
+  chainId: networkConfig.network === 'mainnet' ? 416001 : 416002 // MainNet: 416001, TestNet: 416002
 });
 
 // Algorand node configuration (dynamic based on environment)
@@ -36,7 +37,16 @@ export const connectWallet = async (): Promise<string[]> => {
       }
     }
     
+    // Force disconnect any existing sessions first
+    try {
+      await peraWallet.disconnect();
+    } catch {
+      // Ignore disconnect errors
+    }
+    
+    // Connect with explicit options to prevent redirects
     const newAccounts = await peraWallet.connect();
+    
     return newAccounts;
   } catch (error) {
     console.error('Failed to connect wallet:', error);

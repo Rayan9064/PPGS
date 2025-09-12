@@ -29,8 +29,6 @@ export const OnboardingFlow = ({ onComplete }: OnboardingFlowProps) => {
   const { hapticFeedback } = useWeb();
   const [currentStep, setCurrentStep] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
-  const [walletConnecting, setWalletConnecting] = useState(false);
-  const [connectedWallet, setConnectedWallet] = useState<any>(null); // TODO: Update type for new wallet integration
   
   // Form data
   const [formData, setFormData] = useState({
@@ -58,7 +56,7 @@ export const OnboardingFlow = ({ onComplete }: OnboardingFlowProps) => {
       subtitle: 'Help us understand your profile',
       description: 'We need some basic details to personalize your experience',
       icon: UserIcon,
-      progress: 20,
+      progress: 25,
     },
     {
       key: 'health_info',
@@ -66,7 +64,7 @@ export const OnboardingFlow = ({ onComplete }: OnboardingFlowProps) => {
       subtitle: 'For personalized recommendations',
       description: 'Tell us about your activity level and health goals',
       icon: ScaleIcon,
-      progress: 40,
+      progress: 50,
     },
     {
       key: 'dietary_preferences',
@@ -74,48 +72,17 @@ export const OnboardingFlow = ({ onComplete }: OnboardingFlowProps) => {
       subtitle: 'Any restrictions or special needs?',
       description: 'Help us understand your dietary requirements',
       icon: HeartIcon,
-      progress: 60,
-    },
-    {
-      key: 'goals',
-      title: 'Health Goals',
-      subtitle: 'What are you working towards?',
-      description: 'Select your primary health and wellness goals',
-      icon: CheckIcon,
-      progress: 80,
+      progress: 75,
     },
     {
       key: 'complete',
       title: 'You\'re All Set!',
       subtitle: 'Ready to start your nutrition journey',
-      description: 'Your profile is complete. Let\'s start scanning products!',
+      description: 'Your profile is complete. Let\'s start scanning products! You can connect a wallet later for blockchain features.',
       icon: ShieldCheckIcon,
       progress: 100,
     },
   ];
-
-  const handleConnectWallet = async (walletType: 'pera' | 'walletconnect') => {
-    hapticFeedback.impact('medium');
-    setWalletConnecting(true);
-    
-    try {
-      // TODO: Implement new wallet connection
-      console.log('Wallet connection temporarily disabled - updating to new Pera integration');
-      // Simulate connection for now
-      setConnectedWallet({ name: 'Pera Wallet', address: 'TEMP_ADDRESS' });
-      hapticFeedback.impact('heavy');
-      // Proceed to next step after successful connection
-      setTimeout(() => {
-        handleNext();
-      }, 1000);
-    } catch (error) {
-      console.error('Wallet connection failed:', error);
-      hapticFeedback.impact('heavy');
-      // You could show an error message here
-    } finally {
-      setWalletConnecting(false);
-    }
-  };
 
   const handleNext = async () => {
     hapticFeedback.impact('light');
@@ -179,17 +146,15 @@ export const OnboardingFlow = ({ onComplete }: OnboardingFlowProps) => {
 
   const canProceed = () => {
     switch (currentStep) {
-      case 0: // Welcome - wallet connection required
-        return connectedWallet !== null;
+      case 0: // Welcome
+        return true;
       case 1: // Basic info - at least age required
         return formData.age !== '';
       case 2: // Health info - activity level required
         return formData.activityLevel !== '';
       case 3: // Dietary preferences - optional
         return true;
-      case 4: // Goals - at least one goal required
-        return formData.healthGoals.length > 0;
-      case 5: // Complete - always can proceed
+      case 4: // Complete - always can proceed
         return true;
       default:
         return true;
@@ -406,49 +371,7 @@ export const OnboardingFlow = ({ onComplete }: OnboardingFlowProps) => {
           </div>
         );
 
-      case 4: // Goals
-        const goals = [
-          'weight_loss', 'weight_gain', 'muscle_gain', 'maintain_weight', 'improve_health'
-        ] as const;
-
-        return (
-          <div className="space-y-6">
-            <div className="text-center space-y-2">
-              <h2 className="text-2xl font-bold text-black">Health Goals</h2>
-              <p className="text-gray-800">What are you working towards?</p>
-            </div>
-            <div className="space-y-3">
-                {goals.map((goal) => (
-                  <button
-                    key={goal}
-                    onClick={() => toggleArrayItem('healthGoals', goal)}
-                  className={`w-full p-4 rounded-2xl border-2 text-left transition-all ${
-                      formData.healthGoals.includes(goal)
-                      ? 'border-primary-500 bg-primary-100'
-                      : 'border-secondary-200 hover:border-secondary-300'
-                    }`}
-                  >
-                    <div className="flex items-center gap-3">
-                    <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${
-                        formData.healthGoals.includes(goal)
-                        ? 'border-primary-500 bg-primary-500'
-                        : 'border-secondary-300'
-                      }`}>
-                        {formData.healthGoals.includes(goal) && (
-                        <CheckIcon className="w-4 h-4 text-white" />
-                        )}
-                      </div>
-                    <span className="font-semibold text-black text-lg">
-                        {goal.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
-                      </span>
-                    </div>
-                  </button>
-                ))}
-            </div>
-          </div>
-        );
-
-      case 5: // Complete
+      case 4: // Complete
         return (
           <div className="text-center space-y-8">
             <div className="w-24 h-24 bg-gradient-to-br from-orange-500 to-orange-600 rounded-3xl mx-auto flex items-center justify-center shadow-lg">
@@ -545,46 +468,15 @@ export const OnboardingFlow = ({ onComplete }: OnboardingFlowProps) => {
       <div className="px-6 pb-8">
         <div className="max-w-md mx-auto">
           {currentStep === 0 ? (
-            <div className="space-y-3">
-              {connectedWallet ? (
-                <div className="bg-green-100 border border-green-200 rounded-2xl p-4 text-center">
-                  <div className="flex items-center justify-center gap-2 mb-2">
-                    <CheckIcon className="w-5 h-5 text-green-600" />
-                    <span className="text-green-800 font-semibold">Wallet Connected!</span>
-                  </div>
-                  <p className="text-green-700 text-sm">
-                    {connectedWallet.name}: {connectedWallet.address.slice(0, 6)}...{connectedWallet.address.slice(-4)}
-                  </p>
-                </div>
-              ) : (
-                <>
-                  <button
-                    onClick={() => handleConnectWallet('pera')}
-                    disabled={walletConnecting}
-                    className="w-full bg-gradient-to-r from-blue-500 to-blue-600 text-white font-semibold py-4 text-lg rounded-2xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 disabled:opacity-50 disabled:transform-none flex items-center justify-center gap-2"
-                  >
-                    {walletConnecting ? (
-                      <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                    ) : (
-                      <DevicePhoneMobileIcon className="w-5 h-5" />
-                    )}
-                    Connect Pera Wallet
-                  </button>
-                  
-                  <button
-                    onClick={() => handleConnectWallet('walletconnect')}
-                    disabled={walletConnecting}
-                    className="w-full bg-gradient-to-r from-purple-500 to-purple-600 text-white font-semibold py-4 text-lg rounded-2xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 disabled:opacity-50 disabled:transform-none flex items-center justify-center gap-2"
-                  >
-                    {walletConnecting ? (
-                      <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                    ) : (
-                      <ComputerDesktopIcon className="w-5 h-5" />
-                    )}
-                    Connect via WalletConnect
-                  </button>
-                </>
-              )}
+            <div className="text-center space-y-4">
+              <p className="text-lg text-gray-700">
+                Let's set up your profile to get personalized nutrition recommendations!
+              </p>
+              <div className="bg-orange-50 border border-orange-200 rounded-2xl p-4">
+                <p className="text-orange-800 text-sm">
+                  💡 You can connect a wallet later for blockchain features
+                </p>
+              </div>
             </div>
           ) : currentStep === steps.length - 1 ? (
             <button
