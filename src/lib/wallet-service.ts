@@ -128,8 +128,12 @@ export class WalletService {
 
   loadSavedWallet(): WalletInfo | null {
     try {
+      if (typeof window === 'undefined') return null;
+      
       const savedWallet = localStorage.getItem('nutripal-wallet-info');
-      if (savedWallet) {
+      const isConnected = localStorage.getItem('nutripal-wallet-connected') === 'true';
+      
+      if (savedWallet && isConnected) {
         const walletInfo = JSON.parse(savedWallet);
         this.currentWallet = walletInfo;
         return walletInfo;

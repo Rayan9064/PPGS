@@ -20,11 +20,6 @@ export default function WelcomePage() {
     window.location.href = '/home';
   };
 
-  const handleOnboardingSkip = () => {
-    setShowOnboarding(false);
-    // Redirect to home after skipping
-    window.location.href = '/home';
-  };
 
   return (
     <>
@@ -32,7 +27,6 @@ export default function WelcomePage() {
       {(shouldShowOnboarding || showOnboarding) && (
         <OnboardingFlow 
           onComplete={handleOnboardingComplete}
-          onSkip={handleOnboardingSkip}
         />
       )}
     </>
