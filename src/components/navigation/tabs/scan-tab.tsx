@@ -27,24 +27,19 @@ export const ScanTab = memo(function ScanTab({ onScanSuccess, onBack }: ScanTabP
     if (manualBarcode.trim()) {
       // Simulate scanning with manual barcode
       onScanSuccess({
-        id: manualBarcode,
-        name: 'Manual Product',
-        brand: 'Unknown',
-        barcode: manualBarcode,
-        nutritionGrade: 'C',
-        nutritionScore: 50,
-        calories: 0,
-        sugar: 0,
-        fat: 0,
-        salt: 0,
-        fiber: 0,
-        protein: 0,
-        imageUrl: '',
-        ingredients: [],
-        allergens: [],
-        additives: [],
-        createdAt: new Date(),
-        updatedAt: new Date(),
+        code: manualBarcode,
+        product_name: 'Manual Product',
+        brands: 'Unknown',
+        ingredients_text: 'Manual entry - no ingredient data available',
+        nutrition_grades: 'C',
+        nutriments: {
+          sugars_100g: 0,
+          fat_100g: 0,
+          salt_100g: 0,
+          energy_100g: 0
+        },
+        image_url: undefined,
+        categories: 'Manual entry'
       });
     }
   };
