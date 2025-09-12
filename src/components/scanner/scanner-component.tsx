@@ -400,7 +400,7 @@ export const ScannerComponent = ({ onScanSuccess, onBack }: ScannerComponentProp
               </button>
             </div>
           ) : (
-            <div className="w-full h-full flex items-center justify-center">
+            <div className="w-full h-full flex items-center justify-center bg-white">
               {/* QR Scanner */}
               <div id="qr-reader" className="w-full h-full flex items-center justify-center">
                 <style dangerouslySetInnerHTML={{
@@ -412,6 +412,8 @@ export const ScannerComponent = ({ onScanSuccess, onBack }: ScannerComponentProp
                       flex-direction: column !important;
                       width: 100% !important;
                       height: 100% !important;
+                      background: transparent !important;
+                      background-color: transparent !important;
                     }
                     #qr-reader video {
                       margin: 0 auto !important;
@@ -431,6 +433,20 @@ export const ScannerComponent = ({ onScanSuccess, onBack }: ScannerComponentProp
                       justify-content: center !important;
                       width: 100% !important;
                       height: 100% !important;
+                      background: transparent !important;
+                      background-color: transparent !important;
+                    }
+                    #qr-reader__dashboard {
+                      background: transparent !important;
+                      background-color: transparent !important;
+                    }
+                    #qr-reader__dashboard_section {
+                      background: transparent !important;
+                      background-color: transparent !important;
+                    }
+                    #qr-reader__scan_region {
+                      background: transparent !important;
+                      background-color: transparent !important;
                     }
                     #qr-reader div video:not(:first-child) {
                       display: none !important;
