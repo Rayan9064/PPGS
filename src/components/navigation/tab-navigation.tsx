@@ -173,14 +173,14 @@ export const TabNavigation = () => {
   ];
 
   return (
-    <div className="min-h-screen w-full flex flex-col bg-primary-50 dark:bg-gray-900 no-horizontal-scroll">
+    <div className="min-h-screen w-full flex flex-col bg-gray-50 dark:bg-gray-900 no-horizontal-scroll">
       {/* Main Content */}
       <div className="flex-1 w-full overflow-y-auto mobile-scroll pb-16 sm:pb-20">
         {renderActiveTab()}
       </div>
 
       {/* Bottom Tab Navigation - Fixed at bottom */}
-      <div className="fixed bottom-0 left-0 right-0 z-50 bg-primary-100 dark:bg-gray-800 border-t border-primary-200 dark:border-gray-700 bottom-nav-safe-area shadow-lg">
+      <div className="fixed bottom-0 left-0 right-0 z-50 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 bottom-nav-safe-area shadow-lg">
         <div className="flex justify-around items-center w-full px-2 sm:px-4 py-2">
           {tabs.map((tab) => {
             const isActive = activeTab === tab.id;
@@ -194,11 +194,11 @@ export const TabNavigation = () => {
                 className={`flex flex-col items-center justify-center p-2 rounded-lg transition-all duration-200 min-w-0 flex-1 relative ${
                   isScanButton
                     ? isActive
-                      ? 'text-white bg-primary-500 shadow-lg transform scale-105'
-                      : 'text-white bg-primary-500 shadow-md hover:shadow-lg hover:scale-105'
+                      ? 'text-white bg-red-500 shadow-lg transform scale-105'
+                      : 'text-white bg-red-500 shadow-md hover:shadow-lg hover:scale-105'
                     : isActive 
-                      ? 'text-primary-500 bg-primary-200/50' 
-                      : 'text-secondary-500 hover:text-primary-500 hover:bg-primary-200/30'
+                      ? 'text-red-500 bg-red-100' 
+                      : 'text-gray-600 hover:text-red-500 hover:bg-red-50'
                 }`}
               >
                 <IconComponent className={`${isScanButton ? 'w-7 h-7' : 'w-6 h-6'} mb-1`} />
@@ -206,7 +206,7 @@ export const TabNavigation = () => {
                   {tab.label}
                 </span>
                 {isScanButton && (
-                  <div className="absolute -top-1 -right-1 w-3 h-3 bg-accent-500 rounded-full animate-pulse"></div>
+                  <div className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
                 )}
               </button>
             );
