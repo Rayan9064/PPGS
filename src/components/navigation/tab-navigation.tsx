@@ -180,7 +180,7 @@ export const TabNavigation = () => {
       </div>
 
       {/* Bottom Tab Navigation - Fixed at bottom */}
-      <div className="fixed bottom-0 left-0 right-0 z-50 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 bottom-nav-safe-area shadow-lg">
+      <div className="fixed bottom-0 left-0 right-0 z-50 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 bottom-nav-safe-area shadow-lg" style={{backgroundColor: 'white'}}>
         <div className="flex justify-around items-center w-full px-2 sm:px-4 py-2">
           {tabs.map((tab) => {
             const isActive = activeTab === tab.id;
