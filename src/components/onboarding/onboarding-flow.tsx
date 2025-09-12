@@ -3,6 +3,7 @@
 import { useWeb } from '@/components/providers/web-provider';
 import { useUserData } from '@/components/providers/user-data-provider';
 import { UserData } from '@/types';
+import { walletService, WalletInfo } from '@/lib/wallet-service';
 import {
     CheckIcon,
     ChevronLeftIcon,
@@ -13,20 +14,23 @@ import {
     SparklesIcon,
     ShieldCheckIcon,
     ArrowRightIcon,
-    WalletIcon
+    WalletIcon,
+    DevicePhoneMobileIcon,
+    ComputerDesktopIcon
 } from '@heroicons/react/24/outline';
 import { useState } from 'react';
 
 interface OnboardingFlowProps {
   onComplete: () => void;
-  onSkip?: () => void;
 }
 
-export const OnboardingFlow = ({ onComplete, onSkip }: OnboardingFlowProps) => {
+export const OnboardingFlow = ({ onComplete }: OnboardingFlowProps) => {
   const { userData, updateUserData, updateOnboardingStep, completeOnboarding } = useUserData();
   const { hapticFeedback } = useWeb();
   const [currentStep, setCurrentStep] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
+  const [walletConnecting, setWalletConnecting] = useState(false);
+  const [connectedWallet, setConnectedWallet] = useState<WalletInfo | null>(null);
   
   // Form data
   const [formData, setFormData] = useState({
@@ -90,11 +94,34 @@ export const OnboardingFlow = ({ onComplete, onSkip }: OnboardingFlowProps) => {
     },
   ];
 
-  const handleConnectWallet = () => {
+  const handleConnectWallet = async (walletType: 'pera' | 'walletconnect') => {
     hapticFeedback.impact('medium');
-    // For now, just proceed to the next step
-    // Later we'll add actual wallet connection logic here
-    handleNext();
+    setWalletConnecting(true);
+    
+    try {
+      let walletInfo: WalletInfo | null = null;
+      
+      if (walletType === 'pera') {
+        walletInfo = await walletService.connectPeraWallet();
+      } else if (walletType === 'walletconnect') {
+        walletInfo = await walletService.connectWalletConnect();
+      }
+      
+      if (walletInfo) {
+        setConnectedWallet(walletInfo);
+        hapticFeedback.impact('heavy');
+        // Proceed to next step after successful connection
+        setTimeout(() => {
+          handleNext();
+        }, 1000);
+      }
+    } catch (error) {
+      console.error('Wallet connection failed:', error);
+      hapticFeedback.impact('heavy');
+      // You could show an error message here
+    } finally {
+      setWalletConnecting(false);
+    }
   };
 
   const handleNext = async () => {
@@ -159,8 +186,8 @@ export const OnboardingFlow = ({ onComplete, onSkip }: OnboardingFlowProps) => {
 
   const canProceed = () => {
     switch (currentStep) {
-      case 0: // Welcome - always can proceed
-        return true;
+      case 0: // Welcome - wallet connection required
+        return connectedWallet !== null;
       case 1: // Basic info - at least age required
         return formData.age !== '';
       case 2: // Health info - activity level required
@@ -526,19 +553,45 @@ export const OnboardingFlow = ({ onComplete, onSkip }: OnboardingFlowProps) => {
         <div className="max-w-md mx-auto">
           {currentStep === 0 ? (
             <div className="space-y-3">
-              <button
-                onClick={handleConnectWallet}
-                className="w-full bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold py-4 text-lg rounded-2xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 flex items-center justify-center gap-2"
-              >
-                <WalletIcon className="w-5 h-5" />
-                Connect Wallet
-              </button>
-              {/* <button
-                onClick={onSkip}
-                className="w-full bg-secondary-100 hover:bg-secondary-200 text-black font-medium py-3 rounded-2xl transition-all duration-200"
-              >
-                Continue without account (Demo Mode)
-              </button> */}
+              {connectedWallet ? (
+                <div className="bg-green-100 border border-green-200 rounded-2xl p-4 text-center">
+                  <div className="flex items-center justify-center gap-2 mb-2">
+                    <CheckIcon className="w-5 h-5 text-green-600" />
+                    <span className="text-green-800 font-semibold">Wallet Connected!</span>
+                  </div>
+                  <p className="text-green-700 text-sm">
+                    {connectedWallet.name}: {connectedWallet.address.slice(0, 6)}...{connectedWallet.address.slice(-4)}
+                  </p>
+                </div>
+              ) : (
+                <>
+                  <button
+                    onClick={() => handleConnectWallet('pera')}
+                    disabled={walletConnecting}
+                    className="w-full bg-gradient-to-r from-blue-500 to-blue-600 text-white font-semibold py-4 text-lg rounded-2xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 disabled:opacity-50 disabled:transform-none flex items-center justify-center gap-2"
+                  >
+                    {walletConnecting ? (
+                      <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    ) : (
+                      <DevicePhoneMobileIcon className="w-5 h-5" />
+                    )}
+                    Connect Pera Wallet
+                  </button>
+                  
+                  <button
+                    onClick={() => handleConnectWallet('walletconnect')}
+                    disabled={walletConnecting}
+                    className="w-full bg-gradient-to-r from-purple-500 to-purple-600 text-white font-semibold py-4 text-lg rounded-2xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 disabled:opacity-50 disabled:transform-none flex items-center justify-center gap-2"
+                  >
+                    {walletConnecting ? (
+                      <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    ) : (
+                      <ComputerDesktopIcon className="w-5 h-5" />
+                    )}
+                    Connect via WalletConnect
+                  </button>
+                </>
+              )}
             </div>
           ) : currentStep === steps.length - 1 ? (
             <button

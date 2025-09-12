@@ -4,6 +4,7 @@ import { useWeb } from '@/components/providers/web-provider';
 import { useTheme } from '@/components/providers/theme-provider';
 import { useUserData } from '@/components/providers/user-data-provider';
 import { ConsumptionAnalysis } from '@/components/ai/consumption-analysis';
+import { walletService, WalletInfo } from '@/lib/wallet-service';
 import {
     BellIcon,
     ChevronRightIcon,
@@ -18,13 +19,16 @@ import {
     StarIcon,
     SunIcon,
     UserIcon,
-    ChartBarIcon
+    ChartBarIcon,
+    WalletIcon,
+    XMarkIcon
 } from '@heroicons/react/24/outline';
-import { useState, memo } from 'react';
+import { useState, memo, useEffect } from 'react';
 
 export const ProfileTab = memo(function ProfileTab() {
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
   const [showConsumptionAnalysis, setShowConsumptionAnalysis] = useState(false);
+  const [connectedWallet, setConnectedWallet] = useState<WalletInfo | null>(null);
   const { hapticFeedback, isAvailable, webUser } = useWeb();
   const { 
     userData, 
@@ -36,9 +40,27 @@ export const ProfileTab = memo(function ProfileTab() {
   } = useUserData();
   const { theme, toggleTheme, isDark } = useTheme();
 
+  // Load connected wallet on component mount
+  useEffect(() => {
+    const savedWallet = walletService.loadSavedWallet();
+    setConnectedWallet(savedWallet);
+  }, []);
+
   const handleToggle = (setter: (value: boolean) => void, currentValue: boolean) => {
     hapticFeedback.impact('light');
     setter(!currentValue);
+  };
+
+  const handleDisconnectWallet = async () => {
+    hapticFeedback.impact('medium');
+    try {
+      await walletService.disconnectWallet();
+      setConnectedWallet(null);
+      // Reload the page to go back to onboarding
+      window.location.reload();
+    } catch (error) {
+      console.error('Failed to disconnect wallet:', error);
+    }
   };
 
   const handleMenuPress = (action: string, route?: string) => {
@@ -63,6 +85,12 @@ export const ProfileTab = memo(function ProfileTab() {
       window.location.href = '/profile/help-center';
     } else if (action === 'contact-us') {
       window.location.href = '/profile/contact-us';
+    } else if (action === 'disconnect-wallet') {
+      handleDisconnectWallet();
+    } else if (action === 'wallet-info') {
+      console.log('Show wallet info');
+    } else if (action === 'connect-wallet') {
+      console.log('Connect wallet');
     } else if (route) {
       window.location.href = route;
     } else {
@@ -71,6 +99,24 @@ export const ProfileTab = memo(function ProfileTab() {
   };
 
   const menuSections = [
+    {
+      title: 'Wallet',
+      items: connectedWallet ? [
+        { 
+          icon: WalletIcon, 
+          label: `${connectedWallet.name}: ${connectedWallet.address.slice(0, 6)}...${connectedWallet.address.slice(-4)}`, 
+          action: 'wallet-info' 
+        },
+        { 
+          icon: XMarkIcon, 
+          label: 'Disconnect Wallet', 
+          action: 'disconnect-wallet',
+          isDestructive: true
+        },
+      ] : [
+        { icon: WalletIcon, label: 'No Wallet Connected', action: 'connect-wallet' },
+      ]
+    },
     {
       title: 'Account & Profile',
       items: [
@@ -171,21 +217,59 @@ export const ProfileTab = memo(function ProfileTab() {
                 <button
                   key={itemIndex}
                   onClick={() => handleMenuPress(item.action)}
-                  className="w-full flex items-center justify-between p-4 bg-primary-100 hover:bg-primary-200 rounded-xl transition-colors"
+                  className={`w-full flex items-center justify-between p-4 rounded-xl transition-colors ${
+                    (item as any).isDestructive 
+                      ? 'bg-red-100 hover:bg-red-200' 
+                      : 'bg-primary-100 hover:bg-primary-200'
+                  }`}
                 >
                   <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 bg-primary-200 rounded-lg flex items-center justify-center">
-                      <item.icon className="w-4 h-4 text-primary-600" />
+                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
+                      (item as any).isDestructive 
+                        ? 'bg-red-200' 
+                        : 'bg-primary-200'
+                    }`}>
+                      <item.icon className={`w-4 h-4 ${
+                        (item as any).isDestructive 
+                          ? 'text-red-600' 
+                          : 'text-primary-600'
+                      }`} />
                     </div>
-                    <span className="text-secondary-900 font-medium">{item.label}</span>
+                    <span className={`font-medium ${
+                      (item as any).isDestructive 
+                        ? 'text-red-900' 
+                        : 'text-secondary-900'
+                    }`}>{item.label}</span>
                   </div>
-                  <ChevronRightIcon className="w-5 h-5 text-secondary-400" />
+                  <ChevronRightIcon className={`w-5 h-5 ${
+                    (item as any).isDestructive 
+                      ? 'text-red-400' 
+                      : 'text-secondary-400'
+                  }`} />
                 </button>
               ))}
             </div>
           </div>
         ))}
       </div>
+
+      {/* Disconnect Wallet Button - Bottom Section */}
+      {connectedWallet && (
+        <div className="px-6 mt-8 pb-8">
+          <div className="border-t border-gray-200 pt-6">
+            <button
+              onClick={handleDisconnectWallet}
+              className="w-full bg-gradient-to-r from-red-500 to-red-600 text-white font-semibold py-4 text-lg rounded-2xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 flex items-center justify-center gap-2"
+            >
+              <XMarkIcon className="w-5 h-5" />
+              Disconnect Wallet
+            </button>
+            <p className="text-center text-gray-500 text-sm mt-2">
+              Disconnecting will return you to the onboarding screen
+            </p>
+          </div>
+        </div>
+      )}
 
       {/* AI Consumption Analysis Modal */}
       {showConsumptionAnalysis && (
