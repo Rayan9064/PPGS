@@ -58,7 +58,7 @@ export const ResultsTab = ({ currentProduct, recentScans, onScanAnother, onProdu
           <div className="bg-gradient-to-r from-accent-50 to-accent-100 rounded-2xl p-6 relative overflow-hidden">
             <div className="absolute top-0 right-0 w-32 h-32 bg-accent-200/30 rounded-full -mr-16 -mt-16"></div>
             <div className="relative z-10">
-              <h2 className="text-2xl font-bold text-secondary-900 mb-2">Organic Almond Milk</h2>
+              <h2 className="text-2xl font-bold text-secondary-900 mb-2">{currentProduct.product_name || 'Unknown Product'}</h2>
               <p className="text-primary-500 font-medium">NutriGrade</p>
             </div>
           </div>
@@ -68,10 +68,10 @@ export const ResultsTab = ({ currentProduct, recentScans, onScanAnother, onProdu
         <div className="px-6 mb-6">
           <div className="flex items-center justify-between mb-3">
             <h3 className="text-lg font-bold text-secondary-900">NutriGrade</h3>
-            <span className="text-2xl font-bold text-secondary-900">85</span>
+            <span className="text-2xl font-bold text-secondary-900">{getNutritionGrade(currentProduct)}</span>
           </div>
           <div className="w-full bg-secondary-100 rounded-full h-3">
-            <div className="bg-primary-500 h-3 rounded-full" style={{ width: '85%' }}></div>
+            <div className="bg-primary-500 h-3 rounded-full" style={{ width: `${getNutritionGrade(currentProduct) === 'A' ? 90 : getNutritionGrade(currentProduct) === 'B' ? 75 : getNutritionGrade(currentProduct) === 'C' ? 60 : getNutritionGrade(currentProduct) === 'D' ? 40 : 20}%` }}></div>
           </div>
         </div>
 
@@ -80,14 +80,10 @@ export const ResultsTab = ({ currentProduct, recentScans, onScanAnother, onProdu
           <h3 className="text-lg font-bold text-secondary-900 mb-4">Nutrition Facts</h3>
           <div className="space-y-3">
             {[
-              { label: 'Calories', value: '150 kcal', percentage: 75 },
-              { label: 'Total Fat', value: '10g', percentage: 50 },
-              { label: 'Saturated Fat', value: '5g', percentage: 25 },
-              { label: 'Cholesterol', value: '0mg', percentage: 0 },
-              { label: 'Sodium', value: '200mg', percentage: 10 },
-              { label: 'Total Carbohydrates', value: '15g', percentage: 5 },
-              { label: 'Sugars', value: '10g', percentage: 20 },
-              { label: 'Protein', value: '5g', percentage: 10 },
+              { label: 'Energy', value: `${currentProduct.nutriments?.energy_100g || 0} kcal`, percentage: Math.min((currentProduct.nutriments?.energy_100g || 0) / 2, 100) },
+              { label: 'Total Fat', value: `${currentProduct.nutriments?.fat_100g || 0}g`, percentage: Math.min((currentProduct.nutriments?.fat_100g || 0) * 10, 100) },
+              { label: 'Sugars', value: `${currentProduct.nutriments?.sugars_100g || 0}g`, percentage: Math.min((currentProduct.nutriments?.sugars_100g || 0) * 5, 100) },
+              { label: 'Salt', value: `${currentProduct.nutriments?.salt_100g || 0}g`, percentage: Math.min((currentProduct.nutriments?.salt_100g || 0) * 20, 100) },
             ].map((item, index) => (
               <div key={index} className="flex items-center justify-between">
                 <span className="text-secondary-600">{item.label}</span>
@@ -116,7 +112,7 @@ export const ResultsTab = ({ currentProduct, recentScans, onScanAnother, onProdu
             </div>
           </div>
           <p className="text-secondary-600 leading-relaxed">
-            This almond milk is a good source of vitamin E and calcium. However, it contains added sugars. Consider unsweetened options for a healthier choice.
+            {currentProduct.ingredients_text || 'No detailed analysis available for this product.'}
           </p>
         </div>
 
