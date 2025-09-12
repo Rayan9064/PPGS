@@ -163,7 +163,7 @@ export const ProductResult = memo(function ProductResult({ product, onScanAnothe
             <ArrowLeftIcon className="w-6 h-6 text-gray-600 dark:text-gray-400" />
           </button>
         )}
-        <h1 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white truncate flex-1 mx-2">Product Details</h1>
+        <h1 className="text-lg sm:text-xl font-semibold text-gray-900  truncate flex-1 mx-2">Product Details</h1>
         
         <div className="flex items-center gap-1 sm:gap-2">
           <button
@@ -205,7 +205,7 @@ export const ProductResult = memo(function ProductResult({ product, onScanAnothe
 
       {/* Product Header */}
       <div className="card mb-4 sm:mb-6 text-center">
-        <h2 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white mb-3 sm:mb-4 break-words">
+        <h2 className="text-lg sm:text-xl font-bold text-gray-900  mb-3 sm:mb-4 break-words">
           {product.product_name}
         </h2>
         
@@ -235,7 +235,7 @@ export const ProductResult = memo(function ProductResult({ product, onScanAnothe
       {/* Nutrition Facts */}
       <div className="card mb-6">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+          <h3 className="text-lg font-semibold text-gray-900 ">
             Nutrition Facts (per 100g)
           </h3>
           {isPersonalized && userData && (
@@ -250,7 +250,7 @@ export const ProductResult = memo(function ProductResult({ product, onScanAnothe
           <div className="flex justify-between items-center py-2 border-b border-gray-100 dark:border-gray-700">
             <span className="text-gray-700 dark:text-gray-300">Sugar</span>
             <div className="flex items-center gap-2">
-              <span className="font-medium dark:text-white">{product.nutriments.sugars_100g}g</span>
+              <span className="font-medium ">{product.nutriments.sugars_100g}g</span>
               {userData?.preferences?.maxSugar && (
                 <span className="text-xs text-gray-500 dark:text-gray-400">
                   / {userData.preferences.maxSugar}g max
@@ -262,7 +262,7 @@ export const ProductResult = memo(function ProductResult({ product, onScanAnothe
           <div className="flex justify-between items-center py-2 border-b border-gray-100 dark:border-gray-700">
             <span className="text-gray-700 dark:text-gray-300">Fat</span>
             <div className="flex items-center gap-2">
-              <span className="font-medium dark:text-white">{product.nutriments.fat_100g}g</span>
+              <span className="font-medium ">{product.nutriments.fat_100g}g</span>
               {userData?.preferences?.maxFat && (
                 <span className="text-xs text-gray-500 dark:text-gray-400">
                   / {userData.preferences.maxFat}g max
@@ -274,7 +274,7 @@ export const ProductResult = memo(function ProductResult({ product, onScanAnothe
           <div className="flex justify-between items-center py-2">
             <span className="text-gray-700 dark:text-gray-300">Salt</span>
             <div className="flex items-center gap-2">
-              <span className="font-medium dark:text-white">{product.nutriments.salt_100g}g</span>
+              <span className="font-medium ">{product.nutriments.salt_100g}g</span>
               {userData?.preferences?.maxSalt && (
                 <span className="text-xs text-gray-500 dark:text-gray-400">
                   / {userData.preferences.maxSalt}g max
@@ -377,7 +377,7 @@ export const ProductResult = memo(function ProductResult({ product, onScanAnothe
 
       {/* Ingredients */}
       <div className="card mb-6">
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">Ingredients</h3>
+        <h3 className="text-lg font-semibold text-gray-900  mb-3">Ingredients</h3>
         <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
           {product.ingredients_text}
         </p>

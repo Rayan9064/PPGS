@@ -348,7 +348,7 @@ export const AIChatAssistant = ({ currentProduct, onProductSelect }: AIChatAssis
             onChange={(e) => setInput(e.target.value)}
             onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
             placeholder="Ask me about nutrition, products, or health..."
-            className="flex-1 px-4 py-3 border border-light-green rounded-xl focus:outline-none focus:ring-2 focus:ring-sage-green focus:border-transparent bg-warm-white"
+            className="flex-1 px-4 py-3 border border-light-green rounded-xl focus:outline-none focus:ring-2 focus:ring-sage-green focus:border-transparent bg-warm-white text-gray-900 placeholder-gray-500"
             disabled={isLoading}
           />
           <button
