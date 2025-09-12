@@ -11,90 +11,62 @@ export const calculateGrade = (product: ProductData, userData?: UserData | null)
     return 'U';
   }
 
-  // Use personalized limits if available
-  let thresholds = GRADE_THRESHOLDS;
+  // Calculate a comprehensive nutrition score (0-100)
+  let score = 100;
   
-  if (userData?.preferences?.maxSugar || userData?.preferences?.maxFat || userData?.preferences?.maxSalt) {
-    // Create personalized thresholds based on user preferences
-    const personalLimits = {
-      sugar: userData.preferences.maxSugar || GRADE_THRESHOLDS.D.sugar,
-      fat: userData.preferences.maxFat || GRADE_THRESHOLDS.D.fat,
-      salt: userData.preferences.maxSalt || GRADE_THRESHOLDS.D.salt,
-    };
-
-    thresholds = {
-      A: {
-        sugar: personalLimits.sugar * 0.3,
-        fat: personalLimits.fat * 0.3,
-        salt: personalLimits.salt * 0.3,
-      },
-      B: {
-        sugar: personalLimits.sugar * 0.5,
-        fat: personalLimits.fat * 0.5,
-        salt: personalLimits.salt * 0.5,
-      },
-      C: {
-        sugar: personalLimits.sugar * 0.7,
-        fat: personalLimits.fat * 0.7,
-        salt: personalLimits.salt * 0.7,
-      },
-      D: {
-        sugar: personalLimits.sugar,
-        fat: personalLimits.fat,
-        salt: personalLimits.salt,
-      },
-    };
+  // Sugar penalty (0-30 points)
+  const sugarScore = Math.max(0, 30 - (nutriments.sugars_100g * 1.5));
+  score -= (30 - sugarScore);
+  
+  // Fat penalty (0-25 points)
+  const fatScore = Math.max(0, 25 - (nutriments.fat_100g * 1.2));
+  score -= (25 - fatScore);
+  
+  // Salt penalty (0-20 points)
+  const saltScore = Math.max(0, 20 - (nutriments.salt_100g * 10));
+  score -= (20 - saltScore);
+  
+  // Energy penalty (0-15 points) - penalize very high calorie foods
+  const energyPer100g = nutriments.energy_100g || 0;
+  const energyScore = Math.max(0, 15 - (energyPer100g / 20));
+  score -= (15 - energyScore);
+  
+  // Bonus for positive nutrients (if available)
+  if (nutriments.fiber_100g && nutriments.fiber_100g > 3) {
+    score += 5; // Bonus for high fiber
   }
-
-  // Adjust thresholds based on user's dietary restrictions and medical conditions
+  if (nutriments.proteins_100g && nutriments.proteins_100g > 10) {
+    score += 3; // Bonus for high protein
+  }
+  
+  // Apply user-specific adjustments
   if (userData?.dietaryRestrictions?.includes('diabetic') || userData?.medicalConditions?.includes('diabetes')) {
-    // Stricter sugar limits for diabetic users
-    thresholds = {
-      ...thresholds,
-      A: { ...thresholds.A, sugar: thresholds.A.sugar * 0.5 },
-      B: { ...thresholds.B, sugar: thresholds.B.sugar * 0.7 },
-      C: { ...thresholds.C, sugar: thresholds.C.sugar * 0.8 },
-      D: { ...thresholds.D, sugar: thresholds.D.sugar * 0.9 },
-    };
+    // Stricter penalty for sugar
+    const sugarPenalty = Math.max(0, nutriments.sugars_100g * 2);
+    score -= sugarPenalty;
   }
-
-  if (userData?.dietaryRestrictions?.includes('low_sodium') || userData?.medicalConditions?.includes('hypertension')) {
-    // Stricter salt limits for users with hypertension or low sodium preference
-    thresholds = {
-      ...thresholds,
-      A: { ...thresholds.A, salt: thresholds.A.salt * 0.5 },
-      B: { ...thresholds.B, salt: thresholds.B.salt * 0.7 },
-      C: { ...thresholds.C, salt: thresholds.C.salt * 0.8 },
-      D: { ...thresholds.D, salt: thresholds.D.salt * 0.9 },
-    };
-  }
-
-  if (userData?.medicalConditions?.includes('heart_disease')) {
-    // Stricter fat and salt limits for heart disease
-    thresholds = {
-      ...thresholds,
-      A: { ...thresholds.A, fat: thresholds.A.fat * 0.6, salt: thresholds.A.salt * 0.5 },
-      B: { ...thresholds.B, fat: thresholds.B.fat * 0.7, salt: thresholds.B.salt * 0.7 },
-      C: { ...thresholds.C, fat: thresholds.C.fat * 0.8, salt: thresholds.C.salt * 0.8 },
-      D: { ...thresholds.D, fat: thresholds.D.fat * 0.9, salt: thresholds.D.salt * 0.9 },
-    };
-  }
-
-  // Check against thresholds from best (A) to worst (E)
-  const grades = ['A', 'B', 'C', 'D'] as const;
   
-  for (const grade of grades) {
-    const threshold = thresholds[grade as keyof typeof thresholds];
-    if (
-      nutriments.sugars_100g <= threshold.sugar &&
-      nutriments.fat_100g <= threshold.fat &&
-      nutriments.salt_100g <= threshold.salt
-    ) {
-      return grade;
-    }
+  if (userData?.dietaryRestrictions?.includes('low_sodium') || userData?.medicalConditions?.includes('hypertension')) {
+    // Stricter penalty for salt
+    const saltPenalty = Math.max(0, nutriments.salt_100g * 15);
+    score -= saltPenalty;
   }
-
-  // If no other grade matches, return E
+  
+  if (userData?.medicalConditions?.includes('heart_disease')) {
+    // Stricter penalty for fat and salt
+    const fatPenalty = Math.max(0, nutriments.fat_100g * 1.5);
+    const saltPenalty = Math.max(0, nutriments.salt_100g * 15);
+    score -= (fatPenalty + saltPenalty);
+  }
+  
+  // Ensure score is within bounds
+  score = Math.max(0, Math.min(100, score));
+  
+  // Convert score to grade
+  if (score >= 85) return 'A';
+  if (score >= 70) return 'B';
+  if (score >= 55) return 'C';
+  if (score >= 40) return 'D';
   return 'E';
 };
 
@@ -181,10 +153,75 @@ export const getGradeDescription = (grade: NutritionGrade): string => {
   return descriptions[grade];
 };
 
+export const getNutritionScore = (product: ProductData, userData?: UserData | null): number => {
+  const { nutriments } = product;
+  
+  // If any of the required nutriments are missing, return 5.0 for unknown
+  if (!nutriments.sugars_100g && nutriments.sugars_100g !== 0 || 
+      !nutriments.fat_100g && nutriments.fat_100g !== 0 || 
+      !nutriments.salt_100g && nutriments.salt_100g !== 0) {
+    return 5.0;
+  }
+
+  // Calculate a comprehensive nutrition score (0-100)
+  let score = 100;
+  
+  // Sugar penalty (0-30 points)
+  const sugarScore = Math.max(0, 30 - (nutriments.sugars_100g * 1.5));
+  score -= (30 - sugarScore);
+  
+  // Fat penalty (0-25 points)
+  const fatScore = Math.max(0, 25 - (nutriments.fat_100g * 1.2));
+  score -= (25 - fatScore);
+  
+  // Salt penalty (0-20 points)
+  const saltScore = Math.max(0, 20 - (nutriments.salt_100g * 10));
+  score -= (20 - saltScore);
+  
+  // Energy penalty (0-15 points) - penalize very high calorie foods
+  const energyPer100g = nutriments.energy_100g || 0;
+  const energyScore = Math.max(0, 15 - (energyPer100g / 20));
+  score -= (15 - energyScore);
+  
+  // Bonus for positive nutrients (if available)
+  if (nutriments.fiber_100g && nutriments.fiber_100g > 3) {
+    score += 5; // Bonus for high fiber
+  }
+  if (nutriments.proteins_100g && nutriments.proteins_100g > 10) {
+    score += 3; // Bonus for high protein
+  }
+  
+  // Apply user-specific adjustments
+  if (userData?.dietaryRestrictions?.includes('diabetic') || userData?.medicalConditions?.includes('diabetes')) {
+    // Stricter penalty for sugar
+    const sugarPenalty = Math.max(0, nutriments.sugars_100g * 2);
+    score -= sugarPenalty;
+  }
+  
+  if (userData?.dietaryRestrictions?.includes('low_sodium') || userData?.medicalConditions?.includes('hypertension')) {
+    // Stricter penalty for salt
+    const saltPenalty = Math.max(0, nutriments.salt_100g * 15);
+    score -= saltPenalty;
+  }
+  
+  if (userData?.medicalConditions?.includes('heart_disease')) {
+    // Stricter penalty for fat and salt
+    const fatPenalty = Math.max(0, nutriments.fat_100g * 1.5);
+    const saltPenalty = Math.max(0, nutriments.salt_100g * 15);
+    score -= (fatPenalty + saltPenalty);
+  }
+  
+  // Ensure score is within bounds and convert to 0-10 scale
+  score = Math.max(0, Math.min(100, score));
+  return Math.round((score / 10) * 10) / 10; // Round to 1 decimal place
+};
+
 export const getNutritionGrade = (product: ProductData, userData?: UserData | null) => {
   const grade = calculateGrade(product, userData);
+  const score = getNutritionScore(product, userData);
   return {
     grade,
+    score,
     color: getGradeColor(grade),
     description: getGradeDescription(grade),
     warnings: getNutrientWarnings(product, userData),

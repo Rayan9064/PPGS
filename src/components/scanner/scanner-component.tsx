@@ -355,7 +355,7 @@ export const ScannerComponent = ({ onScanSuccess, onBack }: ScannerComponentProp
             <ArrowLeftIcon className="w-6 h-6 text-gray-700 dark:text-white drop-shadow-lg" />
           </button>
           <div>
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-white drop-shadow-lg">Scan Product</h1>
+            <h1 className="text-2xl font-bold text-gray-900 drop-shadow-lg">Scan Product</h1>
           </div>
         </div>
       </div>
@@ -368,7 +368,7 @@ export const ScannerComponent = ({ onScanSuccess, onBack }: ScannerComponentProp
               <div className="w-20 h-20 bg-red-100 dark:bg-red-500/20 rounded-full flex items-center justify-center mb-6 shadow-lg">
                 <CameraIcon className="w-10 h-10 text-red-600 dark:text-red-400" />
               </div>
-              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3">
+              <h3 className="text-xl font-bold text-gray-900 mb-3">
                 {permissionChecked ? 'Initializing Camera' : 'Checking Camera Access'}
               </h3>
               <p className="text-gray-600 dark:text-white/80 mb-6 text-center max-w-sm">
@@ -384,7 +384,7 @@ export const ScannerComponent = ({ onScanSuccess, onBack }: ScannerComponentProp
               <div className="w-20 h-20 bg-red-100 dark:bg-red-500/20 rounded-full flex items-center justify-center mb-6 shadow-lg">
                 <CameraIcon className="w-10 h-10 text-red-600 dark:text-red-400" />
               </div>
-              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3">Camera Access Required</h3>
+              <h3 className="text-xl font-bold text-gray-900 mb-3">Camera Access Required</h3>
               <p className="text-gray-600 dark:text-white/80 mb-6 text-center max-w-sm">
                 To scan barcodes, please allow camera access when prompted. This permission is saved for future visits.
               </p>

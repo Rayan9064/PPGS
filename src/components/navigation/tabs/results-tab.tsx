@@ -108,7 +108,9 @@ export const ResultsTab = ({ currentProduct, recentScans, onScanAnother, onProdu
           <div className="bg-primary-100 rounded-2xl p-4 mb-4">
             <div className="flex items-center justify-between mb-2">
               <span className="text-secondary-900 font-medium">Health Score</span>
-              <span className="text-2xl font-bold text-secondary-900">8.5/10</span>
+              <span className="text-2xl font-bold text-secondary-900">
+                {getNutritionGrade(currentProduct).score}/10
+              </span>
             </div>
           </div>
           <p className="text-secondary-600 leading-relaxed">

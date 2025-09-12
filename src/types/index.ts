@@ -9,6 +9,8 @@ export interface ProductData {
     fat_100g: number;
     salt_100g: number;
     energy_100g?: number;
+    fiber_100g?: number;
+    proteins_100g?: number;
   };
   image_url?: string;
   brands?: string;
