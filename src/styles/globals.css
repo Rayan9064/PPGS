@@ -262,6 +262,18 @@ div[class*="fixed"][class*="bottom-0"][class*="z-50"] {
   background: white !important;
 }
 
+/* Ensure main content area is always white */
+.flex-1.w-full.overflow-y-auto {
+  background-color: white !important;
+  background: white !important;
+}
+
+/* Force white background on all main content containers */
+.mobile-scroll {
+  background-color: white !important;
+  background: white !important;
+}
+
 /* Dark mode support for bottom nav */
 .dark .fixed-bottom-nav {
   border-top: 1px solid rgba(255, 255, 255, 0.1);

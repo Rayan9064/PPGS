@@ -175,7 +175,7 @@ export const TabNavigation = () => {
   return (
     <div className="min-h-screen w-full flex flex-col bg-white dark:bg-gray-900 no-horizontal-scroll">
       {/* Main Content */}
-      <div className="flex-1 w-full overflow-y-auto mobile-scroll pb-16 sm:pb-20">
+      <div className="flex-1 w-full overflow-y-auto mobile-scroll pb-16 sm:pb-20 bg-white" style={{backgroundColor: 'white', minHeight: 'calc(100vh - 80px)'}}>
         {renderActiveTab()}
       </div>
 
