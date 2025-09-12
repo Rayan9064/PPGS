@@ -4,22 +4,27 @@ import { WebConnectionPrompt } from '@/components/connection/web-connection-prom
 import { TabNavigation } from '@/components/navigation/tab-navigation';
 import { OnboardingFlow } from '@/components/onboarding/onboarding-flow';
 import { useUserData } from '@/components/providers/user-data-provider';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 export default function Home() {
   const { connectionStatus, onboardingState } = useUserData();
-  const [showConnectionPrompt, setShowConnectionPrompt] = useState(false); // Start with false to skip connection prompt
-  const [showOnboarding, setShowOnboarding] = useState(false); // Start with false to show main app
+  const [showConnectionPrompt, setShowConnectionPrompt] = useState(false);
+  const [showOnboarding, setShowOnboarding] = useState(false);
+  const [isWalletConnected, setIsWalletConnected] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
-  // Show connection prompt if not connected or missing data
-  const shouldShowConnectionPrompt = (!connectionStatus.isConnected || 
-    (connectionStatus.isConnected && !connectionStatus.hasUserData)) && showConnectionPrompt;
+  // Check wallet connection status from localStorage after component mounts
+  useEffect(() => {
+    const walletStatus = localStorage.getItem('nutripal-wallet-connected') === 'true';
+    setIsWalletConnected(walletStatus);
+    setIsLoading(false);
+  }, []);
 
-  // Show onboarding if connected, has data, but needs onboarding
-  const shouldShowOnboarding = connectionStatus.isConnected && 
-    connectionStatus.hasUserData && 
-    connectionStatus.needsOnboarding && 
-    !onboardingState.isCompleted;
+  // Show onboarding if wallet is not connected
+  const shouldShowOnboarding = !isWalletConnected && !isLoading;
+
+  // Show main app if wallet is connected
+  const shouldShowMainApp = isWalletConnected && !isLoading;
 
   const handleConnectionPromptClose = () => {
     console.log('Connection prompt close called');
@@ -39,27 +44,36 @@ export default function Home() {
   };
 
   const handleOnboardingComplete = () => {
+    // Set wallet as connected when onboarding is completed
+    localStorage.setItem('nutripal-wallet-connected', 'true');
     setShowOnboarding(false);
+    // Reload the page to show the main app
+    window.location.reload();
   };
 
   const handleOnboardingSkip = () => {
     setShowOnboarding(false);
   };
 
+  // Show loading state while checking wallet status
+  if (isLoading) {
+    return (
+      <div className="min-h-screen w-full flex items-center justify-center bg-primary-50">
+        <div className="text-center">
+          <div className="w-8 h-8 border-4 border-primary-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-secondary-600">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <>
-      <TabNavigation />
+      {/* Show main app if wallet is connected */}
+      {shouldShowMainApp && <TabNavigation />}
       
-      {/* Show connection prompt automatically on first load if needed */}
-      {shouldShowConnectionPrompt && !showOnboarding && (
-        <WebConnectionPrompt 
-          onClose={handleConnectionPromptClose}
-          showDemoMode={true}
-        />
-      )}
-      
-      {/* Show onboarding if needed */}
-      {(shouldShowOnboarding || showOnboarding) && (
+      {/* Show onboarding if wallet is not connected */}
+      {shouldShowOnboarding && (
         <OnboardingFlow 
           onComplete={handleOnboardingComplete}
           onSkip={handleOnboardingSkip}

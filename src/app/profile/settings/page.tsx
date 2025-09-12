@@ -229,6 +229,23 @@ const SettingsPage = memo(function SettingsPage() {
               <span className="text-green-800 font-medium">Settings saved successfully!</span>
             </div>
           )}
+
+          {/* Disconnect Wallet Button */}
+          <div className="mt-8 pt-6 border-t border-gray-200">
+            <button
+              onClick={() => {
+                // Disconnect wallet
+                localStorage.removeItem('nutripal-wallet-connected');
+                localStorage.removeItem('nutripal-user-data');
+                localStorage.removeItem('nutripal-onboarding-completed');
+                // Reload to show onboarding
+                window.location.reload();
+              }}
+              className="w-full bg-gradient-to-r from-orange-500 to-orange-600 text-white font-semibold py-4 text-lg rounded-2xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 flex items-center justify-center gap-2"
+            >
+              Disconnect Wallet
+            </button>
+          </div>
         </div>
       </div>
     </div>
