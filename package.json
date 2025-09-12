@@ -12,6 +12,9 @@
   "dependencies": {
     "@headlessui/react": "^1.7.17",
     "@heroicons/react": "^2.0.18",
+    "@perawallet/connect": "^1.4.2",
+    "@walletconnect/ethereum-provider": "^2.21.8",
+    "@walletconnect/modal": "^2.7.0",
     "axios": "^1.6.0",
     "clsx": "^2.0.0",
     "framer-motion": "^10.16.16",
