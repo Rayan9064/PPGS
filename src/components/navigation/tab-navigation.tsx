@@ -191,14 +191,14 @@ export const TabNavigation = () => {
               <button
                 key={tab.id}
                 onClick={() => handleTabChange(tab.id)}
-                className={`flex flex-col items-center justify-center p-2 rounded-lg transition-all duration-200 min-w-0 flex-1 relative ${
+                className={`flex flex-col items-center justify-center p-2 rounded-lg min-w-0 flex-1 relative ${
                   isScanButton
                     ? isActive
-                      ? 'text-white bg-red-500 shadow-lg transform scale-105'
-                      : 'text-white bg-red-500 shadow-md hover:shadow-lg hover:scale-105'
+                      ? 'text-white bg-red-500 shadow-lg'
+                      : 'text-white bg-red-500 shadow-md'
                     : isActive 
-                      ? 'text-red-500 bg-red-100' 
-                      : 'text-gray-600 hover:text-red-500 hover:bg-red-50'
+                      ? 'text-red-500' 
+                      : 'text-gray-600'
                 }`}
               >
                 <IconComponent className={`${isScanButton ? 'w-7 h-7' : 'w-6 h-6'} mb-1`} />
