@@ -310,7 +310,7 @@ export const ProductResult = memo(function ProductResult({ product, onScanAnothe
               </h3>
               
               {/* Dietary Restrictions Check */}
-              {userData.dietaryRestrictions && userData.dietaryRestrictions.length > 0 && (
+              {userData?.dietaryRestrictions && userData.dietaryRestrictions.length > 0 && (
                 <div className="mb-3">
                   <p className="text-sm text-purple-800 dark:text-purple-200 mb-2">
                     Dietary Restrictions:
@@ -329,7 +329,7 @@ export const ProductResult = memo(function ProductResult({ product, onScanAnothe
               )}
 
               {/* Health Goals Alignment */}
-              {userData.healthGoals && userData.healthGoals.length > 0 && (
+              {userData?.healthGoals && userData.healthGoals.length > 0 && (
                 <div className="mb-3">
                   <p className="text-sm text-purple-800 dark:text-purple-200 mb-2">
                     Health Goals:

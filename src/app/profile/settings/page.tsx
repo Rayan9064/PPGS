@@ -50,7 +50,7 @@ const SettingsPage = memo(function SettingsPage() {
     
     try {
       // Update using optimized storage (debounced and cached)
-      const userData = optimizedStorage.get('nutripal-user-data', {});
+      const userData = optimizedStorage.get('nutripal-user-data', {}) || {};
       userData.firstName = formData.firstName;
       userData.lastName = formData.lastName;
       userData.age = parseInt(formData.age) || 0;

@@ -201,7 +201,14 @@ export const ScannerComponent = ({ onScanSuccess, onBack }: ScannerComponentProp
       const config: Html5QrcodeCameraScanConfig = {
         fps: 10,
         qrbox: { width: 250, height: 250 },
-        aspectRatio: 1.0
+        aspectRatio: 1.0,
+        showTorchButtonIfSupported: false,
+        showZoomSliderIfSupported: false,
+        defaultZoomValueIfSupported: 1,
+        useBarCodeDetectorIfSupported: false,
+        experimentalFeatures: {
+          useBarCodeDetectorIfSupported: false
+        }
       };
 
       await html5QrCode.start(

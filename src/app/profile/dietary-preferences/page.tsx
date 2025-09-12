@@ -43,7 +43,7 @@ const DietaryPreferencesPage = memo(function DietaryPreferencesPage() {
   const handleSave = useCallback(async () => {
     try {
       // Update using optimized storage (debounced and cached)
-      const userData = optimizedStorage.get('nutripal-user-data', {});
+      const userData = optimizedStorage.get('nutripal-user-data', {}) || {};
       userData.dietaryRestrictions = selectedRestrictions;
       userData.updatedAt = new Date();
       optimizedStorage.set('nutripal-user-data', userData);
