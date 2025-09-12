@@ -348,7 +348,7 @@ export const ProductResult = memo(function ProductResult({ product, onScanAnothe
               )}
 
               {/* Medical Conditions Warnings */}
-              {userData.medicalConditions && userData.medicalConditions.length > 0 && userData.medicalConditions[0] !== 'none' && (
+              {userData?.medicalConditions && userData.medicalConditions.length > 0 && userData.medicalConditions[0] !== 'none' && (
                 <div>
                   <p className="text-sm text-purple-800 dark:text-purple-200 mb-2">
                     Health Considerations:
