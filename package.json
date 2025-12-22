@@ -12,7 +12,7 @@
     "test-webhook": "node scripts/test-webhook.js"
   },
   "dependencies": {
-    "next": "^14.0.4",
+    "next": "14.2.35",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "axios": "^1.6.0",
