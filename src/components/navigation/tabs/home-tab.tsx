@@ -36,7 +36,7 @@ export const HomeTab = ({ onStartScanning, recentScans, onProductSelect }: HomeT
   };
 
   return (
-    <div className="flex-1 w-full bg-gradient-to-br from-emerald-50 to-blue-50 dark:from-gray-800 dark:to-gray-900 pb-safe">
+    <div className="flex-1 w-full bg-primary-50 dark:from-gray-800 dark:to-gray-900 pb-safe">
       {/* Header */}
       <div className="relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-emerald-500 via-cyan-500 to-blue-600"></div>
