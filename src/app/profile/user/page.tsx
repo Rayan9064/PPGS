@@ -3,6 +3,7 @@
 import { useTelegram } from '@/components/providers/telegram-provider';
 import { useUserData } from '@/components/providers/user-data-provider';
 import { UserData } from '@/types';
+import Image from 'next/image';
 import {
     ArrowLeftIcon,
     CheckIcon,
@@ -183,10 +184,13 @@ export default function UserProfile() {
             </h3>
             <div className="flex items-center gap-3">
               {tgUser.photo_url && (
-                <img
+                <Image
                   src={tgUser.photo_url}
                   alt="Profile"
+                  width={48}
+                  height={48}
                   className="w-12 h-12 rounded-full border border-gray-300 dark:border-gray-600"
+                  unoptimized
                 />
               )}
               <div>

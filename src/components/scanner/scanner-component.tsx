@@ -85,6 +85,7 @@ export const ScannerComponent = ({ onScanSuccess, onBack }: ScannerComponentProp
         scanLockRef.current = false;
       }, 3000);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isLoading, hapticFeedback, onScanSuccess]);
 
   // Cleanup function

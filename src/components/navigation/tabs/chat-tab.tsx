@@ -199,7 +199,7 @@ export const ChatTab = ({ currentProduct, onScanProduct }: ChatTabProps) => {
               {currentProduct.product_name || 'Unknown Product'}
             </p>
             <p className="text-xs text-emerald-600 dark:text-emerald-400 font-medium">
-              Ask me about this product's nutrition or ingredients!
+              Ask me about this product&apos;s nutrition or ingredients!
             </p>
           </div>
         )}

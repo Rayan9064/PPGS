@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { useTelegram } from '@/components/providers/telegram-provider';
 
 export const GlobalTelegramHeader = () => {
@@ -8,11 +9,14 @@ export const GlobalTelegramHeader = () => {
   return (
     <div className="w-full bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-4 py-2 flex items-center gap-3">
       {tgUser.photo_url && (
-        <img
+        <Image
           src={tgUser.photo_url}
           alt="Telegram Avatar"
+          width={32}
+          height={32}
           className="w-8 h-8 rounded-full border border-gray-300 dark:border-gray-700"
           onError={e => (e.currentTarget.style.display = 'none')}
+          unoptimized
         />
       )}
       <div>

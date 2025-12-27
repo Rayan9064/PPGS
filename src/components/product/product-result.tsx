@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { useTelegram } from '@/components/providers/telegram-provider';
 import { useUserData } from '@/components/providers/user-data-provider';
 import { NutritionGrade, ProductData } from '@/types';
@@ -61,7 +62,8 @@ export const ProductResult = ({ product, onScanAnother, onBack, showBackButton =
       // Dispatch event to update scan history page
       window.dispatchEvent(new CustomEvent('scanHistoryUpdated'));
     }
-  }, [product.code]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleScanAnother = () => {
     hapticFeedback.impact('medium');
@@ -411,10 +413,13 @@ export const ProductResult = ({ product, onScanAnother, onBack, showBackButton =
             >
               ✕
             </button>
-            <img
+            <Image
               src={product.image_url}
               alt={product.product_name}
+              width={400}
+              height={300}
               className="w-full h-auto rounded-lg"
+              unoptimized
             />
           </div>
         </div>

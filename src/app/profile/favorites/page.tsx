@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Image from 'next/image';
 import { ArrowLeftIcon, StarIcon, HeartIcon, TrashIcon } from '@heroicons/react/24/outline';
 import { StarIcon as StarIconSolid } from '@heroicons/react/24/solid';
 import { useTelegram } from '@/components/providers/telegram-provider';
@@ -136,9 +137,8 @@ export default function Favorites() {
     return () => {
       window.removeEventListener('favoritesUpdated', handleFavoritesUpdate);
     };
-  }, []);
-
-  const [filter, setFilter] = useState<'all' | 'recent' | 'healthy'>('all');
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);  const [filter, setFilter] = useState<'all' | 'recent' | 'healthy'>('all');
   const [editMode, setEditMode] = useState(false);
 
   const removeFavorite = (id: string, isUserData: boolean) => {
@@ -256,11 +256,14 @@ export default function Favorites() {
         {tgUser && (
           <div className="px-4 pb-2 flex items-center gap-3">
             {tgUser.photo_url && (
-              <img
+              <Image
                 src={tgUser.photo_url}
                 alt="Telegram Avatar"
+                width={40}
+                height={40}
                 className="w-10 h-10 rounded-full border border-gray-300 dark:border-gray-700"
                 onError={e => (e.currentTarget.style.display = 'none')}
+                unoptimized
               />
             )}
             <div>

@@ -2,6 +2,7 @@
 
 import { useTelegram } from '@/components/providers/telegram-provider';
 import { useUserData } from '@/components/providers/user-data-provider';
+import Image from 'next/image';
 import {
     ArrowRightIcon,
     ExclamationTriangleIcon,
@@ -89,7 +90,7 @@ export const ConnectionPrompt = ({ onClose, showDemoMode = true }: ConnectionPro
                 <ol className="text-sm text-blue-800 dark:text-blue-200 space-y-1 text-left">
                   <li>1. Open the NutriPal bot in Telegram</li>
                   <li>2. Send /start command</li>
-                  <li>3. Tap "Open NutriPal" button</li>
+                  <li>3. Tap &quot;Open NutriPal&quot; button</li>
                 </ol>
               </div>
 
@@ -114,16 +115,19 @@ export const ConnectionPrompt = ({ onClose, showDemoMode = true }: ConnectionPro
               </h3>
               
               <p className="text-gray-600 dark:text-gray-400 mb-6 text-sm leading-relaxed">
-                Great! You're connected to Telegram. Let's create your personalized nutrition profile.
+                Great! You&apos;re connected to Telegram. Let&apos;s create your personalized nutrition profile.
               </p>
 
               {tgUser && (
                 <div className="bg-gray-50 dark:bg-gray-700 rounded-xl p-4 mb-6 flex items-center gap-3">
                   {tgUser.photo_url && (
-                    <img
+                    <Image
                       src={tgUser.photo_url}
                       alt="Profile"
+                      width={40}
+                      height={40}
                       className="w-10 h-10 rounded-full border border-gray-300 dark:border-gray-600"
+                      unoptimized
                     />
                   )}
                   <div className="text-left">
@@ -177,7 +181,7 @@ export const ConnectionPrompt = ({ onClose, showDemoMode = true }: ConnectionPro
               </h3>
               
               <p className="text-gray-600 dark:text-gray-400 mb-6 text-sm leading-relaxed">
-                Let's set up your health profile to provide better nutrition recommendations.
+                Let&apos;s set up your health profile to provide better nutrition recommendations.
               </p>
 
               <button

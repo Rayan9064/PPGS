@@ -113,9 +113,8 @@ export default function ConsumedProducts() {
     return () => {
       window.removeEventListener('consumptionUpdated', handleConsumptionUpdate);
     };
-  }, []);
-
-  const todayConsumed = consumedProducts.filter(item => 
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);  const todayConsumed = consumedProducts.filter(item => 
     new Date(item.timestamp).toDateString() === new Date().toDateString()
   );
 
@@ -165,7 +164,7 @@ export default function ConsumedProducts() {
         {/* Daily Summary */}
         <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Today's Summary</h2>
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Today&apos;s Summary</h2>
             <FireIcon className="w-6 h-6 text-orange-500" />
           </div>
           

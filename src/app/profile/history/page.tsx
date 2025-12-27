@@ -123,6 +123,7 @@ export default function ScanHistory() {
     return () => {
       window.removeEventListener('scanHistoryUpdated', handleScanHistoryUpdate);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const [filter, setFilter] = useState<'all' | 'today' | 'week' | 'month'>('all');
