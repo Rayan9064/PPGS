@@ -54,7 +54,7 @@ export const NutritionVerification = ({ productData, onVerified, onClose }: Nutr
   const handleAcceptVerification = () => {
     if (verification) {
       onVerified(verification.verifiedData);
-      toast.success('Product data accepted and ready for blockchain storage');
+      toast.success('Product data accepted and saved');
     }
   };
 
@@ -80,7 +80,7 @@ export const NutritionVerification = ({ productData, onVerified, onClose }: Nutr
           </div>
           <div>
             <h3 className="font-semibold text-gray-900">AI Nutrition Verification</h3>
-            <p className="text-sm text-gray-600">Blockchain-ready data validation</p>
+            <p className="text-sm text-gray-600">AI-powered data validation</p>
           </div>
         </div>
         {onClose && (
@@ -226,7 +226,7 @@ export const NutritionVerification = ({ productData, onVerified, onClose }: Nutr
               className="flex-1 bg-sage-green hover:bg-sage-green/90 text-white px-4 py-3 rounded-xl transition-colors flex items-center justify-center gap-2"
             >
               <CheckCircleIcon className="w-5 h-5" />
-              Accept & Store on Blockchain
+              Accept & Save Data
             </button>
             <button
               onClick={() => setVerification(null)}
@@ -265,14 +265,14 @@ export const NutritionVerification = ({ productData, onVerified, onClose }: Nutr
         </div>
       )}
 
-      {/* Blockchain Integration Note */}
+      {/* Data Security Note */}
       <div className="bg-sage-green/10 border border-sage-green/30 rounded-xl p-4">
         <div className="flex items-center gap-2 mb-2">
           <ShieldCheckIcon className="w-5 h-5 text-sage-green" />
-          <h5 className="font-medium text-sage-green">Blockchain Ready</h5>
+          <h5 className="font-medium text-sage-green">Data Security</h5>
         </div>
         <p className="text-sm text-gray-700">
-          Verified data will be stored on Algorand blockchain with cryptographic proof of authenticity.
+          Verified data is securely stored and protected with encryption.
           This ensures data integrity and prevents tampering.
         </p>
       </div>

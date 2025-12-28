@@ -464,7 +464,7 @@ export const ProductResult = memo(function ProductResult({ product, onScanAnothe
               onVerified={(verifiedData) => {
                 console.log('Verified product data:', verifiedData);
                 setShowVerification(false);
-                toast.success('Product data verified and ready for blockchain storage!');
+                toast.success('Product data verified and saved!');
               }}
               onClose={() => setShowVerification(false)}
             />

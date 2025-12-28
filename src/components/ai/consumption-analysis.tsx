@@ -191,7 +191,7 @@ export const ConsumptionAnalysis = ({ onClose }: ConsumptionAnalysisProps) => {
           </div>
           <div>
             <h3 className="font-semibold text-gray-900">Consumption Analysis</h3>
-            <p className="text-sm text-gray-600">AI-powered insights from your blockchain data</p>
+            <p className="text-sm text-gray-600">AI-powered insights from your consumption data</p>
           </div>
         </div>
         {onClose && (

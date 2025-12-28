@@ -3,12 +3,7 @@
 import { useWeb } from '@/components/providers/web-provider';
 import { useTheme } from '@/components/providers/theme-provider';
 import { useUserData } from '@/components/providers/user-data-provider';
-import { useWallet } from '@/hooks/useWallet';
 import { ConsumptionAnalysis } from '@/components/ai/consumption-analysis';
-import { WalletSelector } from '@/components/wallet/wallet-selector';
-import { walletService } from '@/lib/wallet-service';
-import { formatAddress } from '@/lib/algorand';
-import { getNetworkDisplayName } from '@/lib/network-config';
 import {
     BellIcon,
     ChevronRightIcon,
@@ -23,32 +18,18 @@ import {
     StarIcon,
     SunIcon,
     UserIcon,
-    ChartBarIcon,
-    WalletIcon,
-    XMarkIcon,
-    CubeIcon,
-    DocumentChartBarIcon,
-    CheckCircleIcon,
-    ClockIcon
+    ChartBarIcon
 } from '@heroicons/react/24/outline';
 import { useState, memo, useEffect } from 'react';
 
 export const ProfileTab = memo(function ProfileTab() {
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
   const [showConsumptionAnalysis, setShowConsumptionAnalysis] = useState(false);
-  const [showWalletSelector, setShowWalletSelector] = useState(false);
-  const [blockchainInitializing, setBlockchainInitializing] = useState(false);
   const { hapticFeedback, isAvailable, webUser } = useWeb();
-  const { accounts, isConnected, balance, connect, disconnect } = useWallet();
   const { 
     userData, 
     connectionStatus, 
     onboardingState, 
-    blockchainStats,
-    initializeBlockchain,
-    optInToContract,
-    optOutOfContract,
-    refreshBlockchainStats,
     getBMI, 
     getBMICategory,
     getDailyCalories 
@@ -59,85 +40,6 @@ export const ProfileTab = memo(function ProfileTab() {
     hapticFeedback.impact('light');
     setter(!currentValue);
   };
-
-  const handleDisconnectWallet = async () => {
-    hapticFeedback.impact('medium');
-    try {
-      await disconnect();
-    } catch (error) {
-      console.error('Failed to disconnect wallet:', error);
-    }
-  };
-
-  const handleConnectWallet = async () => {
-    hapticFeedback.impact('medium');
-    try {
-      await connect();
-    } catch (error) {
-      console.error('Failed to connect wallet:', error);
-    }
-  };
-
-  const handleInitializeBlockchain = async () => {
-    if (!isConnected) {
-      await handleConnectWallet();
-      return;
-    }
-    
-    setBlockchainInitializing(true);
-    hapticFeedback.impact('medium');
-    
-    try {
-      const success = await initializeBlockchain();
-      if (success) {
-        hapticFeedback.notification('success');
-      } else {
-        hapticFeedback.notification('error');
-      }
-    } catch (error) {
-      console.error('Failed to initialize blockchain:', error);
-      hapticFeedback.notification('error');
-    } finally {
-      setBlockchainInitializing(false);
-    }
-  };
-
-  const handleOptIn = async () => {
-    hapticFeedback.impact('medium');
-    try {
-      const success = await optInToContract();
-      if (success) {
-        hapticFeedback.notification('success');
-      } else {
-        hapticFeedback.notification('error');
-      }
-    } catch (error) {
-      console.error('Failed to opt in:', error);
-      hapticFeedback.notification('error');
-    }
-  };
-
-  const handleOptOut = async () => {
-    hapticFeedback.impact('medium');
-    try {
-      const success = await optOutOfContract();
-      if (success) {
-        hapticFeedback.notification('success');
-      } else {
-        hapticFeedback.notification('error');
-      }
-    } catch (error) {
-      console.error('Failed to opt out:', error);
-      hapticFeedback.notification('error');
-    }
-  };
-
-  // Initialize blockchain when wallet connects
-  useEffect(() => {
-    if (isConnected && !blockchainStats.userStats && !blockchainStats.isLoading) {
-      handleInitializeBlockchain();
-    }
-  }, [isConnected]);
 
   const handleMenuPress = (action: string, route?: string) => {
     hapticFeedback.impact('light');
@@ -161,20 +63,6 @@ export const ProfileTab = memo(function ProfileTab() {
       window.location.href = '/profile/help-center';
     } else if (action === 'contact-us') {
       window.location.href = '/profile/contact-us';
-    } else if (action === 'disconnect-wallet') {
-      handleDisconnectWallet();
-    } else if (action === 'wallet-info') {
-      console.log('Show wallet info:', { accounts, balance, network: getNetworkDisplayName() });
-    } else if (action === 'connect-wallet') {
-      setShowWalletSelector(true);
-    } else if (action === 'blockchain-opt-in') {
-      handleOptIn();
-    } else if (action === 'blockchain-opt-out') {
-      handleOptOut();
-    } else if (action === 'blockchain-init') {
-      handleInitializeBlockchain();
-    } else if (action === 'refresh-blockchain') {
-      refreshBlockchainStats();
     } else if (route) {
       window.location.href = route;
     } else {
@@ -183,63 +71,6 @@ export const ProfileTab = memo(function ProfileTab() {
   };
 
   const menuSections = [
-    {
-      title: 'Wallet',
-      items: isConnected ? [
-        { 
-          icon: WalletIcon, 
-          label: `Pera: ${formatAddress(accounts[0])} (${balance.toFixed(2)} ALGO)`, 
-          action: 'wallet-info' 
-        },
-        { 
-          icon: XMarkIcon, 
-          label: 'Disconnect Wallet', 
-          action: 'disconnect-wallet',
-          isDestructive: true
-        },
-      ] : [
-        { icon: WalletIcon, label: 'Connect Pera Wallet', action: 'connect-wallet' },
-      ]
-    },
-    {
-      title: 'Blockchain',
-      items: isConnected ? [
-        ...(blockchainStats.isOptedIn ? [
-          { 
-            icon: CheckCircleIcon, 
-            label: 'Contract Enabled', 
-            action: 'refresh-blockchain',
-            description: `${blockchainStats.userStats?.scanCount || 0} scans recorded`
-          },
-          { 
-            icon: XMarkIcon, 
-            label: 'Opt Out of Contract', 
-            action: 'blockchain-opt-out',
-            isDestructive: true 
-          },
-        ] : [
-          { 
-            icon: CubeIcon, 
-            label: blockchainInitializing ? 'Initializing...' : 'Enable Blockchain Features', 
-            action: 'blockchain-opt-in',
-            description: 'Opt into smart contract for tracking'
-          },
-        ]),
-        { 
-          icon: DocumentChartBarIcon, 
-          label: 'View Global Stats', 
-          action: 'refresh-blockchain',
-          description: `${blockchainStats.globalStats?.totalProducts || 0} products, ${blockchainStats.globalStats?.totalScans || 0} total scans`
-        },
-      ] : [
-        { 
-          icon: CubeIcon, 
-          label: 'Connect Wallet for Blockchain Features', 
-          action: 'connect-wallet',
-          description: 'Track your scans on Algorand blockchain'
-        },
-      ]
-    },
     {
       title: 'Account & Profile',
       items: [
@@ -321,40 +152,10 @@ export const ProfileTab = memo(function ProfileTab() {
           </div>
         </div>
         
-        {/* Blockchain Stats Row */}
-        {isConnected && blockchainStats.isOptedIn && (
-          <div className="grid grid-cols-2 gap-4 mb-4">
-            <div className="bg-gradient-to-br from-blue-100 to-blue-200 rounded-2xl p-4 text-center border border-blue-300">
-              <div className="flex items-center justify-center mb-2">
-                <CubeIcon className="w-5 h-5 text-blue-600 mr-2" />
-                <div className="text-blue-800 font-medium text-sm">Blockchain Scans</div>
-              </div>
-              <div className="text-2xl font-bold text-blue-900">
-                {blockchainStats.userStats?.scanCount.toString() || '0'}
-              </div>
-            </div>
-            <div className="bg-gradient-to-br from-green-100 to-green-200 rounded-2xl p-4 text-center border border-green-300">
-              <div className="flex items-center justify-center mb-2">
-                <DocumentChartBarIcon className="w-5 h-5 text-green-600 mr-2" />
-                <div className="text-green-800 font-medium text-sm">Last Product</div>
-              </div>
-              <div className="text-lg font-bold text-green-900">
-                #{blockchainStats.userStats?.lastScannedProduct.toString() || 'None'}
-              </div>
-            </div>
-          </div>
-        )}
-        
         <div className="grid grid-cols-3 gap-4">
           <div className="bg-primary-100 rounded-2xl p-4 text-center border border-primary-200">
             <div className="text-secondary-900 font-medium text-sm mb-1">Products Scanned</div>
-            <div className="text-2xl font-bold text-secondary-900">
-              {/* Show blockchain count if available, otherwise show mock data */}
-              {blockchainStats.isOptedIn ? 
-                (blockchainStats.userStats?.scanCount.toString() || '0') : 
-                '120'
-              }
-            </div>
+            <div className="text-2xl font-bold text-secondary-900">120</div>
           </div>
           <div className="bg-primary-100 rounded-2xl p-4 text-center border border-primary-200">
             <div className="text-secondary-900 font-medium text-sm mb-1">Healthy Choices</div>
@@ -365,29 +166,6 @@ export const ProfileTab = memo(function ProfileTab() {
             <div className="text-2xl font-bold text-secondary-900">3</div>
           </div>
         </div>
-        
-        {/* Global Blockchain Stats */}
-        {isConnected && blockchainStats.globalStats && (
-          <div className="mt-4 bg-gradient-to-br from-purple-50 to-purple-100 rounded-2xl p-4 border border-purple-200">
-            <div className="text-center">
-              <div className="text-purple-800 font-medium text-sm mb-2">Global Network Stats</div>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <div className="text-lg font-bold text-purple-900">
-                    {blockchainStats.globalStats.totalProducts.toString()}
-                  </div>
-                  <div className="text-purple-700 text-sm">Total Products</div>
-                </div>
-                <div>
-                  <div className="text-lg font-bold text-purple-900">
-                    {blockchainStats.globalStats.totalScans.toString()}
-                  </div>
-                  <div className="text-purple-700 text-sm">Total Scans</div>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
       </div>
 
       {/* Menu Sections */}
@@ -447,24 +225,6 @@ export const ProfileTab = memo(function ProfileTab() {
         ))}
       </div>
 
-      {/* Disconnect Wallet Button - Bottom Section */}
-      {isConnected && (
-        <div className="px-6 mt-8 pb-8">
-          <div className="border-t border-gray-200 pt-6">
-            <button
-              onClick={handleDisconnectWallet}
-              className="w-full bg-gradient-to-r from-red-500 to-red-600 text-white font-semibold py-4 text-lg rounded-2xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 flex items-center justify-center gap-2"
-            >
-              <XMarkIcon className="w-5 h-5" />
-              Disconnect Wallet
-            </button>
-            <p className="text-center text-gray-500 text-sm mt-2">
-              Disconnect your Pera wallet connection
-            </p>
-          </div>
-        </div>
-      )}
-
       {/* AI Consumption Analysis Modal */}
       {showConsumptionAnalysis && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
@@ -474,21 +234,6 @@ export const ProfileTab = memo(function ProfileTab() {
             />
           </div>
         </div>
-      )}
-
-      {/* Wallet Selector Modal */}
-      {showWalletSelector && (
-        <WalletSelector
-          onWalletConnected={(walletInfo) => {
-            console.log('Wallet connected:', walletInfo);
-            setShowWalletSelector(false);
-            // Refresh blockchain stats after connection
-            setTimeout(() => {
-              refreshBlockchainStats();
-            }, 1000);
-          }}
-          onClose={() => setShowWalletSelector(false)}
-        />
       )}
     </div>
   );

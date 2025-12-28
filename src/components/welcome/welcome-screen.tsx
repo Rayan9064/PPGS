@@ -40,7 +40,7 @@ export const WelcomeScreen = ({ onStartScanning }: WelcomeScreenProps) => {
             Welcome to NutriGrade
           </h2>
           <p className="text-gray-700 text-lg leading-relaxed">
-            Unlock the power of AI-driven nutrition analysis and blockchain-verified food data. Start your journey to healthier eating today.
+            Unlock the power of AI-driven nutrition analysis for smarter food choices. Start your journey to healthier eating today.
           </p>
         </div>
 

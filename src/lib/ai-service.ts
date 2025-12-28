@@ -2,7 +2,7 @@ import { ProductData, UserData } from '@/types';
 import { AI_CONFIG } from '@/config/ai-config';
 import { UserContextService, UserContextForAI } from './user-context-service';
 
-// AI Service for NutriGrade - Integrates with blockchain data
+// AI Service for NutriGrade - Nutrition analysis and recommendations
 export class AIService {
   private static instance: AIService;
   private apiKey: string;
@@ -22,7 +22,7 @@ export class AIService {
 
   /**
    * AI-Powered Nutrition Data Verification
-   * Analyzes and verifies product data before blockchain storage
+   * Analyzes and verifies product nutrition data
    */
   async verifyNutritionData(productData: ProductData): Promise<{
     isValid: boolean;
@@ -77,7 +77,7 @@ export class AIService {
 
   /**
    * Personalized Nutrition Recommendations
-   * Based on user profile and blockchain data
+   * Based on user profile and consumption history
    */
   async getPersonalizedRecommendations(
     userProfile: UserData,

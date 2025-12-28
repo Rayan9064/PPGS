@@ -3,7 +3,6 @@
 import { useWeb } from '@/components/providers/web-provider';
 import { useUserData } from '@/components/providers/user-data-provider';
 import { UserData } from '@/types';
-// import { walletService, WalletInfo } from '@/lib/wallet-service'; // TODO: Update to use new wallet integration
 import {
     CheckIcon,
     ChevronLeftIcon,
@@ -14,7 +13,6 @@ import {
     SparklesIcon,
     ShieldCheckIcon,
     ArrowRightIcon,
-    WalletIcon,
     DevicePhoneMobileIcon,
     ComputerDesktopIcon
 } from '@heroicons/react/24/outline';
@@ -78,7 +76,7 @@ export const OnboardingFlow = ({ onComplete }: OnboardingFlowProps) => {
       key: 'complete',
       title: 'You\'re All Set!',
       subtitle: 'Ready to start your nutrition journey',
-      description: 'Your profile is complete. Let\'s start scanning products! You can connect a wallet later for blockchain features.',
+      description: 'Your profile is complete. Let\'s start scanning products!',
       icon: ShieldCheckIcon,
       progress: 100,
     },
@@ -472,11 +470,6 @@ export const OnboardingFlow = ({ onComplete }: OnboardingFlowProps) => {
               <p className="text-lg text-gray-700">
                 Let's set up your profile to get personalized nutrition recommendations!
               </p>
-              <div className="bg-orange-50 border border-orange-200 rounded-2xl p-4">
-                <p className="text-orange-800 text-sm">
-                  💡 You can connect a wallet later for blockchain features
-                </p>
-              </div>
             </div>
           ) : currentStep === steps.length - 1 ? (
             <button

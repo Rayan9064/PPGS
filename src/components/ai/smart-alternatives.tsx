@@ -182,7 +182,7 @@ export const SmartAlternatives = ({ currentProduct, onProductSelect, onClose }: 
           </div>
           <div>
             <h3 className="font-semibold text-gray-900">AI-Powered Alternatives</h3>
-            <p className="text-sm text-gray-600">Based on your blockchain profile</p>
+            <p className="text-sm text-gray-600">Based on your profile preferences</p>
           </div>
         </div>
         {onClose && (

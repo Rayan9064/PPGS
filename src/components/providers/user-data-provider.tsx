@@ -1,9 +1,6 @@
 'use client';
 
 import { UserDataService } from '@/lib/user-data';
-import { contractService, getUserBlockchainStats, getGlobalBlockchainStats, optIntoContract, optOutOfContract } from '@/lib/contract-service';
-import { getContractAppId } from '@/config/contract-config';
-import type { UserStats, ContractStats } from '@/lib/contract-service';
 import { OnboardingState, UserConnectionStatus, UserData } from '@/types';
 import { createContext, ReactNode, useContext, useEffect, useState } from 'react';
 import { useWeb } from './web-provider';
@@ -24,21 +21,6 @@ interface UserDataContextType {
   updateOnboardingStep: (step: OnboardingState['currentStep']) => void;
   updateOnboardingProgress: (progress: number) => void;
   completeOnboarding: () => void;
-  
-  // Blockchain integration
-  blockchainStats: {
-    userStats: UserStats | null;
-    globalStats: ContractStats | null;
-    isOptedIn: boolean;
-    isLoading: boolean;
-    error: string | null;
-  };
-  
-  // Blockchain methods
-  initializeBlockchain: () => Promise<boolean>;
-  optInToContract: () => Promise<boolean>;
-  optOutOfContract: () => Promise<boolean>;
-  refreshBlockchainStats: () => Promise<void>;
   
   // Utility methods
   getBMI: () => number | null;
@@ -66,15 +48,6 @@ export const UserDataProvider = ({ children }: { children: ReactNode }) => {
   });
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  
-  // Blockchain state
-  const [blockchainStats, setBlockchainStats] = useState({
-    userStats: null as UserStats | null,
-    globalStats: null as ContractStats | null,
-    isOptedIn: false,
-    isLoading: false,
-    error: null as string | null,
-  });
 
   // Initialize user data on mount and when web user changes
   useEffect(() => {
@@ -265,104 +238,6 @@ export const UserDataProvider = ({ children }: { children: ReactNode }) => {
     };
   };
 
-  // Blockchain methods
-  const initializeBlockchain = async (): Promise<boolean> => {
-    setBlockchainStats(prev => ({ ...prev, isLoading: true, error: null }));
-    
-    try {
-      const appId = getContractAppId();
-      const success = await contractService.initialize(appId);
-      
-      if (success) {
-        await refreshBlockchainStats();
-        return true;
-      }
-      
-      setBlockchainStats(prev => ({ ...prev, error: 'Failed to initialize contract', isLoading: false }));
-      return false;
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Blockchain initialization failed';
-      setBlockchainStats(prev => ({ ...prev, error: errorMessage, isLoading: false }));
-      return false;
-    }
-  };
-
-  const optInToContract = async (): Promise<boolean> => {
-    setBlockchainStats(prev => ({ ...prev, isLoading: true, error: null }));
-    
-    try {
-      await optIntoContract();
-      setBlockchainStats(prev => ({ ...prev, isOptedIn: true }));
-      await refreshBlockchainStats();
-      return true;
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Opt-in failed';
-      setBlockchainStats(prev => ({ ...prev, error: errorMessage, isLoading: false }));
-      return false;
-    }
-  };
-
-  const optOutOfContract = async (): Promise<boolean> => {
-    setBlockchainStats(prev => ({ ...prev, isLoading: true, error: null }));
-    
-    try {
-      await optOutOfContract();
-      setBlockchainStats(prev => ({ 
-        ...prev, 
-        isOptedIn: false, 
-        userStats: null,
-        isLoading: false 
-      }));
-      return true;
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Opt-out failed';
-      setBlockchainStats(prev => ({ ...prev, error: errorMessage, isLoading: false }));
-      return false;
-    }
-  };
-
-  const refreshBlockchainStats = async (): Promise<void> => {
-    if (!contractService.isInitialized()) return;
-    
-    setBlockchainStats(prev => ({ ...prev, isLoading: true, error: null }));
-    
-    try {
-      // Check if user is opted in and get user stats
-      let userStats = null;
-      let isOptedIn = false;
-      
-      try {
-        userStats = await getUserBlockchainStats();
-        isOptedIn = true;
-      } catch (error) {
-        // User not opted in or no stats available
-        isOptedIn = false;
-      }
-      
-      // Get global stats
-      const globalStats = await getGlobalBlockchainStats();
-      
-      setBlockchainStats(prev => ({
-        ...prev,
-        userStats,
-        globalStats,
-        isOptedIn,
-        isLoading: false,
-        error: null
-      }));
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Failed to fetch blockchain stats';
-      setBlockchainStats(prev => ({ ...prev, error: errorMessage, isLoading: false }));
-    }
-  };
-
-  // Initialize blockchain when wallet is connected
-  useEffect(() => {
-    if (connectionStatus.isConnected && webUser && contractService.isInitialized()) {
-      refreshBlockchainStats();
-    }
-  }, [connectionStatus.isConnected, webUser]);
-
   const contextValue: UserDataContextType = {
     userData,
     onboardingState,
@@ -375,11 +250,6 @@ export const UserDataProvider = ({ children }: { children: ReactNode }) => {
     updateOnboardingStep,
     updateOnboardingProgress,
     completeOnboarding,
-    blockchainStats,
-    initializeBlockchain,
-    optInToContract,
-    optOutOfContract,
-    refreshBlockchainStats,
     getBMI,
     getBMICategory,
     getDailyCalories,

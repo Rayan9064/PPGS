@@ -141,7 +141,7 @@ export const AI_CONFIG = {
     `,
     
     CHAT_ASSISTANT: `
-      You are NutriGrade AI, a helpful nutrition assistant integrated with blockchain technology.
+      You are NutriGrade AI, a helpful nutrition assistant.
       
       User Profile:
       - Health Goals: {healthGoals}
@@ -222,24 +222,11 @@ export const AI_CONFIG = {
   }
 };
 
-// Blockchain integration configuration
-export const BLOCKCHAIN_CONFIG = {
-  NETWORK: process.env.NEXT_PUBLIC_ALGORAND_NETWORK || 'testnet',
-  INDEXER_URL: process.env.NEXT_PUBLIC_ALGORAND_INDEXER_URL || 'https://testnet-algorand.api.purestake.io/idx2',
-  ALGOD_URL: process.env.NEXT_PUBLIC_ALGORAND_ALGOD_URL || 'https://testnet-algorand.api.purestake.io/ps2',
-  
-  // Smart contract addresses (will be set after deployment)
-  CONTRACTS: {
-    PRODUCT_REGISTRY: '',
-    USER_PROFILE: ''
-  }
-};
-
 // App configuration
 export const APP_CONFIG = {
   NAME: process.env.NEXT_PUBLIC_APP_NAME || 'NutriGrade',
   VERSION: process.env.NEXT_PUBLIC_APP_VERSION || '1.0.0',
-  DESCRIPTION: 'AI-powered nutrition tracking with blockchain verification',
+  DESCRIPTION: 'AI-powered nutrition tracking and analysis',
   
   // Feature flags
   FEATURES: {
@@ -247,7 +234,6 @@ export const APP_CONFIG = {
     AI_RECOMMENDATIONS: true,
     AI_ALTERNATIVES: true,
     AI_CHAT: true,
-    AI_ANALYSIS: true,
-    BLOCKCHAIN_INTEGRATION: true
+    AI_ANALYSIS: true
   }
 };
