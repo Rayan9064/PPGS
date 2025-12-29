@@ -11,9 +11,10 @@ import toast from 'react-hot-toast';
 interface ScannerComponentProps {
   onScanSuccess: (data: ProductData) => void;
   onBack: () => void;
+  initialCamera?: string;
 }
 
-export const ScannerComponent = ({ onScanSuccess, onBack }: ScannerComponentProps) => {
+export const ScannerComponent = ({ onScanSuccess, onBack, initialCamera }: ScannerComponentProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const [hasPermission, setHasPermission] = useState<boolean | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -155,13 +156,17 @@ export const ScannerComponent = ({ onScanSuccess, onBack }: ScannerComponentProp
       const devices = await Html5Qrcode.getCameras();
       setCameras(devices);
       if (devices.length > 0) {
-        // Prefer back camera if available
-        const backCamera = devices.find(device => 
-          device.label.toLowerCase().includes('back') || 
-          device.label.toLowerCase().includes('rear') ||
-          device.label.toLowerCase().includes('environment')
-        );
-        setSelectedCamera(backCamera?.id || devices[0].id);
+        // Use initialCamera if provided, otherwise prefer back camera
+        if (initialCamera && devices.some(d => d.id === initialCamera)) {
+          setSelectedCamera(initialCamera);
+        } else {
+          const backCamera = devices.find(device => 
+            device.label.toLowerCase().includes('back') || 
+            device.label.toLowerCase().includes('rear') ||
+            device.label.toLowerCase().includes('environment')
+          );
+          setSelectedCamera(backCamera?.id || devices[0].id);
+        }
         setHasPermission(true);
         setCachedPermission(true); // Cache the permission
         setPermissionChecked(true);
