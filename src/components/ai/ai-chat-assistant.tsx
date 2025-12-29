@@ -41,8 +41,8 @@ export const AIChatAssistant = ({ currentProduct, onProductSelect }: AIChatAssis
     const initializeNutriBro = async () => {
       if (messages.length === 0 && userData) {
         try {
-          // Generate personalized Nutri Bro welcome message
-          const welcomeContent = await aiService.generateNutriBroWelcome(userData);
+          // Generate personalized welcome message
+          const welcomeContent = aiService.generateWelcomeMessage(userData);
           
           const welcomeMessage: ChatMessage = {
             id: 'nutri-bro-welcome',
@@ -136,7 +136,7 @@ export const AIChatAssistant = ({ currentProduct, onProductSelect }: AIChatAssis
         content: response.response,
         timestamp: new Date(),
         suggestions: response.suggestions,
-        relatedProducts: response.relatedProducts,
+
         type: 'general'
       };
 
@@ -196,7 +196,6 @@ export const AIChatAssistant = ({ currentProduct, onProductSelect }: AIChatAssis
         content: response.response,
         timestamp: new Date(),
         suggestions: response.suggestions,
-        relatedProducts: response.relatedProducts,
         type: 'general'
       };
 
